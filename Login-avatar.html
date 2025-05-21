@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PostArt | Avatar</title>
+    <!-- BOXICONS -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <!-- STYLE -->
+    <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/styleLogAvatar.css">
+</head>
+<body>
+    <div class="form-container">
+
+        <div id="cropModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close-button" id="closeModal">&times;</span>
+                <h2>Recortar Imagen</h2>
+                <div class="crop-container" style="width: 100%; height: 400px;">
+                    <img id="imageToCrop" src="" alt="Imagen a recortar" style="max-width: 100%; height: auto;">
+                </div>
+                <button id="confirmCropButton">Confirmar Recorte</button>
+            </div>
+        </div>
+        
+        <div class="left-div">
+            <div class="top-left-div">
+                <div class="avatar-text-name">
+                    <h1>
+                        <span class="hola-text">Hola! </span> 
+                        <span class="nametag-text">NamerTag</span>
+                    </h1>
+                </div>
+            </div>
+            <div class="bottom-left-div">
+                <div class="avatar-perfil">
+                    <img id="userImage" src="../BDM_PostArt_V3/imagenes-prueba/User.jpg" alt="Imagen a recortar">
+                </div>
+            </div>
+        </div>
+        <div class="right-div">
+            <div class="top-right-div">
+                <div class="animated-text" id="animatedText">
+                    Ayudanos a poder
+                    identificarte más fácil en <span>PostArt</span>?
+                </div>
+            </div>
+            <div class="center-right-div">
+                <div class="left-center-div">
+                    <img src="../BDM_PostArt_V3/imagenes-prueba/camaron.png" alt="Camarón" class="rocket" style="max-width: 100%; height: auto;">
+                </div>
+                <div class="middle-center-div">
+                    <input type="file" id="imageUpload" accept="image/*" class="customfile">
+                </div>
+            </div>
+            <div class="bottom-right-div">
+                <button id="#" class="submitButton" onclick="location.href='index.php'">Continuar</button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="../BDM_PostArt_V3/js/LoginAvatar.js"></script>
+</body>
+</html>

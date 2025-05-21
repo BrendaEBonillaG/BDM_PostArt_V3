@@ -1,0 +1,332 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    display: flex;
+    justify-content: center; /* Centrado horizontal */
+    align-items: center;     /* Centrado vertical si es necesario */
+    min-height: 100vh;       /* Asegura que ocupe toda la altura de la pantalla */
+    background-color: #111111; /* Color de fondo para más contraste */
+}
+
+.usuarios-container {
+  display: flex;
+  height: 80vh;
+  width: 90%;
+  max-width: 1200px;
+  margin: 20px auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.user-list {
+  width: 24%;
+  background-color: #353535;
+  color:#ccc;
+  padding: 20px;
+  overflow-y: auto;
+  position: fixed;
+  right: 0;
+  top: 20px;  /* Margen superior */
+  bottom: 20px; /* Margen inferior */
+  right: 40px;
+  height: auto; /* Ajusta la altura automáticamente */
+  border-radius: 10px; /* Bordes redondeados */
+  border: 1.5px solid #e9e6e6; /* Marco blanco delgado */
+}
+
+.user-list h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #ccc;
+}
+
+.user-list ul {
+  list-style: none;
+}
+
+.user-list li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #3e5678;
+  transition: background 0.3s;
+  position: relative; /* Necesario para posicionar el círculo */
+}
+.user-list li::after {
+  content: "";
+  width: 10px; /* Tamaño del círculo */
+  height: 10px;
+  background-color: #FF5733; /* Color del círculo (puedes cambiarlo) */
+  border-radius: 50%; /* Hace que sea un círculo */
+  position: absolute;
+  right: 10px; /* Espaciado desde el borde derecho */
+  top: 50%;
+  transform: translateY(-50%); /* Centra el círculo verticalmente */
+}
+
+.user-list li:hover,
+.user-list li.active {
+  background-color: #1B2A41;
+  font-weight: bold;
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  background-color: #fff;
+  border-radius: 50px 0 50px 50px; /* Tres esquinas redondeadas, una normal */
+}
+
+
+.chats{
+  background-color: #353535;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 600px;  /* Aumento del ancho del chat */
+    height: 600px; /* Ajuste de la altura para mantener un diseño equilibrado */
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-container {
+  background-color: #353535;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 3%; /* Ajustado para que no quede tan cerca del borde superior */
+  left: 45.5%; /* Centramos horizontalmente */
+  transform: translateX(-50%); /* Solo se mueve horizontalmente */
+  width: 820px;
+  height: 94vh; /* Abarca el 90% de la altura de la pantalla */
+  display: flex;
+  flex-direction: column;
+  border: 2px solid white; /* Borde blanco añadido */
+}
+
+  .chat-box {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #353535;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .message {
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 10px;
+    max-width: 80%; /* Aumento del ancho de las burbujas de texto */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .message-sent {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre la foto y el mensaje */
+    flex-direction: row-reverse; /* Coloca la foto a la derecha */
+  }
+  
+  .photo-sent {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    background-color: #fff;
+    border-radius: 50px 0 50px 50px;
+  }
+  
+  .text-sent {
+    background-color: #fef5d6;
+    border: 1px solid #ccc;
+    padding: 12px;
+    border-radius: 10px;
+    max-width: 80%;
+    color: #1B2A41;
+  }
+  
+  
+  .message-received {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espacio entre la foto y el mensaje */
+}
+
+.photo-received {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  background-color: #fff;
+  border-radius: 50px 0 50px 50px; 
+}
+
+.text-received {
+    background-color: #fef5d6;
+    border: 1px solid #ccc;
+    padding: 12px;
+    border-radius: 10px;
+    max-width: 80%;
+    color: #1B2A41;
+}
+
+  
+  .chat-box p{
+    color: #1B2A41;
+  }
+
+  .user {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .chat-footer {
+    bottom: 0px;
+    position: fixed;
+    width: 90%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex; /* Usa flexbox para alinear los elementos */
+    justify-content: space-between; /* Distribuye el espacio entre los elementos */
+    align-items: center; /* Alinea el botón y el input al centro verticalmente */
+    padding: 12px;
+    border-radius: 45px;
+    background-color: #292929;
+    margin-bottom: 15px;
+  }
+  
+  #message-input {
+    width: 85%; /* Ajusta el ancho del input */
+    padding: 12px;
+    border-radius: 45px;
+    background-color: #292929;
+    color: white;
+    border: none; /* Asegura que no haya borde */
+    box-shadow: none; /* Elimina cualquier sombra */
+  }
+  .clip-btn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: #9d9d9d; /* Esto cambiará el color del ícono */
+  }
+  
+  /* Asegúrate de que el color del ícono se aplique correctamente */
+  .clip-btn i {
+    color: #9d9d9d; /* Color específico para el ícono */
+  }
+  
+  
+  .send-btn {
+    background-color: #9d9d9d;
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 45px;
+    cursor: pointer;
+  }
+  
+  .send-btn:hover {
+    background-color: #7e7e7e;
+  }
+  
+  
+  .profile-card {
+    width: 250px;
+    padding: 30px; /* Aumenta el padding para hacerla más larga */
+    background-color: #353535; /* Fondo del recuadro */
+    color: #fff;
+    border-radius: 10px; /* Bordes redondeados */
+    display: flex;
+    flex-direction: column; /* Cambiar a disposición vertical */
+    align-items: center; /* Centra los elementos horizontalmente */
+    gap: 10px; /* Espacio entre la foto y el texto */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+    position: fixed;
+    left: 20px; /* Margen desde el lado izquierdo */
+    top: 50px;  /* Margen superior */
+    height: 300px; /* Aumenta la altura para hacerla más larga */
+    border: 1.5px solid #e9e6e6; 
+  }
+
+  .profile-pic2 {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50px 0 50px 50px;/* Tres esquinas redondeadas */
+    position: relative;
+  }
+  
+  .profile-pic2::after {
+    content: "";
+    width: 20px; /* Tamaño del círculo */
+    height: 20px; /* Tamaño del círculo */
+    border-radius: 50%; /* Esto hace que sea un círculo */
+    position: absolute;
+    bottom: 0; /* Ajusta para que esté al fondo */
+    right: 0; /* Ajusta para que esté a la derecha */
+    border: 3px solid #2D4263; /* Borde de color contrastante */
+  }
+  
+  .profile-info {
+    text-align: center; /* Centra el texto */
+    color: #ccc;
+  }
+  
+  .profile-info h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #ccc;
+  }
+  
+  .profile-info p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 15px;
+    width: 170px;
+    height: 70px;
+    margin-top: 15px; /* Espacio entre .profile-card y .button-container */
+    padding: 5px;
+    background-color: #353535;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    left: 55px; /* Alineado con .profile-card */
+    top: 400px; /* Posicionado debajo de .profile-card */
+    z-index: 10; /* Asegura que esté visible */
+}
+
+  .button-container button {
+    background-color: transparent; /* Color de botón */
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+    
+  }
+  
+  .button-container button:hover {
+    background-color: #292929; /* Cambio de color al pasar el mouse */
+  }
+  
+  .button-container button img {
+    width: 50px; /* Ajusta el tamaño del icono */
+    height: 50px;
+    filter: invert(1); /* Para hacerlos blancos si son oscuros */
+}
