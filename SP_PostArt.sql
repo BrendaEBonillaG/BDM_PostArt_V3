@@ -4,8 +4,6 @@ SHOW PROCEDURE STATUS WHERE Db = 'PostArt';
 
 
 -- LOGIN
-
-DROP PROCEDURE  LoginUsuario;
 DELIMITER $$
 
 CREATE PROCEDURE `LoginUsuario`(IN p_username VARCHAR(50), IN p_password VARCHAR(255))
@@ -19,7 +17,6 @@ END$$
 DELIMITER ;
 
 
-DROP PROCEDURE sp_registrar_usuario;
 -- REGISTRO
 DELIMITER $$
 
@@ -49,7 +46,6 @@ END$$
 
 DELIMITER ;
 
-DROP PROCEDURE VerificarCorreo;
 -- VERIFICAR CORREO
 DELIMITER $$
 
@@ -106,3 +102,8 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+-- DROPS
+DROP PROCEDURE VerificarCorreo;
+DROP PROCEDURE sp_registrar_usuario;
+DROP PROCEDURE  LoginUsuario;
