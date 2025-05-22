@@ -1,14 +1,12 @@
 <?php
 session_start();
 
-$user = []; // Inicializamos como array vacío para evitar warnings
+$user = []; // Inicializamos como array vacío
 
 if (isset($_SESSION['usuario'])) {
-    $user_id = $_SESSION['usuario'];
+    $user_id = $_SESSION['usuario']['ID_Usuario']; // Corregido para tomar solo el ID
 
-    require_once __DIR__ . '../Conexion.php'; // Corregí la ruta relativa agregando la barra diagonal
-
-    // echo "ID en sesión: " . $user_id; // Puedes descomentar para debug
+    require_once __DIR__ . '../Conexion.php'; // Corrección en la ruta
 
     $stmt = $conexion->prepare("CALL GetUserProfileInfo(?)");
     if ($stmt === false) {
@@ -38,11 +36,11 @@ if (isset($_SESSION['usuario'])) {
     $stmt->close();
     $conexion->close();
 } else {
-    // Redirige solo si no hay sesión o id
     header('Location: Login.html');
     exit();
 }
 ?>
+
 
 
 
