@@ -37,7 +37,9 @@ CREATE TABLE Publicaciones (
     Imagen MEDIUMBLOB NOT NULL COMMENT 'Imagen asociada a la publicación',
     Tipo VARCHAR(20) NOT NULL COMMENT 'Indica si es Pública o por Subscripción',
     Fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha en que fue creada la publicación',
-    Estado VARCHAR(20) DEFAULT 'Activo' COMMENT 'Estado actual de la publicación'
+    Estado VARCHAR(20) DEFAULT 'Activo' COMMENT 'Estado actual de la publicación',
+	FOREIGN KEY (Id_usuario) REFERENCES Usuario(Id_usuario),
+	FOREIGN KEY (Id_Categoria) REFERENCES Categorias(Id_Categoria)
 );
 
 -- Tabla de Comentarios
@@ -47,7 +49,9 @@ CREATE TABLE Comentarios (
     Id_usuario INT NOT NULL COMMENT 'Usuario que escribió el comentario',
     Comentario TEXT NOT NULL COMMENT 'Contenido del comentario',
     Fecha_comentario TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha del comentario',
-    Estado VARCHAR(20) DEFAULT 'Activo' COMMENT 'Estado del comentario (Activo/Inactivo)'
+    Estado VARCHAR(20) DEFAULT 'Activo' COMMENT 'Estado del comentario (Activo/Inactivo)',
+    FOREIGN KEY (Id_publicacion) REFERENCES Publicaciones(Id_publicacion),
+    FOREIGN KEY (Id_usuario) REFERENCES Usuario(Id_usuario)
 );
 
 -- Tabla de Seguidores
@@ -56,7 +60,9 @@ CREATE TABLE Seguidores (
     Id_usuario_seguidor INT NOT NULL COMMENT 'Usuario que sigue a otro',
     Id_usuario_artista INT NOT NULL COMMENT 'Artista que es seguido',
     Fecha_inicio TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha en que comenzó el seguimiento',
-    Estado VARCHAR(20) DEFAULT 'Activo' COMMENT 'Estado del seguimiento (Activo/Cancelado)'
+    Estado VARCHAR(20) DEFAULT 'Activo' COMMENT 'Estado del seguimiento (Activo/Cancelado)',
+	FOREIGN KEY (Id_usuario_seguidor) REFERENCES Usuario(Id_usuario),
+    FOREIGN KEY (Id_usuario_artista) REFERENCES Usuario(Id_usuario)
 );
 
 -- Tabla de Donadores (usuarios que donan)
@@ -64,9 +70,17 @@ CREATE TABLE Donadores (
     Id_donadores INT AUTO_INCREMENT PRIMARY KEY,
     Id_usuario_donante INT NOT NULL COMMENT 'Usuario que realizó la donación',
     Id_usuario_artista INT NOT NULL COMMENT 'Artista que recibió la donación',
+    Id_donacion  INT NOT NULL COMMENT 'ID de la donación relacionada',
     Monto DECIMAL(10,2) NOT NULL COMMENT 'Monto donado',
-    Fecha_donacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha en que se realizó la donación'
+    Fecha_donacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha en que se realizó la donación',
+	FOREIGN KEY (Id_usuario_donante) REFERENCES Usuario(Id_usuario),
+    FOREIGN KEY (Id_usuario_artista) REFERENCES Usuario(Id_usuario),
+	FOREIGN KEY (Id_donacion) REFERENCES Donaciones(Id_donacion)
 );
+
+ALTER TABLE Donadores
+ADD COLUMN Id_donacion INT NOT NULL COMMENT 'ID de la donación relacionada',
+ADD FOREIGN KEY (Id_donacion) REFERENCES Donaciones(Id_donacion);
 
 -- Tabla de Donaciones (campañas de donación)
 CREATE TABLE Donaciones(
@@ -79,7 +93,9 @@ CREATE TABLE Donaciones(
     Video_url VARCHAR(255) NULL COMMENT 'Enlace a video explicativo (opcional)',
     Meta DECIMAL(10,2) NOT NULL COMMENT 'Monto objetivo de la campaña',
     Fecha_Limite TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha límite para recibir donaciones',
-    Fecha_publicacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha de publicación de la campaña'
+    Fecha_publicacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha de publicación de la campaña',
+    FOREIGN KEY (Id_usuario) REFERENCES Usuario(Id_usuario),
+	FOREIGN KEY (Id_Categoria) REFERENCES Categorias(Id_Categoria)
 );
 
 -- Tabla de Subscripciones
@@ -90,7 +106,9 @@ CREATE TABLE Subscripciones (
     Monto DECIMAL(10,2) NOT NULL COMMENT 'Monto pagado por la subscripción',
     Fecha_inicio TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha de inicio de la subscripción',
     Fecha_fin DATE NULL COMMENT 'Fecha de finalización (si aplica)',
-    Estado VARCHAR(20) DEFAULT 'Activa' NOT NULL COMMENT 'Estado actual de la subscripción'
+    Estado VARCHAR(20) DEFAULT 'Activa' NOT NULL COMMENT 'Estado actual de la subscripción',
+	FOREIGN KEY (Id_usuario_comprador) REFERENCES Usuario(Id_usuario),
+    FOREIGN KEY (Id_usuario_artista) REFERENCES Usuario(Id_usuario)
 );
 
 -- Tabla de Mensajes Directos
@@ -100,7 +118,9 @@ CREATE TABLE Mensajes (
     Id_receptor INT NOT NULL COMMENT 'Usuario que recibe el mensaje',
     Contenido TEXT NOT NULL COMMENT 'Texto del mensaje',
     Fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha y hora de envío',
-    Leido BIT DEFAULT FALSE NULL COMMENT 'Indica si el mensaje fue leído (1) o no (0)'
+    Leido BIT DEFAULT FALSE NULL COMMENT 'Indica si el mensaje fue leído (1) o no (0)',
+    FOREIGN KEY (Id_emisor) REFERENCES Usuario(Id_usuario),
+    FOREIGN KEY (Id_receptor) REFERENCES Usuario(Id_usuario)
 );
 
 -- Tabla de Chats Grupales
@@ -108,14 +128,17 @@ CREATE TABLE Chats_Grupales (
     Id_chat INT AUTO_INCREMENT PRIMARY KEY,
     Id_usuario_artista INT NOT NULL COMMENT 'Artista creador del chat grupal',
     Nombre_chat VARCHAR(100) NOT NULL COMMENT 'Nombre del chat grupal',
-    Fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha en que fue creado el chat'
+    Fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha en que fue creado el chat',
+	FOREIGN KEY (Id_usuario_artista) REFERENCES Usuario(Id_usuario)
 );
 
 -- Tabla de Miembros de Chat Grupal
 CREATE TABLE Miembros_Chat (
     Id_Miembro INT AUTO_INCREMENT PRIMARY KEY,
     Id_usuario INT NOT NULL COMMENT 'Usuario que pertenece al chat',
-    Id_chat INT NOT NULL COMMENT 'Chat grupal al que pertenece'
+    Id_chat INT NOT NULL COMMENT 'Chat grupal al que pertenece',
+	FOREIGN KEY (Id_usuario) REFERENCES Usuario(Id_usuario),
+	FOREIGN KEY (Id_chat) REFERENCES Chats_Grupales(Id_chat)
 );
 
 -- Tabla de Mensajes Grupales
@@ -124,14 +147,19 @@ CREATE TABLE Mensajes_Grupales (
     Id_chat INT NOT NULL COMMENT 'Chat grupal donde se publicó el mensaje',
     Id_usuario INT NOT NULL COMMENT 'Usuario que envió el mensaje grupal',
     Contenido TEXT NOT NULL COMMENT 'Contenido del mensaje',
-    Fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha en la que fue enviado el mensaje'
+    Fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha en la que fue enviado el mensaje',
+	FOREIGN KEY (Id_chat) REFERENCES Chats_Grupales(Id_chat),
+    FOREIGN KEY (Id_usuario) REFERENCES Usuario(Id_usuario)
 );
 
 -- Tabla de Me Gusta
 CREATE TABLE Me_Gusta(
     Id_Like INT AUTO_INCREMENT PRIMARY KEY,
     Id_usuario INT NOT NULL COMMENT 'Usuario que dio "me gusta"',
-    Id_publicacion INT NOT NULL COMMENT 'Publicación que recibió el "me gusta"'
+    Id_publicacion INT NOT NULL COMMENT 'Publicación que recibió el "me gusta"',
+    FOREIGN KEY (Id_usuario) REFERENCES Usuario(Id_usuario),
+	FOREIGN KEY (Id_publicacion) REFERENCES Publicaciones(Id_publicacion)
+
 );
 
 -- Tabla de Redes Sociales
@@ -139,5 +167,6 @@ CREATE TABLE Redes_sociales(
     Id_red INT AUTO_INCREMENT PRIMARY KEY,
     Id_usuario INT NOT NULL COMMENT 'Usuario que enlazó la red social',
     Nombre  VARCHAR(50) NOT NULL COMMENT 'Nombre de la red (Instagram, Twitter, etc.)',
-    Link VARCHAR(255) NOT NULL COMMENT 'Enlace al perfil de red social del usuario'
+    Link VARCHAR(255) NOT NULL COMMENT 'Enlace al perfil de red social del usuario',
+    FOREIGN KEY (Id_usuario) REFERENCES Usuario(Id_usuario)
 );
