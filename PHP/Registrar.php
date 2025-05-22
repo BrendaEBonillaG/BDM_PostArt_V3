@@ -43,24 +43,31 @@ if ($row['existe'] > 0) {
 }
 
 // Procesar imagen de perfil si existe
-$foto = null;
+$fotoContenido = null;
+$tieneFoto = false;
+
 if (isset($_FILES['foto']['tmp_name']) && $_FILES['foto']['tmp_name'] != "") {
-    $foto = fopen($_FILES['foto']['tmp_name'], 'rb');
+    $fotoContenido = file_get_contents($_FILES['foto']['tmp_name']);
+    $tieneFoto = true;
 }
 
 // Registrar usuario
 $stmt = $conexion->prepare("CALL RegistrarUsuario(?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("sssssb", $nombre, $nickname, $correo, $contrasena, $rol, $foto);
+
+if (!$stmt) {
+    die("Error en prepare: " . $conexion->error);
+}
+
+// Como no se puede pasar directamente un blob con bind_param en procedimientos, usamos null y luego send_long_data
+$fotoNull = NULL;
+
+$stmt->bind_param("sssss" . "b", $nombre, $nickname, $correo, $contrasena, $rol, $fotoNull);
+
+if ($tieneFoto) {
+    $stmt->send_long_data(5, $fotoContenido); // el índice es cero-based (empieza desde 0)
+}
 
 if ($stmt->execute()) {
-    $_SESSION['usuario'] = [
-        'id' => $id_usuario,
-        'nombre' => $nombre,
-        'nickname' => $nickname,
-        'correo' => $correo,
-        'rol' => $rol
-    ];
-
     echo "<script>
         alert('Registro exitoso.');
         window.location.href = '../index.php';
@@ -68,10 +75,6 @@ if ($stmt->execute()) {
 } else {
     echo "Error al registrar: " . $stmt->error;
     echo "Error MySQL: " . mysqli_error($conexion);
-}
-
-if ($foto) {
-    fclose($foto);
 }
 
 $stmt->close();

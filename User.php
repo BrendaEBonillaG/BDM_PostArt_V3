@@ -41,9 +41,6 @@ if (isset($_SESSION['usuario'])) {
 }
 ?>
 
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -143,15 +140,14 @@ if (isset($_SESSION['usuario'])) {
     <div class="container-perfil-info-dashboard">
         <div class="container-perfil-info">
             <div class="avatar-perfil">
-                <?php if (!empty($user) && !empty($user['Foto_perfil'])): ?>
+                <?php if (!empty($user['Foto_perfil'])): ?>
                     <?php
-                    $finfo = new finfo(FILEINFO_MIME_TYPE);
-                    $mimeType = $finfo->buffer($user['Foto_perfil']);
+                    $imagenBlob = $user['Foto_perfil'];
+                    $imagenBase64 = base64_encode($imagenBlob);
                     ?>
-                    <img src="data:<?= htmlspecialchars($mimeType); ?>;base64,<?= base64_encode($user['Foto_perfil']); ?>"
-                        alt="Foto de perfil">
+                    <img src="data:image/jpeg;base64,<?= $imagenBase64 ?>" alt="Foto de perfil" class="profile-img">
                 <?php else: ?>
-                    <img src="../BDM_POSTART_V3/imagenes-prueba/User.jpg" alt="Foto por defecto">
+                    <img src="../BDM_POSTART_V3/imagenes-prueba/User.jpg" alt="Foto por defecto" class="profile-img">
                 <?php endif; ?>
             </div>
 
@@ -175,7 +171,7 @@ if (isset($_SESSION['usuario'])) {
                 </div>
             </div>
 
-    
+
 
             <div class="perfil-info-social" id="perfil-info-social">
                 <div class="perfil-info-social-control">
