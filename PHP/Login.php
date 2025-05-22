@@ -15,11 +15,12 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
 
     $user = $result->fetch_assoc();
-    
+   $_SESSION['usuario'] = [
+    'ID_Usuario' => $user['ID_Usuario'],
+    'Nickname' => $user['Nickname'],
+    'Rol' => $user['Rol']
+];
 
-    $_SESSION['user_id'] = $user['ID_Usuario']; 
-    $_SESSION['username'] = $user['Nickname'];
-    $_SESSION['role'] = $user['Rol'];
 
     header('Location: ../index.php');
     exit();
