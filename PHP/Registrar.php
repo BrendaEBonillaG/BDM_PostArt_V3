@@ -70,7 +70,7 @@ if ($tieneFoto) {
 if ($stmt->execute()) {
     echo "<script>
         alert('Registro exitoso.');
-        window.location.href = '../index.php';
+        window.location.href = '../Login.php';
     </script>";
 } else {
     echo "Error al registrar: " . $stmt->error;
