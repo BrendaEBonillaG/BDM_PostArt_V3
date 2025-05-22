@@ -2,6 +2,8 @@ DROP DATABASE PostArt;
 -- Crear la base de datos
 CREATE DATABASE IF NOT EXISTS PostArt;
 USE PostArt;
+SELECT * FROM Usuario;
+DESCRIBE Usuario;
 
 -- Tabla de Usuarios
 CREATE TABLE Usuario (

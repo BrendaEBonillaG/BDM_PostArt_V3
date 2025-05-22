@@ -3,13 +3,15 @@ session_start();
 
 if (isset($_SESSION['usuario'])) {
     $usuario = $_SESSION['usuario'];
-    echo "Bienvenido, " . $usuario['nickname'];
+    // Ojo, la clave en el array es 'Nickname' (mayúscula N)
+    echo "Bienvenido, " . $usuario['Nickname'];
 } else {
-    echo "No estás registrado. Por favor, inicia sesión.";
+    // No imprimir nada antes del header
     header('Location: ../Login.html');
     exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

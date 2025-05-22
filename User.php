@@ -1,10 +1,12 @@
 <?php
 session_start();
 
-if (isset($_SESSION['usuario'])) {
-    $user_id = $_SESSION['usuario'];
+$user = []; // Inicializamos como array vacío
 
-    require_once __DIR__ . '../Conexion.php';
+if (isset($_SESSION['usuario'])) {
+    $user_id = $_SESSION['usuario']['ID_Usuario']; // Corregido para tomar solo el ID
+
+    require_once __DIR__ . '../Conexion.php'; // Corrección en la ruta
 
     $stmt = $conexion->prepare("CALL GetUserProfileInfo(?)");
     if ($stmt === false) {
@@ -13,7 +15,6 @@ if (isset($_SESSION['usuario'])) {
 
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
-
     $stmt->bind_result($id, $nombre, $apePa, $apeMa, $nick, $correo, $biografia, $foto_perfil, $rol);
 
     if ($stmt->fetch()) {
@@ -35,16 +36,14 @@ if (isset($_SESSION['usuario'])) {
     $stmt->close();
     $conexion->close();
 } else {
-    echo "No estás registrado. Por favor, inicia sesión.";
-    header('Location: ../Login.html');
+    header('Location: Login.html');
     exit();
 }
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,13 +54,14 @@ if (isset($_SESSION['usuario'])) {
     <link rel="stylesheet" href="../BDM_POSTART_V3/CSS/cartas.css">
     <title>PostArt | User</title>
 </head>
+
 <body>
     <header>
         <div class="base-header">
             <!-- barra de logo -->
-             <div class="base-header-logo">
+            <div class="base-header-logo">
                 <img src="../BDM_POSTART_V3/imagenes-prueba/logo1.png" alt="">
-             </div>
+            </div>
             <!-- barra de busqueda -->
             <div class="container-base-header-search-bar">
                 <input type="text" class="search-bar-dashboard" placeholder="Search...">
@@ -69,24 +69,24 @@ if (isset($_SESSION['usuario'])) {
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
                 <div class="notify-botton-activity-bar">
-                    <i class='bx bxs-message-error' ></i>
+                    <i class='bx bxs-message-error'></i>
                 </div>
                 <div class="message-botton-activity-bar">
                     <button onclick="location.href='chat.html'" class="icon-button">
-                        <i class='bx bxs-message-minus' ></i>
+                        <i class='bx bxs-message-minus'></i>
                     </button>
                 </div>
-             </div>
+            </div>
         </div>
     </header>
-<!-- boton menu -->
+    <!-- boton menu -->
     <div class="avatar-boton-card" id="botonAvatarMenujs">
         <div class="avatar-image">
             <img src="/../BDM_POSTART_V3/imagenes-prueba/User.jpg">
         </div>
         <div class="perfile-avatar-status"></div>
     </div>
-<!-- menu perfil -->
+    <!-- menu perfil -->
     <div class="menu-avatar oculto" id="menuAvatarjs">
         <div class="avatar-menu">
             <img src="/../BDM_POSTART_V3/imagenes-prueba/User.jpg" alt="">
@@ -101,17 +101,17 @@ if (isset($_SESSION['usuario'])) {
             <div class="menu-perfil-btn">
                 <div class="menu-perfil-btn-base1">
                     <div class="menu-perfil-btn-base2">
-                        <i class='bx bx-menu' ></i>
+                        <i class='bx bx-menu'></i>
                     </div>
                 </div>
             </div>
         </div>
         <div class="btns-menu-profile">
-            <span><i class='bx bxs-user' ></i></span>
+            <span><i class='bx bxs-user'></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
-            <span><i class='bx bxs-cog' ></i></span>
-            <span><i class='bx bx-log-out' ></i></span>
+            <span><i class='bx bxs-cog'></i></span>
+            <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
     <div class="pantalla-blur oculto" id="pantallaBlurjs"></div>
@@ -136,109 +136,118 @@ if (isset($_SESSION['usuario'])) {
         </button>
     </div>
 
-     <!-- Pefil info -->
-     <div class="container-perfil-info-dashboard">
+    <!-- Pefil info -->
+    <div class="container-perfil-info-dashboard">
         <div class="container-perfil-info">
-        <div class="avatar-perfil">
-            <?php if (!empty($user['Foto_perfil'])): ?>
-                <?php
-                $finfo = new finfo(FILEINFO_MIME_TYPE);
-                $mimeType = $finfo->buffer($user['Foto_perfil']);
+            <div class="avatar-perfil">
+                <?php if (!empty($user['Foto_perfil'])): ?>
+                    <?php
+                    $imagenBlob = $user['Foto_perfil'];
+                    $imagenBase64 = base64_encode($imagenBlob);
+                    ?>
+                    <img src="data:image/jpeg;base64,<?= $imagenBase64 ?>" alt="Foto de perfil" class="profile-img">
+                <?php else: ?>
+                    <img src="../BDM_POSTART_V3/imagenes-prueba/User.jpg" alt="Foto por defecto" class="profile-img">
+                <?php endif; ?>
+            </div>
 
-                ?>
-                <img src="data:<?php echo $mimeType; ?>;base64,<?php echo base64_encode($user['Foto_perfil']); ?>" alt="Foto de perfil">
-            <?php else: ?>
-                <img src="../BDM_POSTART_V3/imagenes-prueba/User.jpg" alt="Foto por defecto">
-            <?php endif; ?>
-        </div>
-        
             <div class="content-perfil-info" id="perfil-info-toggle">
                 <div class="details-perfil-info">
-                <h2><?php echo $user['Nickname']; ?><br><span><?php echo $user['Rol'];?></span></h2>
-                <h4><?php echo $user['Biografia']; ?></h4>
+                    <h2>
+                        <?= !empty($user['Nickname']) ? htmlspecialchars($user['Nickname']) : 'Usuario'; ?><br>
+                        <span><?= !empty($user['Rol']) ? htmlspecialchars($user['Rol']) : 'Invitado'; ?></span>
+                    </h2>
+                    <h4><?= !empty($user['Biografia']) ? htmlspecialchars($user['Biografia']) : 'Sin biografía'; ?></h4>
                     <br>
                     <div class="data-perfil-info">
                         <h3>50<br><span>Post</span></h3>
                         <h3>62<br><span>Followers</span></h3>
                         <h3>5<br><span>Following</span></h3>
                     </div>
-    
+
                     <div class="actionBtn-User-info">
                         <button id="editButton">Edit info</button>
                     </div>
                 </div>
-
             </div>
+
+
 
             <div class="perfil-info-social" id="perfil-info-social">
                 <div class="perfil-info-social-control">
                     <!--Toggle Button-->
-                    <div class="perfil-info-social-toggle" >
+                    <div class="perfil-info-social-toggle">
                         <i class='bx bx-cross'></i>
-    
+
                     </div>
                     <span class="perfil-info-social-text"><?php echo $user['Correo']; ?></span>
-    
+
                     <!--Card Social-->
                     <ul class="perfil-info-social-list">
-    
+
                         <a href="https://www.facebook.com/" class="perfil-info-social-link">
                             <i class='bx bxl-linkedin'></i>
                         </a>
                         <a href="https://www.instagram.com/" class="perfil-info-social-link">
-                            <i class='bx bxl-instagram' ></i>
+                            <i class='bx bxl-instagram'></i>
                         </a>
                         <a href="https://twitter.com/" class="perfil-info-social-link">
-                            <i class='bx bxl-twitter' ></i>
+                            <i class='bx bxl-twitter'></i>
                         </a>
                         <a href="https://youtube.com/" class="perfil-info-social-link">
-                            <i class='bx bxl-youtube' ></i>
+                            <i class='bx bxl-youtube'></i>
                         </a>
-    
+
                     </ul>
-    
+
                 </div>
             </div>
 
-         </div>
+        </div>
 
-     </div>
-
-     
-
-<!-- Modal editar perfil -->
-<div id="editUser" class="modal-edit-user">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Editar Información</h2>
-        <form id="editForm" method="POST" action="ActualizarUsu.php" enctype="multipart/form-data">
-            <label for="name">Nombre:</label>
-            <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($user['Nombre']); ?>" required>
-
-            <label for="surname1">Apellido paterno:</label>
-            <input type="text" id="surname1" name="surname1" value="<?php echo htmlspecialchars($user['ApePa']); ?>" required>
-
-            <label for="surname2">Apellido materno:</label>
-            <input type="text" id="surname2" name="surname2" value="<?php echo htmlspecialchars($user['ApeMa']); ?>" required>
-
-            <label for="email">Correo:</label>
-            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['Correo']); ?>" required>
-
-            <div class="input-box">
-            <input type="file" class="input-field" name="foto" accept="image/*">
-            <i class="bx bx-image icon"></i>
-            </div>
-
-            <label for="description">Descripción:</label>
-            <textarea id="description" name="description" required><?php echo htmlspecialchars($user['Biografia']); ?></textarea>
-
-            <button type="submit">Guardar</button>
-        </form>
     </div>
-</div>
+
+
+
+    <!-- Modal editar perfil -->
+    <div id="editUser" class="modal-edit-user">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Editar Información</h2>
+            <form id="editForm" method="POST" action="ActualizarUsu.php" enctype="multipart/form-data">
+                <label for="name">Nombre:</label>
+                <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($user['Nombre']); ?>"
+                    required>
+
+                <label for="surname1">Apellido paterno:</label>
+                <input type="text" id="surname1" name="surname1" value="<?php echo htmlspecialchars($user['ApePa']); ?>"
+                    required>
+
+                <label for="surname2">Apellido materno:</label>
+                <input type="text" id="surname2" name="surname2" value="<?php echo htmlspecialchars($user['ApeMa']); ?>"
+                    required>
+
+                <label for="email">Correo:</label>
+                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['Correo']); ?>"
+                    required>
+
+                <div class="input-box">
+                    <input type="file" class="input-field" name="foto" accept="image/*">
+                    <i class="bx bx-image icon"></i>
+                </div>
+
+                <label for="description">Descripción:</label>
+                <textarea id="description" name="description"
+                    required><?php echo htmlspecialchars($user['Biografia']); ?></textarea>
+
+                <button type="submit">Guardar</button>
+            </form>
+        </div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    
+
     <script src="../BDM_PostArt_V3/js/script.js"></script>
     <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
 </body>
+
 </html>
