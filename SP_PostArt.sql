@@ -255,6 +255,32 @@ END$$
 
 DELIMITER ;
 
+DELIMITER //
+
+CREATE PROCEDURE MostrarPublicacionesPorUsuario(
+    IN p_IdUsuario INT
+)
+BEGIN
+    SELECT 
+        p.Id_publicacion,
+        p.Titulo,
+        p.Contenido,
+        p.Imagen,
+        p.Tipo,
+        p.Fecha_creacion,
+        p.Estado,
+        c.Nombre AS Categoria,
+        u.Nickname AS Usuario
+    FROM Publicaciones p
+    INNER JOIN Categorias c ON p.Id_Categoria = c.Id_Categoria
+    INNER JOIN Usuario u ON p.Id_usuario = u.ID_Usuario
+    WHERE p.Id_usuario = p_IdUsuario
+      AND p.Estado = 'Activo'
+    ORDER BY p.Fecha_creacion DESC;
+END //
+
+DELIMITER ;
+
 -- DONACIONES
 DELIMITER $$
 
@@ -353,6 +379,28 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+
+CREATE PROCEDURE ReporteDonacionesPorCampaña()
+BEGIN
+    SELECT 
+        d.Id_Donacion,
+        d.Titulo AS Campaña,
+        d.Meta AS Meta_Campaña,
+        don.Id_usuario_donante,
+        u.Nombre,
+        u.Nickname,
+        don.Monto,
+        don.Fecha_donacion
+    FROM Donaciones d
+    LEFT JOIN Donadores don ON d.Id_Donacion = don.Id_donacion
+    LEFT JOIN Usuario u ON don.Id_usuario_donante = u.ID_Usuario
+    ORDER BY d.Id_Donacion, don.Fecha_donacion;
+END $$
+
+DELIMITER ;
+
+
 -- COMENTARIOS
 DELIMITER $$
 
@@ -407,6 +455,28 @@ BEGIN
           AND Id_usuario_artista = p_Id_usuario_artista
           AND Estado = 'Activo';
     END IF;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE ReporteSeguidores(
+    IN p_id_usuario_artista INT
+)
+BEGIN
+    SELECT 
+        s.Id_seguidor,
+        u.ID_Usuario AS ID_Seguidor,
+        u.Nombre,
+        u.Nickname,
+        s.Fecha_inicio,
+        s.Estado
+    FROM Seguidores s
+    INNER JOIN Usuario u ON s.Id_usuario_seguidor = u.ID_Usuario
+    WHERE s.Id_usuario_artista = p_id_usuario_artista
+      AND s.Estado = 'Activo'
+    ORDER BY s.Fecha_inicio DESC;
 END$$
 
 DELIMITER ;
