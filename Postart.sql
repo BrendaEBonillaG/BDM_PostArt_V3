@@ -70,12 +70,17 @@ CREATE TABLE Donadores (
     Id_donadores INT AUTO_INCREMENT PRIMARY KEY,
     Id_usuario_donante INT NOT NULL COMMENT 'Usuario que realizó la donación',
     Id_usuario_artista INT NOT NULL COMMENT 'Artista que recibió la donación',
+    Id_donacion  INT NOT NULL COMMENT 'ID de la donación relacionada',
     Monto DECIMAL(10,2) NOT NULL COMMENT 'Monto donado',
     Fecha_donacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha en que se realizó la donación',
 	FOREIGN KEY (Id_usuario_donante) REFERENCES Usuario(Id_usuario),
-    FOREIGN KEY (Id_usuario_artista) REFERENCES Usuario(Id_usuario)
-    
+    FOREIGN KEY (Id_usuario_artista) REFERENCES Usuario(Id_usuario),
+	FOREIGN KEY (Id_donacion) REFERENCES Donaciones(Id_donacion)
 );
+
+ALTER TABLE Donadores
+ADD COLUMN Id_donacion INT NOT NULL COMMENT 'ID de la donación relacionada',
+ADD FOREIGN KEY (Id_donacion) REFERENCES Donaciones(Id_donacion);
 
 -- Tabla de Donaciones (campañas de donación)
 CREATE TABLE Donaciones(

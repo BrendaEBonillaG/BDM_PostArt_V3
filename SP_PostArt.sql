@@ -123,7 +123,9 @@ END $$
 DELIMITER ;
 
 
--- CREAR PUBLICACION
+-- PUBLICACIONES
+
+-- PRUEBA
 DELIMITER //
 CREATE PROCEDURE InsertarPublicacion(
     IN p_usuario VARCHAR(50),
@@ -139,6 +141,59 @@ BEGIN
 END //
 DELIMITER ;
 
+-- OFICIAL
+DELIMITER $$
+
+CREATE PROCEDURE SP_GestionPublicacion(
+    IN p_accion VARCHAR(10), -- 'crear', 'editar', 'eliminar'
+    IN p_Id_publicacion INT, -- Para editar o eliminar
+    IN p_Id_usuario INT,    -- Para crear
+    IN p_Id_Categoria INT,
+    IN p_Titulo VARCHAR(100),
+    IN p_Contenido TEXT,
+    IN p_Imagen MEDIUMBLOB,
+    IN p_Tipo VARCHAR(20),
+    IN p_Estado VARCHAR(20) -- Para editar (por ejemplo 'Activo' o 'Inactivo')
+)
+BEGIN
+    IF p_accion = 'crear' THEN
+        INSERT INTO Publicaciones (
+            Id_usuario,
+            Id_Categoria,
+            Titulo,
+            Contenido,
+            Imagen,
+            Tipo,
+            Estado
+        ) VALUES (
+            p_Id_usuario,
+            p_Id_Categoria,
+            p_Titulo,
+            p_Contenido,
+            p_Imagen,
+            p_Tipo,
+            'Activo'
+        );
+    ELSEIF p_accion = 'editar' THEN
+        UPDATE Publicaciones
+        SET
+            Id_Categoria = p_Id_Categoria,
+            Titulo = p_Titulo,
+            Contenido = p_Contenido,
+            Imagen = p_Imagen,
+            Tipo = p_Tipo,
+            Estado = p_Estado
+        WHERE Id_publicacion = p_Id_publicacion;
+    ELSEIF p_accion = 'eliminar' THEN
+        UPDATE Publicaciones
+        SET Estado = 'Inactivo'
+        WHERE Id_publicacion = p_Id_publicacion;
+    ELSE
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Accion no valida';
+    END IF;
+END$$
+
+DELIMITER ;
 
 -- DONACIONES
 DELIMITER $$
@@ -186,16 +241,57 @@ END$$
 
 DELIMITER ;
 
-CREATE TABLE Donadores (
-    Id_Donador INT AUTO_INCREMENT PRIMARY KEY,
-    Id_usuario INT NOT NULL,
-    Id_Donacion INT NOT NULL,
-    Cantidad DECIMAL(10,2) NOT NULL,
-    Fecha_Donacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Comentario TEXT,
-    FOREIGN KEY (Id_usuario) REFERENCES Usuarios(Id_usuario),
-    FOREIGN KEY (Id_Donacion) REFERENCES Donaciones(Id_Donacion)
-);
+DELIMITER $$
+
+CREATE PROCEDURE SP_InsertarDonador(
+    IN p_Id_usuario_donante INT,
+    IN p_Id_usuario_artista INT,
+    IN p_Monto DECIMAL(10,2),
+    IN p_Id_donacion INT
+)
+BEGIN
+    INSERT INTO Donadores (
+        Id_usuario_donante,
+        Id_usuario_artista,
+        Monto,
+        Id_donacion
+    ) VALUES (
+        p_Id_usuario_donante,
+        p_Id_usuario_artista,
+        p_Monto,
+        p_Id_donacion
+    );
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE VerificarMetaDonacion (IN artista_id INT)
+BEGIN
+  DECLARE recaudado DECIMAL(10,2);
+  DECLARE meta DECIMAL(10,2);
+
+  SELECT IFNULL(SUM(Monto), 0) INTO recaudado
+  FROM Donadores
+  WHERE Id_usuario_artista = artista_id;
+
+  SELECT Meta INTO meta
+  FROM Donaciones
+  WHERE Id_usuario = artista_id
+  ORDER BY Fecha_publicacion DESC
+  LIMIT 1;
+
+  IF recaudado >= meta THEN
+    UPDATE Donaciones
+    SET Estado = 'Cumplida'
+    WHERE Id_usuario = artista_id
+    AND Estado != 'Cumplida';
+  END IF;
+END$$
+
+DELIMITER ;
 
 
 -- DROPS

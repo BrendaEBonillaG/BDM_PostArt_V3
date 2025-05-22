@@ -1,1 +1,13 @@
 -- FUNCIONES
+USE PostArt;
+
+CREATE FUNCTION TotalLikes(idPubli INT)
+RETURNS INT
+DETERMINISTIC
+RETURN (SELECT COUNT(*) FROM Me_Gusta WHERE Id_publicacion = idPubli);
+
+
+CREATE FUNCTION TotalDonadoArtista(idArtista INT)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+RETURN (SELECT IFNULL(SUM(Monto), 0) FROM Donadores WHERE Id_usuario_artista = idArtista);
