@@ -112,44 +112,54 @@ CREATE TABLE Subscripciones (
 );
 
 -- Tabla de Mensajes Directos
-CREATE TABLE Mensajes (
-    Id_mensaje INT AUTO_INCREMENT PRIMARY KEY,
-    Id_emisor INT NOT NULL COMMENT 'Usuario que envía el mensaje',
-    Id_receptor INT NOT NULL COMMENT 'Usuario que recibe el mensaje',
-    Contenido TEXT NOT NULL COMMENT 'Texto del mensaje',
-    Fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha y hora de envío',
-    Leido BIT DEFAULT FALSE NULL COMMENT 'Indica si el mensaje fue leído (1) o no (0)',
-    FOREIGN KEY (Id_emisor) REFERENCES Usuario(Id_usuario),
-    FOREIGN KEY (Id_receptor) REFERENCES Usuario(Id_usuario)
+CREATE TABLE Chat_Privado (
+    id_chat INT AUTO_INCREMENT PRIMARY KEY,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_remitente INT NOT NULL,
+    id_emisor INT NOT NULL,
+    CONSTRAINT chk_diferentes CHECK (id_remitente <> id_emisor), -- Evita que alguien cree un chat consigo mismo
+    FOREIGN KEY (id_remitente) REFERENCES Usuario(Id_usuario) ON DELETE CASCADE,
+    FOREIGN KEY (id_emisor) REFERENCES Usuario(Id_usuario) ON DELETE CASCADE
 );
 
--- Tabla de Chats Grupales
-CREATE TABLE Chats_Grupales (
-    Id_chat INT AUTO_INCREMENT PRIMARY KEY,
-    Id_usuario_artista INT NOT NULL COMMENT 'Artista creador del chat grupal',
-    Nombre_chat VARCHAR(100) NOT NULL COMMENT 'Nombre del chat grupal',
-    Fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha en que fue creado el chat',
-	FOREIGN KEY (Id_usuario_artista) REFERENCES Usuario(Id_usuario)
+CREATE TABLE Mensajes_Privado (
+    id_mensaje INT AUTO_INCREMENT PRIMARY KEY,
+    id_chat_Privado INT NOT NULL,
+    id_usuario INT NOT NULL,
+    contenido TEXT NOT NULL,
+    fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tipo VARCHAR(500) DEFAULT 'texto',
+    visto BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (id_chat_Privado) REFERENCES Chat_Privado(id_chat) ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(Id_usuario) ON DELETE CASCADE
 );
 
--- Tabla de Miembros de Chat Grupal
-CREATE TABLE Miembros_Chat (
-    Id_Miembro INT AUTO_INCREMENT PRIMARY KEY,
-    Id_usuario INT NOT NULL COMMENT 'Usuario que pertenece al chat',
-    Id_chat INT NOT NULL COMMENT 'Chat grupal al que pertenece',
-	FOREIGN KEY (Id_usuario) REFERENCES Usuario(Id_usuario),
-	FOREIGN KEY (Id_chat) REFERENCES Chats_Grupales(Id_chat)
+CREATE TABLE Chat_Grupal (
+    id_chat INT AUTO_INCREMENT PRIMARY KEY,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    nombre VARCHAR(50) NOT NULL,
+    numero_Participantes INT NOT NULL,
+    imagen LONGBLOB
 );
 
--- Tabla de Mensajes Grupales
+CREATE TABLE Participantes_Grupal (
+    id_participante INT AUTO_INCREMENT PRIMARY KEY,
+    id_ChatGrupal INT NOT NULL,
+    id_usuario INT NOT NULL,
+    FOREIGN KEY (id_ChatGrupal) REFERENCES Chat_Grupal(id_chat) ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(Id_usuario) ON DELETE CASCADE
+);
+
 CREATE TABLE Mensajes_Grupales (
-    Id_mensaje_grupal INT AUTO_INCREMENT PRIMARY KEY,
-    Id_chat INT NOT NULL COMMENT 'Chat grupal donde se publicó el mensaje',
-    Id_usuario INT NOT NULL COMMENT 'Usuario que envió el mensaje grupal',
-    Contenido TEXT NOT NULL COMMENT 'Contenido del mensaje',
-    Fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT 'Fecha en la que fue enviado el mensaje',
-	FOREIGN KEY (Id_chat) REFERENCES Chats_Grupales(Id_chat),
-    FOREIGN KEY (Id_usuario) REFERENCES Usuario(Id_usuario)
+    id_mensaje INT AUTO_INCREMENT PRIMARY KEY,
+    id_chat_Grupal INT NOT NULL,
+    id_usuario INT NOT NULL,
+    contenido TEXT NOT NULL,
+    fecha_envio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tipo VARCHAR(500) DEFAULT 'texto',
+    visto BIT NOT NULL DEFAULT 0,
+    FOREIGN KEY (id_chat_Grupal) REFERENCES Chat_Grupal(id_chat) ON DELETE CASCADE,
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(Id_usuario) ON DELETE CASCADE
 );
 
 -- Tabla de Me Gusta
