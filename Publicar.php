@@ -45,7 +45,7 @@ if (isset($_SESSION['usuario'])) {
                     <i class='bx bxs-message-error'></i>
                 </div>
                 <div class="message-botton-activity-bar">
-                    <button onclick="location.href='chat.html'" class="icon-button">
+                    <button onclick="location.href='Chat.php'" class="icon-button">
                         <i class='bx bxs-message-minus'></i>
                     </button>
                 </div>
