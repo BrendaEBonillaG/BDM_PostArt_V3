@@ -1,34 +1,31 @@
 document.addEventListener('DOMContentLoaded', function() {
     const usuarios = document.querySelectorAll('.usuario-chat');
-    const userNameSpan = document.querySelector('.user-name');
-    const userAvatarImg = document.querySelector('.user-avatar');
+    const userNameSpan = document.getElementById('nombre-usuario');
+    const userAvatarImg = document.getElementById('foto-usuario');
     const mainContent = document.querySelector('.main-content');
-    const btnVendedor = document.getElementById('btnOpcionesVendedor'); // ← nuevo
+    const btnVendedor = document.getElementById('btnOpcionesVendedor');
 
     window.idChatActivo = null;
 
     usuarios.forEach(function(usuario) {
         usuario.addEventListener('click', function(e) {
             e.preventDefault();
+
             const nombreUsuario = usuario.getAttribute('data-nombre');
             const fotoUsuario = usuario.getAttribute('data-foto');
             const idChat = usuario.getAttribute('data-id-chat');
 
-    
-            userNameSpan.textContent = nombreUsuario;
-            userAvatarImg.src = fotoUsuario;
+            // ✅ Seguridad para evitar errores
+            if (userNameSpan) userNameSpan.textContent = nombreUsuario;
+            if (userAvatarImg) userAvatarImg.src = fotoUsuario;
 
-            // Activar el chat
             window.idChatActivo = parseInt(idChat);
 
+            if (mainContent) mainContent.style.display = 'flex';
 
-            mainContent.style.display = 'flex';
-
-            // Mostrar el botón solo si existe (rol vendedor)
             if (btnVendedor) {
                 btnVendedor.classList.remove('d-none');
             }
-
 
             obtenerMensajes();
         });

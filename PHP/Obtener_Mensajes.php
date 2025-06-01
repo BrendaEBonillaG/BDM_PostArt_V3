@@ -1,36 +1,30 @@
 <?php
-
-require '../config.php';
-
-
+require '../Conexion.php';
 session_start();
-if (!isset($_SESSION['usuario'], $_GET['id_chat'])) {
+
+if (!isset($_SESSION['usuario']['ID_Usuario']) || !isset($_GET['id_chat'])) {
     http_response_code(400);
     exit('Faltan datos');
 }
 
-$id_usuario = $_SESSION['usuario'];
+$id_usuario = $_SESSION['usuario']['ID_Usuario'];
 $id_chat = intval($_GET['id_chat']);
 
+// Ajuste: columna correcta es id_chat_Privado
+$stmt = $conexion->prepare("SELECT id_usuario, contenido, fecha_envio 
+                            FROM Mensajes_Privado 
+                            WHERE id_chat_Privado = ? 
+                            ORDER BY fecha_envio ASC");
+$stmt->bind_param("i", $id_chat);
+$stmt->execute();
+$result = $stmt->get_result();
 
-$stmt = $conn->prepare("SELECT id_usuario, contenido, fecha_envio FROM Mensajes_Privado WHERE id_chat = ? ORDER BY fecha_envio ASC");
-$stmt->execute([$id_chat]);
-$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+while ($row = $result->fetch_assoc()) {
+    $clase = ($row['id_usuario'] == $id_usuario) ? 'message-sent' : 'message-received';
 
-foreach ($result as $row) {
-    $clase = ($row['id_usuario'] == $id_usuario) ? 'outgoing' : 'incoming';
-    echo '<div class="chat-message ' . $clase . '">';
-    echo '<div class="message-content">';
-    $esMensajeSistema = strpos($row['contenido'], 'btn-ver-cotizacion') !== false;
-
-    if ($esMensajeSistema) {
-        echo '<p>' . $row['contenido'] . '</p>';
-    } else {
-        echo '<p>' . htmlspecialchars($row['contenido']) . '</p>';
-    }
-
+    echo '<div class="' . $clase . '">';
+    echo '<div class="text-received"><p>' . htmlspecialchars($row['contenido']) . '</p></div>';
     echo '<span class="message-time">' . date("H:i", strtotime($row['fecha_envio'])) . '</span>';
-    echo '</div></div>';
+    echo '</div>';
 }
-
 ?>

@@ -1,35 +1,50 @@
-// Definir globalmente la función para obtener el chat activo
+// Guardar el chat activo globalmente
 window.getChatActivo = function () {
     return window.idChatActivo || null;
 };
 
-// Función global para obtener los mensajes
 function obtenerMensajes() {
     const idChat = getChatActivo();
-
     if (!idChat) return;
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'PHP/Obtener_Mensajes.php?id_chat=' + idChat, true);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            const chatContainer = document.querySelector('.chat-container');
-            chatContainer.innerHTML = xhr.responseText;
+    fetch('PHP/Obtener_Mensajes.php?id_chat=' + idChat)
+        .then(res => res.text())
+        .then(html => {
+            const chatContainer = document.querySelector('.chat-box');
+            chatContainer.innerHTML = html;
             chatContainer.scrollTop = chatContainer.scrollHeight;
-        } else {
-            console.error('Error al obtener mensajes:', xhr.status, xhr.responseText);
-        }
-    };
-    xhr.onerror = function () {
-        console.error('Error de red al obtener mensajes.');
-    };
-    xhr.send();
+        })
+        .catch(err => {
+            console.error('Error al obtener mensajes:', err);
+        });
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    const inputMensaje = document.getElementById('mensajeInput');
-    const btnEnviar = document.getElementById('btnEnviar');
+    const inputMensaje = document.getElementById('message-input');
+    const btnEnviar = document.getElementById('send-btn');
+    const nombreUsuario = document.getElementById('nombre-usuario');
+    const fotoUsuario = document.getElementById('foto-usuario');
+    const chatBox = document.querySelector('.chat-box');
 
+    // Escuchar clic en cada usuario para activar el chat y actualizar nombre/foto
+    const usuarios = document.querySelectorAll('.usuario-chat');
+    usuarios.forEach(usuario => {
+        usuario.addEventListener('click', () => {
+            const nombre = usuario.dataset.nombre;
+            const foto = usuario.dataset.foto;
+            const idChat = usuario.dataset.idChat;
+
+            window.idChatActivo = idChat;
+
+            // Mostrar nombre y foto del usuario en el header
+            if (nombreUsuario) nombreUsuario.textContent = nombre;
+            if (fotoUsuario) fotoUsuario.src = foto;
+
+            obtenerMensajes();
+        });
+    });
+
+    // Enviar mensaje
     if (inputMensaje && btnEnviar) {
         btnEnviar.addEventListener('click', function () {
             const mensaje = inputMensaje.value.trim();
@@ -45,49 +60,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'PHP/Insertar_Mensaje.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    console.log('Respuesta del servidor:', xhr.responseText);
-                    inputMensaje.value = '';
-                    obtenerMensajes();
-                } else {
-                    console.error('Error al enviar mensaje:', xhr.status, xhr.responseText);
-                }
-            };
-            xhr.onerror = function () {
-                console.error('Error de red al enviar mensaje.');
-            };
-
-            console.log('Enviando mensaje:', mensaje, 'al chat', idChat);
-            xhr.send('mensaje=' + encodeURIComponent(mensaje) + '&id_chat=' + idChat);
+            fetch('PHP/Insertar_Mensaje.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'mensaje=' + encodeURIComponent(mensaje) + '&id_chat=' + idChat
+            })
+            .then(res => res.text())
+            .then(response => {
+                inputMensaje.value = '';
+                obtenerMensajes();
+            })
+            .catch(err => {
+                console.error('Error al enviar mensaje:', err);
+            });
         });
     }
 
+    // Recargar mensajes si estás en el fondo del chat
     setInterval(() => {
-        const chatContainer = document.querySelector('.chat-container');
-        if (!chatContainer) return;
-
-        const isBottom = chatContainer.scrollTop + chatContainer.clientHeight >= chatContainer.scrollHeight - 5;
-
+        if (!chatBox) return;
+        const isBottom = chatBox.scrollTop + chatBox.clientHeight >= chatBox.scrollHeight - 5;
         if (isBottom) {
             obtenerMensajes();
         }
     }, 1000);
 });
-
-document.addEventListener('click', function (e) {
-    if (e.target && e.target.classList.contains('btn-ver-cotizacion')) {
-        const idProducto = e.target.getAttribute('data-producto-id');
-
-    
-        function abrirVentanaPago() {
-            window.open('tarjeta.html', '_blank', 'width=600,height=600');
-        }
-   abrirVentanaPago();
-    }
-   
-});
-

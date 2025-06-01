@@ -109,56 +109,11 @@ while ($row = $result->fetch_assoc()) {
     </button>
   </div>
 
-  <script>
-    const usuarios = document.querySelectorAll('.usuario-chat');
-    const nombreUsuario = document.getElementById('nombre-usuario');
-    const fotoUsuario = document.getElementById('foto-usuario');
-    const chatBox = document.getElementById('chat-box');
 
-    usuarios.forEach(usuario => {
-      usuario.addEventListener('click', () => {
-        const nombre = usuario.dataset.nombre;
-        const foto = usuario.dataset.foto;
-        const idChat = usuario.dataset.idChat;
 
-        nombreUsuario.textContent = nombre;
-        fotoUsuario.src = foto;
+  <script src="./JS/ChatFunc.js" defer></script>
+  <script src="./JS/cambiar-chat.js" defer></script>
 
-        // Cargar mensajes vía AJAX (debes tener una API PHP que devuelva los mensajes por chat)
-        fetch(`./PHP/get_mensajes.php?id_chat=${idChat}`)
-          .then(res => res.json())
-          .then(mensajes => {
-            chatBox.innerHTML = '';
-            mensajes.forEach(msg => {
-              const clase = msg.tipo === 'recibido' ? 'message-received' : 'message-sent';
-              chatBox.innerHTML += `
-                <div class="${clase}">
-                  <img class="photo-received" src="${msg.foto}" alt="Foto">
-                  <div class="text-received"><p>${msg.mensaje}</p></div>
-                </div>`;
-            });
-          });
-      });
-    });
-
-    // Lógica de envío de mensaje
-    document.getElementById('send-btn').addEventListener('click', () => {
-      const mensaje = document.getElementById('message-input').value;
-      const idChat = document.querySelector('.usuario-chat.active')?.dataset.idChat;
-      if (!mensaje || !idChat) return;
-
-      fetch('./PHP/enviar_mensaje.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `id_chat=${idChat}&mensaje=${encodeURIComponent(mensaje)}`
-      }).then(() => {
-        document.getElementById('message-input').value = '';
-      });
-    });
-  </script>
-
-    <script src="./JS/ChatFunc.js"></script>
-    <script src="./JS/cambiar-chat.js"></script>
 </body>
 
 </html>
