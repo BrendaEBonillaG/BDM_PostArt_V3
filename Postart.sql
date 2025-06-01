@@ -111,9 +111,9 @@ CREATE TABLE Subscripciones (
     FOREIGN KEY (Id_usuario_artista) REFERENCES Usuario(Id_usuario)
 );
 
-INSERT INTO Chat_Privado (id_remitente, id_emisor)
-VALUES (1, 2);
 
+
+SELECT * FROM Mensajes_Privado;
 -- Tabla de Mensajes Directos
 CREATE TABLE Chat_Privado (
     id_chat INT AUTO_INCREMENT PRIMARY KEY,

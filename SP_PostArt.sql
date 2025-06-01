@@ -505,19 +505,45 @@ DELIMITER ;
 
 
 -- CHAT PRIVADO
-DELIMITER $$
+DELIMITER //
+CREATE PROCEDURE ObtenerUsuariosYChatsPrivados(IN p_id_usuario INT)
+BEGIN
+  SELECT 
+    u.ID_Usuario AS id_usuario,
+    u.Nickname AS nombreUsu,
+    u.Foto_perfil AS foto,
+    cp.id_chat
+  FROM Usuario u
+  JOIN Chat_Privado cp 
+    ON ((u.ID_Usuario = cp.id_remitente AND cp.id_emisor = p_id_usuario)
+     OR (u.ID_Usuario = cp.id_emisor AND cp.id_remitente = p_id_usuario))
+  WHERE u.ID_Usuario != p_id_usuario
+  GROUP BY u.ID_Usuario, cp.id_chat;
+END //
+DELIMITER ;
 
-CREATE PROCEDURE InsertarMensajeDirecto(
-    IN p_Id_emisor INT,
-    IN p_Id_receptor INT,
-    IN p_Contenido TEXT
+-- INSERTAR Y LLAMAR
+DELIMITER //
+CREATE PROCEDURE ChatPrivado_Operacion(
+    IN p_operacion VARCHAR(10), -- 'insertar' o 'listar'
+    IN p_id_chat INT,
+    IN p_id_usuario INT,
+    IN p_contenido TEXT
 )
 BEGIN
-    INSERT INTO Mensajes (Id_emisor, Id_receptor, Contenido, Leido)
-    VALUES (p_Id_emisor, p_Id_receptor, p_Contenido, 0);
-END$$
+    IF p_operacion = 'insertar' THEN
+        INSERT INTO Mensajes_Privado (id_chat_Privado, id_usuario, contenido)
+        VALUES (p_id_chat, p_id_usuario, p_contenido);
 
+    ELSEIF p_operacion = 'listar' THEN
+        SELECT id_usuario, contenido, fecha_envio
+        FROM Mensajes_Privado
+        WHERE id_chat_Privado = p_id_chat
+        ORDER BY fecha_envio ASC;
+    END IF;
+END //
 DELIMITER ;
+
 
 
 -- SUBSCRIPCIONES

@@ -27,8 +27,9 @@ if ($mensaje === '') {
 }
 
 // Insertar en Mensajes_Privado
-$stmt = $conexion->prepare("INSERT INTO Mensajes_Privado (id_chat_Privado, id_usuario, contenido) VALUES (?, ?, ?)");
+$stmt = $conexion->prepare("CALL ChatPrivado_Operacion('insertar', ?, ?, ?)");
 $stmt->bind_param("iis", $id_chat, $id_usuario, $mensaje);
+
 
 if ($stmt->execute()) {
     echo "Mensaje enviado correctamente.";

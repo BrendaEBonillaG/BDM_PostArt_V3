@@ -10,11 +10,8 @@ if (!isset($_SESSION['usuario']['ID_Usuario']) || !isset($_GET['id_chat'])) {
 $id_usuario = $_SESSION['usuario']['ID_Usuario'];
 $id_chat = intval($_GET['id_chat']);
 
-// Ajuste: columna correcta es id_chat_Privado
-$stmt = $conexion->prepare("SELECT id_usuario, contenido, fecha_envio 
-                            FROM Mensajes_Privado 
-                            WHERE id_chat_Privado = ? 
-                            ORDER BY fecha_envio ASC");
+// Llamar al procedimiento con modo 'listar'
+$stmt = $conexion->prepare("CALL ChatPrivado_Operacion('listar', ?, 0, NULL)");
 $stmt->bind_param("i", $id_chat);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -27,4 +24,7 @@ while ($row = $result->fetch_assoc()) {
     echo '<span class="message-time">' . date("H:i", strtotime($row['fecha_envio'])) . '</span>';
     echo '</div>';
 }
+
+$stmt->close();
+$conexion->close();
 ?>
