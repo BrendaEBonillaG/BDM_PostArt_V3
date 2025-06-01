@@ -1,18 +1,23 @@
 // Guardar el chat activo globalmente
 window.getChatActivo = function () {
-    return window.idChatActivo || null;
+    return {
+        id: window.idChatActivo || null,
+        tipo: window.tipoChatActivo || 'privado' // 'privado' por defecto
+    };
 };
 
 function obtenerMensajes() {
-    const idChat = getChatActivo();
-    if (!idChat) return;
+    const chat = getChatActivo();
+    if (!chat.id) return;
 
-    fetch('PHP/Obtener_Mensajes.php?id_chat=' + idChat)
+    fetch(`PHP/Obtener_Mensajes.php?id_chat=${chat.id}&tipo=${chat.tipo}`)
         .then(res => res.text())
         .then(html => {
             const chatContainer = document.querySelector('.chat-box');
-            chatContainer.innerHTML = html;
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            if (chatContainer) {
+                chatContainer.innerHTML = html;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
         })
         .catch(err => {
             console.error('Error al obtener mensajes:', err);
@@ -26,17 +31,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const fotoUsuario = document.getElementById('foto-usuario');
     const chatBox = document.querySelector('.chat-box');
 
-    // Escuchar clic en cada usuario para activar el chat y actualizar nombre/foto
+    // Escuchar clic en cada usuario o grupo para activar el chat
     const usuarios = document.querySelectorAll('.usuario-chat');
     usuarios.forEach(usuario => {
         usuario.addEventListener('click', () => {
             const nombre = usuario.dataset.nombre;
             const foto = usuario.dataset.foto;
             const idChat = usuario.dataset.idChat;
+            const tipo = usuario.dataset.tipo || 'privado'; // tipo: 'privado' o 'grupal'
 
             window.idChatActivo = idChat;
+            window.tipoChatActivo = tipo;
 
-            // Mostrar nombre y foto del usuario en el header
             if (nombreUsuario) nombreUsuario.textContent = nombre;
             if (fotoUsuario) fotoUsuario.src = foto;
 
@@ -48,9 +54,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (inputMensaje && btnEnviar) {
         btnEnviar.addEventListener('click', function () {
             const mensaje = inputMensaje.value.trim();
-            const idChat = getChatActivo();
+            const chat = getChatActivo();
 
-            if (!idChat) {
+            if (!chat.id) {
                 console.warn('No hay chat activo definido.');
                 return;
             }
@@ -63,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch('PHP/Insertar_Mensaje.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'mensaje=' + encodeURIComponent(mensaje) + '&id_chat=' + idChat
+                body: `mensaje=${encodeURIComponent(mensaje)}&id_chat=${chat.id}&tipo=${chat.tipo}`
             })
             .then(res => res.text())
             .then(response => {

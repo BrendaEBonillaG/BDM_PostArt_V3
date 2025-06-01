@@ -137,6 +137,7 @@ CREATE TABLE Mensajes_Privado (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(Id_usuario) ON DELETE CASCADE
 );
 
+
 CREATE TABLE Chat_Grupal (
     id_chat INT AUTO_INCREMENT PRIMARY KEY,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -152,7 +153,7 @@ CREATE TABLE Participantes_Grupal (
     FOREIGN KEY (id_ChatGrupal) REFERENCES Chat_Grupal(id_chat) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario) REFERENCES Usuario(Id_usuario) ON DELETE CASCADE
 );
-
+DROP TABLE Mensajes_Grupales;
 CREATE TABLE Mensajes_Grupales (
     id_mensaje INT AUTO_INCREMENT PRIMARY KEY,
     id_chat_Grupal INT NOT NULL,
@@ -164,6 +165,7 @@ CREATE TABLE Mensajes_Grupales (
     FOREIGN KEY (id_chat_Grupal) REFERENCES Chat_Grupal(id_chat) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario) REFERENCES Usuario(Id_usuario) ON DELETE CASCADE
 );
+DESCRIBE Mensajes_Grupales;
 
 -- Tabla de Me Gusta
 CREATE TABLE Me_Gusta(

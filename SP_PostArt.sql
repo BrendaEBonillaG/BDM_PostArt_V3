@@ -489,18 +489,42 @@ END$$
 
 DELIMITER ;
 
-DELIMITER $$
-
-CREATE PROCEDURE InsertarMensajeGrupal(
-    IN p_Id_chat INT,
-    IN p_Id_usuario INT,
-    IN p_Contenido TEXT
+DROP PROCEDURE ChatGrupal_Operacion;
+DELIMITER //
+CREATE PROCEDURE ChatGrupal_Operacion(
+    IN p_operacion VARCHAR(10), -- 'insertar' o 'listar'
+    IN p_id_chat INT,
+    IN p_id_usuario INT,
+    IN p_contenido TEXT
 )
 BEGIN
-    INSERT INTO Mensajes_Grupales (Id_chat, Id_usuario, Contenido)
-    VALUES (p_Id_chat, p_Id_usuario, p_Contenido);
-END$$
+    IF p_operacion = 'insertar' THEN
+        INSERT INTO Mensajes_Grupales (id_chat_Grupal, id_usuario, contenido)
+        VALUES (p_id_chat, p_id_usuario, p_contenido);
 
+    ELSEIF p_operacion = 'listar' THEN
+        SELECT 
+            mg.id_usuario, 
+            u.Nickname AS nombre_usuario, 
+            mg.contenido, 
+            mg.fecha_envio
+        FROM Mensajes_Grupales mg
+        INNER JOIN Usuario u ON mg.id_usuario = u.ID_Usuario
+        WHERE mg.id_chat_Grupal = p_id_chat
+        ORDER BY mg.fecha_envio ASC;
+    END IF;
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE PROCEDURE ObtenerChatsGrupalesDeUsuario(IN p_id_usuario INT)
+BEGIN
+    SELECT cg.id_chat, cg.nombre, cg.imagen
+    FROM Chat_Grupal cg
+    INNER JOIN Participantes_Grupal pg ON cg.id_chat = pg.id_ChatGrupal
+    WHERE pg.id_usuario = p_id_usuario;
+END //
 DELIMITER ;
 
 
@@ -523,6 +547,7 @@ END //
 DELIMITER ;
 
 -- INSERTAR Y LLAMAR
+DROP PROCEDURE ChatPrivado_Operacion;
 DELIMITER //
 CREATE PROCEDURE ChatPrivado_Operacion(
     IN p_operacion VARCHAR(10), -- 'insertar' o 'listar'
@@ -536,13 +561,15 @@ BEGIN
         VALUES (p_id_chat, p_id_usuario, p_contenido);
 
     ELSEIF p_operacion = 'listar' THEN
-        SELECT id_usuario, contenido, fecha_envio
-        FROM Mensajes_Privado
-        WHERE id_chat_Privado = p_id_chat
-        ORDER BY fecha_envio ASC;
+        SELECT mp.id_usuario, u.Nickname AS nombre_usuario, mp.contenido, mp.fecha_envio
+        FROM Mensajes_Privado mp
+        INNER JOIN Usuario u ON mp.id_usuario = u.ID_Usuario
+        WHERE mp.id_chat_Privado = p_id_chat
+        ORDER BY mp.fecha_envio ASC;
     END IF;
 END //
 DELIMITER ;
+
 
 
 
