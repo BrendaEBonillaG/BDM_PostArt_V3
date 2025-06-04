@@ -5,6 +5,7 @@ USE PostArt;
 SELECT * FROM Usuario;
 DESCRIBE Usuario;
 
+SELECT * FROM Publicaciones;
 -- Tabla de Usuarios
 CREATE TABLE Usuario (
     ID_Usuario INT AUTO_INCREMENT PRIMARY KEY,

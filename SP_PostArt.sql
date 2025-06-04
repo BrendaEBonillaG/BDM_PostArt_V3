@@ -2,19 +2,30 @@ USE PostArt;
 
 SHOW PROCEDURE STATUS WHERE Db = 'PostArt';
 
+DROP PROCEDURE LoginUsuario;
 
 -- LOGIN
 DELIMITER $$
 
-CREATE PROCEDURE `LoginUsuario`(IN p_username VARCHAR(50), IN p_password VARCHAR(255))
+CREATE PROCEDURE `LoginUsuario`(
+    IN p_username VARCHAR(50), 
+    IN p_password VARCHAR(255)
+)
 BEGIN
-    -- Verifica si el usuario existe y la contraseña es correcta
-    SELECT ID_Usuario, Nombre, Nickname, Correo, Rol
+    SELECT 
+        ID_Usuario, 
+        Nombre, 
+        Nickname, 
+        Correo, 
+        Rol,
+        Biografia,
+        Foto_perfil
     FROM Usuario
     WHERE Nickname = p_username AND Contrasena = p_password;
 END$$
 
 DELIMITER ;
+
 
 
 -- REGISTRO
