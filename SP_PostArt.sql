@@ -186,6 +186,55 @@ DELIMITER ;
 
 
 -- PUBLICACIONES
+
+DELIMITER //
+
+CREATE PROCEDURE ObtenerPublicacionesActivas()
+BEGIN
+    SELECT 
+        p.Id_publicacion, 
+        p.Titulo, 
+        p.Imagen, 
+        u.ID_Usuario, 
+        u.Foto_perfil, 
+        u.Nombre, 
+        u.Rol
+    FROM Publicaciones p 
+    JOIN Usuario u ON p.ID_Usuario = u.ID_Usuario 
+    WHERE p.Estado = 'Activo' 
+    ORDER BY p.Fecha_creacion DESC;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE GetPerfilInfo(
+    IN p_action VARCHAR(20),  -- 'logueado' o 'artista'
+    IN p_id INT               -- ID del usuario a consultar
+)
+BEGIN
+    IF p_action = 'logueado' THEN
+        SELECT Nickname, Rol, Biografia, Foto_perfil
+        FROM Usuario
+        WHERE ID_Usuario = p_id;
+
+    ELSEIF p_action = 'artista' THEN
+        SELECT 
+            u.Nickname, u.Rol, u.Biografia, u.Foto_perfil, u.Correo,
+            rs1.Link AS Facebook,
+            rs2.Link AS Instagram,
+            rs3.Link AS Twitter,
+            rs4.Link AS Youtube
+        FROM Usuario u
+        LEFT JOIN Redes_sociales rs1 ON u.ID_Usuario = rs1.Id_usuario AND rs1.Nombre = 'Facebook'
+        LEFT JOIN Redes_sociales rs2 ON u.ID_Usuario = rs2.Id_usuario AND rs2.Nombre = 'Instagram'
+        LEFT JOIN Redes_sociales rs3 ON u.ID_Usuario = rs3.Id_usuario AND rs3.Nombre = 'Twitter'
+        LEFT JOIN Redes_sociales rs4 ON u.ID_Usuario = rs4.Id_usuario AND rs4.Nombre = 'Youtube'
+        WHERE u.ID_Usuario = p_id;
+    END IF;
+END //
+DELIMITER ;
+
 -- OFICIAL
 DELIMITER $$
 
