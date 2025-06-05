@@ -115,12 +115,10 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
     <div class="container-picture-dashboard">
         <?php
         // Consulta para obtener publicaciones activas
-        $sql = "SELECT p.Id_publicacion, p.Titulo, p.Imagen, u.ID_Usuario, u.Foto_perfil, u.Nombre, u.Rol
-        FROM Publicaciones p 
-        JOIN Usuario u ON p.ID_Usuario = u.ID_Usuario 
-        WHERE p.Estado = 'Activo' 
-        ORDER BY p.Fecha_creacion DESC";
-        $resultado = $conexion->query($sql);
+        $stmt = $conexion->prepare("CALL ObtenerPublicacionesActivas()");
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+
 
         if ($resultado->num_rows > 0) {
             while ($fila = $resultado->fetch_assoc()) {
