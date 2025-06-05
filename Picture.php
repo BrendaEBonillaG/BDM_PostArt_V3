@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 require __DIR__ . '../Conexion.php';
 
 if (!isset($_SESSION['usuario'])) {
@@ -10,7 +9,7 @@ if (!isset($_SESSION['usuario'])) {
 
 $usuario = $_SESSION['usuario'];
 
-// Convertir la imagen de base64 a src si existe, si no usar imagen por defecto
+// Variables del NAVBAR (dejan igual)
 $fotoPerfilSrc = $usuario['Foto_perfil']
     ? 'data:image/jpeg;base64,' . $usuario['Foto_perfil']
     : 'imagenes-prueba/User.jpg';
@@ -19,14 +18,14 @@ $nickname = $usuario['Nickname'];
 $rol = $usuario['Rol'];
 $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
 
-
+// Validar ID del post
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("ID de publicación no válido.");
 }
 
 $idPublicacion = intval($_GET['id']);
 
-
+// Obtener datos del post y su autor
 $stmt = $conexion->prepare("CALL SP_ObtenerPublicacionPorID(?)");
 $stmt->bind_param("i", $idPublicacion);
 $stmt->execute();
@@ -39,18 +38,21 @@ if ($res->num_rows === 0) {
 $publicacion = $res->fetch_assoc();
 $stmt->close();
 
+// Variables del POST
 $tituloPublicacion = $publicacion['Titulo'];
 $imagenPublicacion = $publicacion['Imagen'];
 $imagenSrc = 'data:image/jpeg;base64,' . base64_encode($imagenPublicacion);
 
-$nicknamePost = $publicacion['Nickname'];
-$rolPost = $publicacion['Rol'];
-$fotoAutorPost = $publicacion['Foto_perfil']
+// Variables del AUTOR del POST (nuevas variables)
+$autorNickname = $publicacion['Nickname'];
+$autorRol = $publicacion['Rol'];
+$autorFotoPerfil = $publicacion['Foto_perfil']
     ? 'data:image/jpeg;base64,' . base64_encode($publicacion['Foto_perfil'])
     : 'imagenes-prueba/User.jpg';
-
-
+$id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también devuelve esto
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -144,14 +146,15 @@ $fotoAutorPost = $publicacion['Foto_perfil']
     <div class="space-container-area">
         <<div class="left-space-zone">
             <div class="contenedor-card-perfil">
-                <div class="avatar-perfil-publicar">
-                    <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
-                </div>
-                <div class="content-perfil-publicar-info-user">
-                    <h2><?php echo htmlspecialchars($nickname); ?></h2>
-                    <h4><?php echo htmlspecialchars($rol); ?></h4>
-                </div>
-            </div>
+    <div class="avatar-perfil-publicar">
+        <img src="<?php echo $autorFotoPerfil; ?>" alt="Avatar del autor">
+    </div>
+    <div class="content-perfil-publicar-info-user">
+        <h2><?php echo htmlspecialchars($autorNickname); ?></h2>
+        <h4><?php echo htmlspecialchars($autorRol); ?></h4>
+    </div>
+</div>
+
             <div class="add-homeBtn">
                 <!-- Botón de inicio  -->
                 <button onclick="location.href='index.php'" class="icon-button" title="Inicio">
