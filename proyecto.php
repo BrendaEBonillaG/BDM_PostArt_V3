@@ -7,15 +7,8 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $idProyecto = intval($_GET['id']);
 
-// Obtener datos del proyecto
-$stmt = $conexion->prepare("
-    SELECT d.Titulo, d.Contenido, d.Video_url, d.Imagen, d.Meta, d.Fecha_Limite,
-           c.Nombre AS Categoria, u.Nickname AS Usuario
-    FROM Donaciones d
-    JOIN Categorias c ON d.Id_Categoria = c.Id_Categoria
-    JOIN Usuario u ON d.Id_usuario = u.ID_Usuario
-    WHERE d.Id_Donacion = ?
-");
+// Llamar al SP
+$stmt = $conexion->prepare("CALL SP_ObtenerProyectoCompleto(?)");
 $stmt->bind_param("i", $idProyecto);
 $stmt->execute();
 $res = $stmt->get_result();
@@ -28,20 +21,21 @@ $proyecto = $res->fetch_assoc();
 $titulo = $proyecto['Titulo'];
 $autor = $proyecto['Usuario'];
 $categoria_nombre = $proyecto['Categoria'];
-$video_id = str_replace("https://www.youtube.com/watch?v=", "", $proyecto['Video_url']);
+$video_url = $proyecto['Video_url'];
 $imagen = $proyecto['Imagen'];
 $descripcion = $proyecto['Contenido'];
 $meta = $proyecto['Meta'];
-$numero_participantes = 0; 
+$numero_participantes = 0;
 
 $stmt->close();
+$conexion->next_result(); // Para liberar el SP
 
 // Calcular días restantes
 $fecha_limite = new DateTime($proyecto['Fecha_Limite']);
 $hoy = new DateTime();
 $dias_restantes = $hoy->diff($fecha_limite)->format('%r%a');
 
-// Recaudado (opcional si usas tabla Donadores)
+// Consulta del monto recaudado
 $stmt = $conexion->prepare("SELECT SUM(Monto) AS Recaudado FROM Donadores WHERE Id_donacion = ?");
 $stmt->bind_param("i", $idProyecto);
 $stmt->execute();
@@ -50,7 +44,31 @@ $stmt->fetch();
 $stmt->close();
 
 $recaudado = $recaudado ?? 0;
+
+// Función para transformar a embed
+function obtenerEmbedYouTube($url)
+{
+    if (strpos($url, 'watch?v=') !== false) {
+        parse_str(parse_url($url, PHP_URL_QUERY), $vars);
+        return 'https://www.youtube.com/embed/' . $vars['v'];
+    }
+
+    if (strpos($url, 'youtu.be/') !== false) {
+        $id = explode('youtu.be/', $url)[1];
+        $id = strtok($id, '?');
+        return 'https://www.youtube.com/embed/' . $id;
+    }
+
+    if (strpos($url, 'youtube.com/embed/') !== false) {
+        return $url;
+    }
+
+    return '';
+}
+$video_embed_url = obtenerEmbedYouTube($video_url);
+
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -133,8 +151,11 @@ $recaudado = $recaudado ?? 0;
             </div>
 
             <div class="video_del_proyecto">
-                <iframe src="https://www.youtube.com/embed/<?php echo htmlspecialchars($video_id); ?>" frameborder="0" allowfullscreen class="video_proyecto"></iframe>
+                <div class="video-wrapper">
+                    <iframe src="<?= $video_embed_url ?>" frameborder="0" allowfullscreen></iframe>
+                </div>
             </div>
+
 
             <div class="imagen_del_proyecto">
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($imagen); ?>" class="imagen_proyecto" alt="Imagen del proyecto">

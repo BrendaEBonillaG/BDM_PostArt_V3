@@ -94,9 +94,10 @@
 
                 <label for="titulo">Título del proyecto</label>
                 <input type="text" name="titulo" class="input_donacion" required>
-
                 <label for="categoria">Categoría</label>
-                <input type="text" name="categoria" class="input_donacion" required>
+                <select name="categoria" class="input_donacion" required id="selectCategoria"></select>
+
+
 
                 <label for="video_url">Link de YouTube</label>
                 <input type="url" name="video_url" class="input_donacion" required>
@@ -125,6 +126,9 @@
 
     <script src="../BDM_PostArt_V3/js/script.js"></script>
     <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
+    <script src="js/categorias.js"></script>
+
+
 </body>
 
 </html>
