@@ -1,8 +1,62 @@
+<?php
+include("Conexion.php");
+
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("ID de proyecto no válido.");
+}
+
+$idProyecto = intval($_GET['id']);
+
+// Obtener datos del proyecto
+$stmt = $conexion->prepare("
+    SELECT d.Titulo, d.Contenido, d.Video_url, d.Imagen, d.Meta, d.Fecha_Limite,
+           c.Nombre AS Categoria, u.Nickname AS Usuario
+    FROM Donaciones d
+    JOIN Categorias c ON d.Id_Categoria = c.Id_Categoria
+    JOIN Usuario u ON d.Id_usuario = u.ID_Usuario
+    WHERE d.Id_Donacion = ?
+");
+$stmt->bind_param("i", $idProyecto);
+$stmt->execute();
+$res = $stmt->get_result();
+
+if ($res->num_rows === 0) {
+    die("Proyecto no encontrado.");
+}
+
+$proyecto = $res->fetch_assoc();
+$titulo = $proyecto['Titulo'];
+$autor = $proyecto['Usuario'];
+$categoria_nombre = $proyecto['Categoria'];
+$video_id = str_replace("https://www.youtube.com/watch?v=", "", $proyecto['Video_url']);
+$imagen = $proyecto['Imagen'];
+$descripcion = $proyecto['Contenido'];
+$meta = $proyecto['Meta'];
+$numero_participantes = 0; 
+
+$stmt->close();
+
+// Calcular días restantes
+$fecha_limite = new DateTime($proyecto['Fecha_Limite']);
+$hoy = new DateTime();
+$dias_restantes = $hoy->diff($fecha_limite)->format('%r%a');
+
+// Recaudado (opcional si usas tabla Donadores)
+$stmt = $conexion->prepare("SELECT SUM(Monto) AS Recaudado FROM Donadores WHERE Id_donacion = ?");
+$stmt->bind_param("i", $idProyecto);
+$stmt->execute();
+$stmt->bind_result($recaudado);
+$stmt->fetch();
+$stmt->close();
+
+$recaudado = $recaudado ?? 0;
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
+    <title>PostArt | Proyecto</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/stylex.css">
@@ -10,21 +64,17 @@
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/navegador.css">
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/cartas.css">
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/proyecto.css">
-    <title>PostArt | Home</title>
 </head>
 
 <body>
     <header>
         <div class="base-header">
-            <!-- barra de logo -->
             <div class="base-header-logo">
                 <img src="../BDM_PostArt_V3/imagenes-prueba/logo1.png" alt="">
             </div>
-            <!-- barra de busqueda -->
             <div class="container-base-header-search-bar">
                 <input type="text" class="search-bar-dashboard" placeholder="Search...">
             </div>
-            <!-- barra de notificaciones -->
             <div class="activity-header-bar">
                 <div class="notify-botton-activity-bar">
                     <i class='bx bxs-message-error'></i>
@@ -37,14 +87,14 @@
             </div>
         </div>
     </header>
-    <!-- boton menu -->
+
     <div class="avatar-boton-card" id="botonAvatarMenujs">
         <div class="avatar-image">
             <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
         </div>
         <div class="perfile-avatar-status"></div>
     </div>
-    <!-- menu perfil -->
+
     <div class="menu-avatar oculto" id="menuAvatarjs">
         <div class="avatar-menu">
             <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg" alt="">
@@ -55,7 +105,6 @@
                 <h5>2D artist</h5>
                 <h6>An artist makes dreams real</h6>
             </div>
-            <div class="menu-tapa"></div>
             <div class="menu-perfil-btn">
                 <div class="menu-perfil-btn-base1">
                     <div class="menu-perfil-btn-base2">
@@ -72,55 +121,40 @@
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
-    <div class="pantalla-blur oculto" id="pantallaBlurjs"></div>
-    <!-- modal log out-->
-    <div id="confirmationModal" class="modal">
-        <div class="modal-content">
-            <h2 class="modal-title">Log out confirmation</h2>
-            <p class="modal-message">Are you sure you want to log out?</p>
-            <div class="modal-buttons">
-                <button id="yesBtn">Yes</button>
-                <button id="noBtn">No</button>
-            </div>
-        </div>
-    </div>
-    <!-- posts -->
-    <div class="container-picture-dashboard">
 
+    <div class="pantalla-blur oculto" id="pantallaBlurjs"></div>
+
+    <div class="container-picture-dashboard">
         <div class="contenedor_proyecto_publicado">
             <div class="titulo_del_proyecto">
-                <h1>Nombre del Proyecto</h1>
-                <p class="usuario_del_proyecto">Publicado por: <span>Nombre del Usuario</span></p>
-                <p class="categoria_del_proyecto">Categoría: <span>Ilustración</span></p>
+                <h1><?php echo htmlspecialchars($titulo); ?></h1>
+                <p class="usuario_del_proyecto">Publicado por: <span><?php echo htmlspecialchars($autor); ?></span></p>
+                <p class="categoria_del_proyecto">Categoría: <span><?php echo htmlspecialchars($categoria_nombre); ?></span></p>
             </div>
 
-
             <div class="video_del_proyecto">
-                <iframe src="https://www.youtube.com/embed/sZNeut6RR4I" frameborder="0" allowfullscreen
-                    class="video_proyecto">
-                </iframe>
+                <iframe src="https://www.youtube.com/embed/<?php echo htmlspecialchars($video_id); ?>" frameborder="0" allowfullscreen class="video_proyecto"></iframe>
             </div>
 
             <div class="imagen_del_proyecto">
-                <img src="imagenes-prueba/11.jpg" class="imagen_proyecto">
+                <img src="data:image/jpeg;base64,<?php echo base64_encode($imagen); ?>" class="imagen_proyecto" alt="Imagen del proyecto">
             </div>
 
             <div class="descripcion_del_proyecto">
                 <h2>Descripción</h2>
-                <p>Aquí va la descripción detallada del proyecto. Explica de qué se trata, cuál es su objetivo y por qué
-                    la gente debería apoyarlo.</p>
+                <p><?php echo nl2br(htmlspecialchars($descripcion)); ?></p>
             </div>
 
             <div class="contador_dias">
-                <p>Quedan <span id="dias_restantes">30</span> días para el cierre del proyecto.</p>
+                <p>Quedan <span id="dias_restantes"><?php echo $dias_restantes; ?></span> días para el cierre del proyecto.</p>
             </div>
 
             <div class="contador_participantes">
-                <p><span id="numero_participantes">150</span> personas han apoyado este proyecto.</p>
+                <p><span id="numero_participantes"><?php echo $numero_participantes; ?></span> personas han apoyado este proyecto.</p>
             </div>
 
             <div class="monto_donacion">
-                <p>Recaudado: <strong>$3,200.00</strong> de una meta de <strong>$5,000.00</strong></p>
+                <p>Recaudado: <strong>$<?php echo number_format($recaudado, 2); ?></strong> de una meta de <strong>$<?php echo number_format($meta, 2); ?></strong></p>
             </div>
 
             <div class="barra_donacion">
@@ -130,10 +164,9 @@
             </div>
         </div>
 
-
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="../BDM_PostArt_V3/js/script.js"></script>
     <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
 </body>
