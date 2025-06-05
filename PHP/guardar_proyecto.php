@@ -9,7 +9,6 @@ if (!isset($conexion)) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $id_usuario = $_SESSION['usuario']['ID_Usuario'];
     $id_categoria = intval($_POST['categoria']);
-
     $titulo = $_POST['titulo'];
     $descripcion = $_POST['descripcion'];
     $video_url = $_POST['video_url'];
@@ -21,8 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (isset($_FILES['imagen']) && $_FILES['imagen']['tmp_name'] !== '') {
         $imagen_binario = file_get_contents($_FILES['imagen']['tmp_name']);
     }
-    $stmt = $conexion->prepare("INSERT INTO Donaciones (Id_usuario, Id_Categoria, Titulo, Contenido, Imagen, Video_url, Meta, Fecha_Limite)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+    $stmt = $conexion->prepare("CALL SP_InsertarProyecto(?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param(
         "iissssds",
         $id_usuario,
@@ -34,19 +33,19 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $meta,
         $fecha_limite
     );
-    if ($stmt->execute()) {
-        $id_proyecto = $conexion->insert_id;
 
-        if ($id_proyecto) {
-            echo "<script>
+    if ($stmt->execute()) {
+        $resultado = $stmt->get_result();
+        $fila = $resultado->fetch_assoc();
+        $id_proyecto = $fila['id_proyecto'];
+
+        echo "<script>
             alert('Proyecto guardado exitosamente.');
             window.location.href = '../proyecto.php?id=$id_proyecto';
         </script>";
-        } else {
-            echo "<script>alert('Proyecto guardado, pero no se pudo obtener el ID.');</script>";
-        }
+    } else {
+        echo "<script>alert('Error al guardar el proyecto.');</script>";
     }
-
 
     $stmt->close();
     $conexion->close();
