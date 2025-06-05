@@ -1,5 +1,5 @@
+<?php include ('conexion.php');?>
 <?php
-require __DIR__ . '/../Conexion.php';
 session_start();
 
 $nombre = $_POST['nombre'];

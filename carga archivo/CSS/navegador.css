@@ -1,0 +1,300 @@
+/* tarjeta de el boton de avatar */
+.avatar-boton-card {
+    position: fixed; 
+    bottom: 4%; 
+    left: 1%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 180px;
+    border-radius: 25%;
+    background: #282828;
+
+    cursor: pointer;
+    z-index: 4;
+    
+}
+/* animacion para desaparecer el avatar card */
+@keyframes agrandar {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+.agrandado {
+    animation: agrandar 0.4s ease;
+}
+.deslizar {
+    animation: showPro .4s ease;
+}
+.oculto {
+    opacity: 0; 
+    pointer-events: none; 
+    display: none;
+}
+
+
+/* contenedor de la imagen */
+.avatar-image {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 26px 0px 26px 26px;
+    border: 2px solid #05A8EE;
+    box-shadow: 0 0 .5rem #babbbc;
+    
+}
+ /* imagen */
+.avatar-image img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+/* estatus del perfil */
+.perfile-avatar-status {
+    width: 12px;
+    height: 12px;
+    border-radius: 100%;
+    border: 2px solid rgb(36, 36, 36) ;
+    position: absolute;
+    right: 15px;
+    bottom: 45px;
+    background: greenyellow;
+    box-shadow: 0 0 .5rem greenyellow;
+}
+
+.pantalla-blur{
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--blue-panel); /* Color azul con opacidad */
+    backdrop-filter: blur(2px); /* Desenfoque de fondo */
+    position: fixed;
+    mix-blend-mode: color;
+    z-index: 3;
+
+}
+
+/* menu */
+.menu-avatar {
+    position: fixed; 
+    bottom: 50%; 
+    left: 70px;
+    width: 400px;
+    height: 100px;
+    border-radius: 60px;
+    background: #282828;
+    z-index: 4;
+    cursor: pointer;
+    animation: showPro .5s forwards ease-in-out;
+    
+}
+.menu-tapa {
+    position: absolute;
+    bottom: 0px; 
+    left: 0px;
+    width: 400px;
+    height: 100px;
+    border-radius: 60px 60px 60px 60px;
+    background: #282828;
+    z-index: 1;
+    cursor: pointer;
+    animation: showPro .5s forwards ease-in-out;
+    pointer-events: none;
+    
+}
+/*profile  animation*/
+@keyframes showPro {
+    0% {
+        width: 0;
+    }
+}
+.avatar-menu img{
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-left: 0px;
+    margin-top: 5px;
+    border: 5px solid #fafafa;
+    box-shadow: 0 0 .5rem #babbbc;
+    z-index: 4;
+    animation: rotateImg .5s forwards ease-in-out;
+}
+/*image rotate animation*/
+@keyframes rotateImg {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.menu-avatar .menu-perfil-nametag{
+    padding: 10px;
+
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: -20px;
+    left: 60px;
+    z-index: 4;
+}
+.menu-avatar .menu-perfil-nametag::before{
+    content: "";
+    position: absolute;
+    width: 230px;
+    height: 150px;
+    left: 0;
+    top: -20px;
+    transform: rotate(-8deg);
+    
+}
+.menu-avatar .content-menu-perfil .menu-perfil-nametag{
+    margin-top: 20px;
+    margin-left: 50px;
+} 
+.menu-avatar .content-menu-perfil .menu-perfil-nametag h3,
+.menu-avatar .content-menu-perfil .menu-perfil-nametag h5,
+.menu-avatar .content-menu-perfil .menu-perfil-nametag h6{
+    font-weight: bold;
+    margin: 3px 0;
+    white-space: nowrap;
+}
+.menu-avatar .content-menu-perfil .menu-perfil-nametag h3{
+    color: #05A8EE;
+}
+.menu-avatar .content-menu-perfil .menu-perfil-nametag h5{
+    color: #A9A9A9;
+}
+.menu-avatar .content-menu-perfil .menu-perfil-nametag h6{
+    color: #414141;
+}
+
+.menu-perfil-btn{
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: 90px;
+    height: 90px;
+    border-radius: 100%;
+    background: linear-gradient(to top right, #036088, #05A8EE, #036088);
+    margin-left: 213PX;
+    margin-top: 3PX;
+    cursor: pointer;
+    z-index: 5;
+    border: 2px solid #505050;
+    position: relative; /* Añadir esto */
+    animation: popIcon .2s both ease-in-out .3s;
+}
+.menu-perfil-btn-base1{
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: 93%;
+    height: 93%;
+    border-radius: 100%;
+    background: linear-gradient(to bottom left, #525252, #414141);
+    position: absolute; /* Esto es correcto */
+    top: 3px; 
+    left: 3px; 
+    cursor: pointer;
+    z-index: 5;
+}
+.menu-perfil-btn-base2{
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    width: 70%;
+    height: 70%;
+    border-radius: 100%;
+    background: linear-gradient(to bottom right, #525252, #414141);
+    position: absolute; /* Esto es correcto */
+    top: 12px; 
+    left: 12px; 
+    cursor: pointer;
+    z-index: 5;
+}
+.menu-perfil-btn-base2 i{
+    font-size: 36px;
+    color: #05A8EE;
+}
+@keyframes popIcon{
+    0% {
+        transform: scale(0);
+    }
+    80% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+.menu-avatar .btns-menu-profile{
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: #05a8ee5d;
+    position: absolute;
+    top: 50%;
+    right: -51%;
+    transform: translate(-50%, -50%);
+    transition: .3s;
+    opacity: 0;
+    z-index: 0;
+}
+.menu-avatar .btns-menu-profile span{
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 50%;
+    background: #ececec;
+    font-size: 26px;
+    text-align: center;
+    position: absolute;
+    left: 95px;
+    top: 95px;
+    box-shadow: 0 0 0.5rem #babbbc;
+    cursor: pointer;
+    transition-duration: .3s;
+    z-index: 4;
+}
+.menu-avatar .btns-menu-profile span:hover{
+    transition-delay: initial !important;
+    box-shadow: 0 0 0 5px #babbbc;
+}
+.menu-avatar .btns-menu-profile.open{
+    opacity: 1;
+}
+.menu-avatar .btns-menu-profile.open span{
+    left: 60px;
+}
+.menu-avatar .btns-menu-profile.open span:nth-of-type(1){
+    transform: rotate(-90deg) translateX(150px) translateY(45px) rotate(90deg);
+    transition-delay: 0s;
+}
+.menu-avatar .btns-menu-profile.open span:nth-of-type(2){
+    transform: rotate(-45deg) translateX(180px) translateY(40px) rotate(45deg);
+    transition-delay: 0.1s;
+}
+.menu-avatar .btns-menu-profile.open span:nth-of-type(3){
+    transform: rotate(0deg) translateX(215px) translateY(0px) rotate(0deg);
+    transition-delay: 0.2s;
+}
+.menu-avatar .btns-menu-profile.open span:nth-of-type(4){
+    transform: rotate(45deg) translateX(190px) translateY(-40px) rotate(-45deg);
+    transition-delay: 0.3s;
+}
+.menu-avatar .btns-menu-profile.open span:nth-of-type(5){
+    transform: rotate(90deg) translateX(160px) translateY(-45px) rotate(-90deg);
+    transition-delay: 0.4s;
+}

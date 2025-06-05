@@ -1,0 +1,331 @@
+/* POPPINS FONT */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* ====== BASE ===== */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ====== Body ===== */
+body{
+    background-color: #111111;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 0 20px;
+}
+
+/* ====== Form container ===== */
+.form-container{
+    display: flex;
+    width: 1500px;
+    height: 800px;
+    background-color: #282828;
+    border: 3px solid rgba(110, 195, 255, 0.3);
+    border-radius: 30px;
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+}
+
+.modal {
+    display: none; /* Ocultar el modal por defecto */
+    position: fixed; /* Fijar el modal en la pantalla */
+    z-index: 1000; /* Asegurarse de que esté por encima de otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%; /* Ancho completo */
+    height: 100%; /* Alto completo */
+    overflow: auto; /* Habilitar desplazamiento si es necesario */
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+    color: #05A8EE;
+}
+
+.modal-content {
+    background-color: #282828;
+    margin: 15% auto; /* Centrar el modal */
+    padding: 20px;
+    border: 3px solid rgba(110, 195, 255, 0.3);
+    width: 80%; /* Ancho del modal */
+    max-width: 600px; /* Ancho máximo del modal */
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* ====== Form container - Maquetado de divs ===== */
+.left-div {
+    width: 35%;
+    height: 100%;
+    display: flex;
+    flex-direction: column; /* Para apilar los divs verticalmente */
+}
+
+.top-left-div {
+    height: 20%;
+    background-color: #5a5a5a; /* Color de fondo para el div superior */
+}
+
+.bottom-left-div {
+    height: 80%;
+    background-color: #3a3a3a; /* Color de fondo para el div inferior */
+}
+
+.right-div {
+    width: 65%;
+    height: 100%;
+    display: flex;
+    flex-direction: column; /* Para apilar los divs verticalmente */
+}
+
+.top-right-div {
+    height: 60%;
+    background-color: #1a1a1a; /* Color de fondo para el div superior */
+}
+
+.center-right-div {
+    height: 20%;
+    display: flex; /* Para apilar los divs horizontalmente */
+}
+
+.left-center-div {
+    width: 30%;
+    background-color: #1a1a1a; /* Color de fondo para el div izquierdo del centro */
+}
+
+.middle-center-div {
+    width: 70%;
+    background-color: #1a1a1a; /* Color de fondo para el div central del centro */
+}
+
+
+.bottom-right-div {
+    height: 20%;
+    background-color: #4a4a4a; /* Color de fondo para el div inferior */
+}
+
+.form-container .left-div .bottom-left-div {
+    display: flex; /* Habilita flexbox */
+    align-items: center; /* Centra verticalmente */
+    justify-content: center; /* Centra horizontalmente */
+    height: 80%; /* Asegúrate de que la altura sea la correcta */
+}
+
+.form-container .left-div .top-left-div {
+    display: flex; /* Habilita flexbox */
+    align-items: center; /* Centra verticalmente */
+    justify-content: center; /* Centra horizontalmente */
+    height: 20%; /* Asegúrate de que la altura sea la correcta */
+}
+
+.avatar-text-name h1 {
+    display: flex; /* Habilita flexbox para el texto */
+    align-items: center; /* Centra verticalmente el texto */
+    margin: 0; /* Elimina el margen por defecto */
+    font-size: 24px; /* Tamaño de fuente general para el h1 */
+}
+
+.hola-text {
+    color: #05A8EE; /* Color azul para "Hola" */
+    margin-right: 15px; /* Espacio entre "Hola" y "NamerTag" */
+    font-size: 60px; /* Tamaño de fuente específico para "Hola" */
+}
+
+.nametag-text {
+    color: white; /* Color blanco para "NamerTag" */
+    font-size: 50px; /* Tamaño de fuente específico para "NamerTag" */
+}
+
+/* ====== botton-left-div - avatar imagen ===== */
+
+.form-container .left-div .bottom-left-div .avatar-perfil {
+    width: 320px;
+    height: 320px;
+    background: #fff;
+    border-radius: 36px 0px 36px 36px;
+    border: 5px solid #05A8EE;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.50);
+    overflow: hidden;
+    transition: 0.5s;
+}
+
+.form-container .left-div .bottom-left-div .avatar-perfil img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@keyframes jump {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-40px); /* Ajusta la altura del salto */
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.jump {
+    animation: jump .6s forwards; /* Duración de 1 segundo */
+}
+
+/* ====== top-right-div - informacion ===== */
+
+.top-right-div {
+    height: 60%; /* Asegúrate de que la altura sea la correcta */
+    display: flex; /* Habilita flexbox */
+    align-items: center; /* Centra verticalmente */
+    justify-content: center; /* Centra horizontalmente */
+    text-align: center; /* Centra el texto */
+    color: white; /* Color del texto */
+}
+
+.animated-text {
+    font-size: 35px; /* Tamaño de fuente */
+    line-height: 1; /* Ajusta la altura de línea para que el cursor esté alineado con el texto */
+    white-space: pre-line; /* Mantiene los saltos de línea */
+    overflow: hidden; /* Oculta el texto que no se muestra */
+    display: inline-block; /* Permite que el contenedor se ajuste al contenido */
+    position: relative; /* Necesario para el posicionamiento absoluto del cursor */
+}
+
+.animated-text span {
+    color: #05A8EE;
+}
+
+/* ====== center-right-div - acciones ===== */
+
+/* ====== center-right-div izquierdo - camaron ===== */
+.left-center-div {
+    display: flex;               /* Usar flexbox para centrar el contenido */
+    justify-content: center;     /* Centrar horizontalmente */
+    align-items: center;         /* Centrar verticalmente */
+    height: 100%;                /* Asegurarse de que el div ocupe toda la altura disponible */
+}
+
+/* ====== Form Image Animation ===== */
+.coin{
+    animation: scale-down 3s ease-in-out alternate infinite; 
+}
+.spring{
+    animation: scale-down 3s ease-in-out alternate infinite;
+}
+.dots{
+    animation: scale-up 3s ease-in-out alternate infinite;
+}
+.rocket{
+    animation: up-down 3s ease-in-out alternate infinite;
+}
+.cloud{
+    animation: left-right 3s ease-in-out alternate infinite;
+}
+.stars{
+    animation: scale-up 3s ease-in-out alternate infinite;
+}
+
+@keyframes left-right{
+    to{
+        transform: translateX(10px);
+    }
+}
+@keyframes up-down{
+    to{
+        transform: translateY(15px);
+    }
+}
+@keyframes scale-down{
+    to{
+        transform: scale(0.95);
+    }
+}
+@keyframes scale-up{
+    to{
+        transform: scale(1.05);
+    }
+}
+/* ====== center-right-div centro - imagen upload ===== */
+.middle-center-div {
+    display: flex;               /* Usar flexbox para centrar el contenido */
+    justify-content: center;     /* Centrar horizontalmente */
+    align-items: center;         /* Centrar verticalmente */
+    height: 100%;                /* Asegurarse de que el div ocupe toda la altura disponible */
+}
+.customfile{
+    border: 2px solid #05A8EE;
+    border-radius: 50px;
+    padding: 2px;
+    font-size: 19px;
+    color: #aaa;
+}
+.customfile::-webkit-file-upload-button{
+    background-image: linear-gradient(45deg,#05A8EE,#aaced0);
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+}
+/* ====== center-right-div derecho - boton accion1 ===== */
+
+.right-center-div {
+    display: flex;               /* Usar flexbox para centrar el contenido */
+    justify-content: center;     /* Centrar horizontalmente */
+    align-items: center;         /* Centrar verticalmente */
+    height: 100%;                /* Asegurarse de que el div ocupe toda la altura disponible */
+}
+
+.modifyImageButton {
+    height: 50px;
+    width: 160px;
+    border-radius: 20px;        /* Bordes redondeados */
+    border: none;               /* Sin borde */
+    outline: none;              /* Sin contorno */
+    font-size: 1em;            /* Tamaño de fuente */
+    font-weight: 500;          /* Peso de fuente */
+    background: #05A8EE;       /* Color de fondo */
+    color: #fff;                /* Color del texto */
+    cursor: pointer;            /* Cambiar el cursor al pasar el ratón */
+}
+
+/* ====== center-right-div derecho - boton accion2 ===== */
+
+.bottom-right-div {
+    display: flex;               /* Usar flexbox para centrar el contenido */
+    justify-content: flex-end;   /* Alinear el contenido a la derecha */
+    align-items: center;         /* Centrar verticalmente */
+}
+
+.submitButton {
+    height: 70px;
+    width: 200px;
+    margin-right: 40px;
+    border-radius: 20px;        /* Bordes redondeados */
+    border: none;               /* Sin borde */
+    outline: none;              /* Sin contorno */
+    font-size: 1em;            /* Tamaño de fuente */
+    font-weight: 500;          /* Peso de fuente */
+    background: #05A8EE;       /* Color de fondo */
+    color: #fff;                /* Color del texto */
+    cursor: pointer;            /* Cambiar el cursor al pasar el ratón */
+}

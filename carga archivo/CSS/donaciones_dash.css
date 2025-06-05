@@ -1,0 +1,88 @@
+:root{
+    --primario: #435794;
+    --gris: #808080;
+    --negro: #ffffff;
+    --blanco: #282828bb;
+}
+.card_proyecto p{
+    font-weight: 500;
+}
+
+.card_proyecto a{
+
+    text-decoration: none;
+    color: var(--negro);
+}
+
+.card_proyecto a:hover{
+    color: var(--negro);
+    cursor: pointer;
+}
+
+.card_proyecto {
+    -webkit-box-shadow: 10px 10px 0px 5px rgba(0,0,0,1);
+    -moz-box-shadow: 10px 10px 0px 5px rgba(0,0,0,1);
+    box-shadow: 5px 5px 0px 3px rgba(0, 0, 0, 1);
+    background-color: var(--blanco);
+    border-radius: 0.75rem; /* Reducido a la mitad */
+    padding: 1rem; /* Reducido a la mitad */
+    border: 1px solid var(--negro);
+    max-width: 320px; /* Limitar el ancho al 50% */
+    height: 800px;
+}
+
+.card_proyecto_img{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 450px;
+    width: 320px;
+}
+.card_proyecto_img img{
+    width: 100%;
+    border-radius: 1rem;
+}
+
+.card_proyect_text .estado {
+    font-size: 1.3rem;
+    font-weight: 800;
+    background-color: var(--primario);
+    padding: .5rem;
+    border-radius: .5rem;
+    display:inline-block;
+    margin-top: 3rem;
+    margin-bottom: 0;
+}
+
+.card_proyect_text .parrafo{
+    color: var(--gris);
+}
+
+.card_proyect_text .autor{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 1rem;
+}
+.autor_cart_proyecto {
+    display: flex; /* Usar flexbox para alinear elementos en línea */
+    align-items: center; /* Centrar verticalmente */
+    gap: 1rem; /* Espacio entre la imagen y el nombre */
+}
+
+.autor_cart_proyecto .avatar_autor_proyecto img {
+    width: 40px; /* Ajusta el tamaño de la imagen según sea necesario */
+    height: 40px; /* Ajusta el tamaño de la imagen según sea necesario */
+    border-radius: 50%; /* Hacer la imagen circular */
+}
+
+.autor_cart_proyecto .avatar_autor_proyecto {
+    display: flex; /* Usar flexbox para alinear la imagen y el texto */
+    align-items: center; /* Centrar verticalmente */
+    gap: 15px;
+}
+
+.autor_cart_proyecto .autor_name_proyect {
+    font-weight: 800;
+}
+

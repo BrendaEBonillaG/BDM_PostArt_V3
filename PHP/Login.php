@@ -1,7 +1,7 @@
+<?php include ('conexion.php');?>
 <?php
 session_start(); 
 
-require __DIR__ . '/../Conexion.php'; 
 
 $username = $_POST['username'];
 $password = $_POST['password'];
@@ -22,7 +22,7 @@ if ($result->num_rows > 0) {
 ];
 
 
-    header('Location: ../index.php');
+    header('Location: Dashboard.php');
     exit();
 } else {
    

@@ -5,11 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="CSS/stylex.css">
-    <link rel="stylesheet" href="CSS/header.css">
-    <link rel="stylesheet" href="CSS/navegador.css">
-    <link rel="stylesheet" href="CSS/cartas.css">
-    <link rel="stylesheet" href="CSS/style_container_img.css">
+    <link rel="stylesheet" href="/CSS/stylex.css">
+    <link rel="stylesheet" href="/CSS/header.css">
+    <link rel="stylesheet" href="/CSS/navegador.css">
+    <link rel="stylesheet" href="/CSS/cartas.css">
+    <link rel="stylesheet" href="/CSS/style_container_img.css">
     <title>PostArt | publicar</title>
 </head>
 <body>
@@ -103,7 +103,7 @@
             <div class="drop-area" id="dropArea">
                 Arrastre y suelte la imagen aquí o haga clic para seleccionar
             </div>
-            <input type="file" class="form-control-file" name="imagen" id="imagen" style="display: none;" required>
+            <input type="file" class="form-control-file" name="imagen" id="imagen" style="display: none;">
             <div class="file-list" id="filelist"></div>
         </div>
         <button type="submit" class="btn btn-primary">Enviar</button>
@@ -113,8 +113,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-    <script src="js/script.js"></script>
-    <script src="js/enlaces.js"></script>
-    <script src="js/cargar_img.js"></script>
+    <script src="/js/script.js"></script>
+    <script src="/js/enlaces.js"></script>
+    <script src="/js/cargar_img.js"></script>
 </body>
 </html>

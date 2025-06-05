@@ -21,10 +21,10 @@ if (isset($_SESSION['usuario'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/stylex.css">
-    <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/header.css">
-    <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/navegador.css">
-    <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/cartas.css">
+    <link rel="stylesheet" href="/CSS/stylex.css">
+    <link rel="stylesheet" href="/CSS/header.css">
+    <link rel="stylesheet" href="/CSS/navegador.css">
+    <link rel="stylesheet" href="/CSS/cartas.css">
     <title>PostArt | publicar</title>
 </head>
 
