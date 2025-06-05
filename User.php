@@ -79,23 +79,40 @@ if (isset($_SESSION['usuario'])) {
             </div>
         </div>
     </header>
-    <!-- boton menu -->
+    <!-- Botón del menú -->
     <div class="avatar-boton-card" id="botonAvatarMenujs">
         <div class="avatar-image">
-            <img src="/../BDM_POSTART_V3/imagenes-prueba/User.jpg">
+            <div class="avatar-image">
+                <?php
+                $fotoPerfilSrc = !empty($user['Foto_perfil'])
+                    ? 'data:image/jpeg;base64,' . base64_encode($user['Foto_perfil'])
+                    : '../BDM_POSTART_V3/imagenes-prueba/User.jpg';
+                ?>
+                <img src="<?= $fotoPerfilSrc ?>" alt="Avatar">
+            </div>
+
         </div>
         <div class="perfile-avatar-status"></div>
     </div>
-    <!-- menu perfil -->
+
+    <!-- Menú del perfil -->
     <div class="menu-avatar oculto" id="menuAvatarjs">
         <div class="avatar-menu">
-            <img src="/../BDM_POSTART_V3/imagenes-prueba/User.jpg" alt="">
+            <div class="avatar-menu">
+                <?php
+                $fotoPerfilSrc = !empty($user['Foto_perfil'])
+                    ? 'data:image/jpeg;base64,' . base64_encode($user['Foto_perfil'])
+                    : '../BDM_POSTART_V3/imagenes-prueba/User.jpg';
+                ?>
+                <img src="<?= $fotoPerfilSrc ?>" alt="Avatar">
+            </div>
+
         </div>
         <div class="content-menu-perfil">
             <div class="menu-perfil-nametag">
-                <h3>Jane Doe</h3>
-                <h5>2D artist</h5>
-                <h6>An artist makes dreams real</h6>
+                <h3><?php echo htmlspecialchars($user['Nickname']); ?></h3>
+                <h5><?php echo htmlspecialchars($rol); ?></h5>
+                <h6><?php echo htmlspecialchars($biografia); ?></h6>
             </div>
             <div class="menu-tapa"></div>
             <div class="menu-perfil-btn">
@@ -110,7 +127,7 @@ if (isset($_SESSION['usuario'])) {
             <span><i class='bx bxs-user'></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
-<span><i class='bx bxs-donate-heart'></i></span>
+            <span><i class='bx bxs-donate-heart'></i></span>
 
             <span><i class='bx bx-log-out'></i></span>
         </div>
