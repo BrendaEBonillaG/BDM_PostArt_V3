@@ -115,7 +115,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
     <div class="container-picture-dashboard">
         <?php
         // Consulta para obtener publicaciones activas
-        $sql = "SELECT p.Id_publicacion, p.Titulo, p.Imagen, u.Foto_perfil, u.Nombre, u.Rol
+        $sql = "SELECT p.Id_publicacion, p.Titulo, p.Imagen, u.ID_Usuario, u.Foto_perfil, u.Nombre, u.Rol
         FROM Publicaciones p 
         JOIN Usuario u ON p.ID_Usuario = u.ID_Usuario 
         WHERE p.Estado = 'Activo' 
@@ -124,38 +124,38 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
 
         if ($resultado->num_rows > 0) {
             while ($fila = $resultado->fetch_assoc()) {
-                // Convertimos el blob de imagen a base64
                 $imagenCodificada = base64_encode($fila['Imagen']);
-                $src = 'data:image/jpeg;base64,' . $imagenCodificada;
+                $src = !empty($fila['Imagen']) ? 'data:image/jpeg;base64,' . $imagenCodificada : "imagenes-prueba/default_post.jpg";
 
                 $perfilSrc = !empty($fila['Foto_perfil']) ? 'data:image/jpeg;base64,' . base64_encode($fila['Foto_perfil']) : "imagenes-prueba/User.jpg";
                 $nombre = !empty($fila['Nombre']) ? htmlspecialchars($fila['Nombre']) : "Artista Desconocido";
                 $rol = !empty($fila['Rol']) ? htmlspecialchars($fila['Rol']) : "Rol no definido";
-                $src = !empty($fila['Imagen']) ? 'data:image/jpeg;base64,' . base64_encode($fila['Imagen']) : "imagenes-prueba/default_post.jpg";
                 $titulo = !empty($fila['Titulo']) ? htmlspecialchars($fila['Titulo']) : "Sin título";
+                $idUsuario = intval($fila['ID_Usuario']);
 
                 echo '
-                <div class="card-image-post">
-                    <div class="tag-artist-info">
-                        <div class="tag-artist-avatar">
-                            <img src="' . htmlspecialchars($perfilSrc, ENT_QUOTES) . '" alt="Perfil de Usuario">
-                        </div>
-                        <div class="tag-artist-name">
-                            <h3>' . $nombre . '</h3>
-                            <h6>' . $rol . '</h6>
-                        </div>
-                    </div>
-                    <div class="tag-paw-botton paw-button">
-                        <i class="bx bxs-hot"></i>
-                    </div>
-                    <div class="imag" id="cardImagePost">
-                        <img src="' . $src . '" alt="' . $titulo . '">
-                    </div>
-                </div>';
+        <div class="card-image-post">
+            <a href="Perfil.php?id=' . $idUsuario . '" class="tag-artist-info">
+                <div class="tag-artist-avatar">
+                    <img src="' . htmlspecialchars($perfilSrc, ENT_QUOTES) . '" alt="Perfil de Usuario">
+                </div>
+                <div class="tag-artist-name">
+                    <h3>' . $nombre . '</h3>
+                    <h6>' . $rol . '</h6>
+                </div>
+            </a>
+            <div class="tag-paw-botton paw-button">
+                <i class="bx bxs-hot"></i>
+            </div>
+            <div class="imag" id="cardImagePost">
+                <img src="' . $src . '" alt="' . $titulo . '">
+            </div>
+        </div>';
             }
         } else {
             echo "<p>No hay publicaciones disponibles.</p>";
         }
+
         ?>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
