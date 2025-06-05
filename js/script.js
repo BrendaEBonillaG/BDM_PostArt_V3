@@ -78,7 +78,7 @@ const Event4menu = document.querySelectorAll('.bx.bxs-donate-heart');
 Event4menu.forEach(function(icon) { 
     icon.addEventListener('click', function(event) {
         event.stopPropagation(); // Evita que el clic se propague
-        window.location.href = 'donaciones_dash.html'; // Redirige a config.html
+        window.location.href = 'donaciones_dash.php'; // Redirige a config.html
     });
 });
 
