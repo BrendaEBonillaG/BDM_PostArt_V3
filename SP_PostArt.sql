@@ -2,19 +2,31 @@ USE PostArt;
 
 SHOW PROCEDURE STATUS WHERE Db = 'PostArt';
 
-
+DROP PROCEDURE LoginUsuario;
 -- LOGIN
+DROP PROCEDURE IF EXISTS LoginUsuario;
+
 DELIMITER $$
 
-CREATE PROCEDURE `LoginUsuario`(IN p_username VARCHAR(50), IN p_password VARCHAR(255))
+CREATE PROCEDURE `LoginUsuario`(
+    IN p_username VARCHAR(50), 
+    IN p_password VARCHAR(255)
+)
 BEGIN
-    -- Verifica si el usuario existe y la contraseña es correcta
-    SELECT ID_Usuario, Nombre, Nickname, Correo, Rol
+    SELECT 
+        ID_Usuario, 
+        Nombre, 
+        Nickname, 
+        Correo, 
+        Rol,
+        Biografia,
+        Foto_perfil
     FROM Usuario
     WHERE Nickname = p_username AND Contrasena = p_password;
 END$$
 
 DELIMITER ;
+
 
 
 -- REGISTRO
@@ -102,6 +114,8 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
 -- USUARIOS DEFINITIVO 
 DELIMITER $$
 
@@ -169,38 +183,9 @@ END$$
 
 DELIMITER ;
 
--- CATEGORIAS
 
-DELIMITER $$
-
-CREATE PROCEDURE InsertarCategoria(
-    IN p_Nombre VARCHAR(50)
-)
-BEGIN
-    INSERT INTO Categorias (Nombre)
-    VALUES (p_Nombre);
-END$$
-
-DELIMITER ;
 
 -- PUBLICACIONES
-
--- PRUEBA
-DELIMITER //
-CREATE PROCEDURE InsertarPublicacion(
-    IN p_usuario VARCHAR(50),
-    IN p_categoria INT,
-    IN p_titulo VARCHAR(255),
-    IN p_contenido TEXT,
-    IN p_tipo VARCHAR(50),
-    IN p_imagen LONGBLOB
-)
-BEGIN
-    INSERT INTO publicaciones (usuario, categoria, titulo, contenido, tipo, imagen)
-    VALUES (p_usuario, p_categoria, p_titulo, p_contenido, p_tipo, p_imagen);
-END //
-DELIMITER ;
-
 -- OFICIAL
 DELIMITER $$
 

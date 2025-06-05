@@ -68,17 +68,17 @@ const Event3menu = document.querySelectorAll('.bx.bxs-add-to-queue');
 Event3menu.forEach(function(icon) { 
     icon.addEventListener('click', function(event) {
         event.stopPropagation(); // Evita que el clic se propague
-        window.location.href = 'Publicar.php'; // Redirige a Publicar.php
+        window.location.href = 'Subir_post.php'; // Redirige a Publicar.php
     });
 });
 
 // Evento para los íconos de configuración
-const Event4menu = document.querySelectorAll('.bx.bxs-cog');
+const Event4menu = document.querySelectorAll('.bx.bxs-donate-heart');
 
 Event4menu.forEach(function(icon) { 
     icon.addEventListener('click', function(event) {
         event.stopPropagation(); // Evita que el clic se propague
-        window.location.href = 'Config.html'; // Redirige a config.html
+        window.location.href = 'donaciones_dash.html'; // Redirige a config.html
     });
 });
 

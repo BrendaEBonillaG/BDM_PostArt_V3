@@ -4,6 +4,8 @@ CREATE DATABASE IF NOT EXISTS PostArt;
 USE PostArt;
 SELECT * FROM Usuario;
 DESCRIBE Usuario;
+SELECT * FROM Publicaciones;
+SELECT * FROM Categorias;
 
 -- Tabla de Usuarios
 CREATE TABLE Usuario (
