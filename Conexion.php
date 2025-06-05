@@ -1,7 +1,7 @@
 <?php
 $servidor = "localhost";
 $usuario = "root";
-$contrasena = "Admin";
+$contrasena = "admin";
 $basedatos = "PostArt";
 
 
