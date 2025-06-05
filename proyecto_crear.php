@@ -1,26 +1,3 @@
-
-<?php
-session_start();
-
-require __DIR__ . '../Conexion.php';
-
-if (!isset($_SESSION['usuario'])) {
-    header('Location: ../Login.html');
-    exit();
-}
-
-$usuario = $_SESSION['usuario'];
-
-// Convertir la imagen de base64 a src si existe, si no usar imagen por defecto
-$fotoPerfilSrc = $usuario['Foto_perfil']
-    ? 'data:image/jpeg;base64,' . $usuario['Foto_perfil']
-    : 'imagenes-prueba/User.jpg';
-
-$nickname = $usuario['Nickname'];
-$rol = $usuario['Rol'];
-$biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,7 +9,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/header.css">
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/navegador.css">
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/cartas.css">
-    <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/donaciones_dash.css">
+    <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/proyecto.css">
     <title>PostArt | Home</title>
 </head>
 
@@ -40,23 +17,19 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
     <header>
         <div class="base-header">
             <!-- barra de logo -->
-
-             <div class="base-header-logo">
+            <div class="base-header-logo">
                 <img src="../BDM_PostArt_V3/imagenes-prueba/logo1.png" alt="">
-             </div>
-
+            </div>
             <!-- barra de busqueda -->
             <div class="container-base-header-search-bar">
                 <input type="text" class="search-bar-dashboard" placeholder="Search...">
             </div>
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
-
-
+                <div class="notify-botton-activity-bar">
+                    <i class='bx bxs-message-error'></i>
+                </div>
                 <div class="message-botton-activity-bar">
-                    <button onclick="location.href='groups_dash.html'">
-                        <i class='bx bxs-message-error'></i>
-                    </button>
                     <button onclick="location.href='Chat.php'" class="icon-button">
                         <i class='bx bxs-message-minus'></i>
                     </button>
@@ -64,48 +37,41 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
         </div>
     </header>
-    <!-- Botón del menú -->
+    <!-- boton menu -->
     <div class="avatar-boton-card" id="botonAvatarMenujs">
         <div class="avatar-image">
-            <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
+            <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
         </div>
         <div class="perfile-avatar-status"></div>
     </div>
-
-    <!-- Menú del perfil -->
+    <!-- menu perfil -->
     <div class="menu-avatar oculto" id="menuAvatarjs">
         <div class="avatar-menu">
-            <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
+            <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg" alt="">
         </div>
         <div class="content-menu-perfil">
             <div class="menu-perfil-nametag">
-                <h3><?php echo htmlspecialchars($nickname); ?></h3>
-                <h5><?php echo htmlspecialchars($rol); ?></h5>
-                <h6><?php echo htmlspecialchars($biografia); ?></h6>
-
+                <h3>Jane Doe</h3>
+                <h5>2D artist</h5>
+                <h6>An artist makes dreams real</h6>
             </div>
             <div class="menu-tapa"></div>
             <div class="menu-perfil-btn">
                 <div class="menu-perfil-btn-base1">
                     <div class="menu-perfil-btn-base2">
-
                         <i class='bx bx-menu'></i>
-
                     </div>
                 </div>
             </div>
         </div>
         <div class="btns-menu-profile">
-
             <span><i class='bx bxs-user'></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
-            <span><i class='bx bxs-donate-heart'></i></span>
-
+            <span><i class='bx bxs-cog'></i></span>
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
-
     <div class="pantalla-blur oculto" id="pantallaBlurjs"></div>
     <!-- modal log out-->
     <div id="confirmationModal" class="modal">
@@ -118,22 +84,51 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
         </div>
     </div>
-
     <!-- posts -->
     <div class="container-picture-dashboard">
 
+        <div class="contenedor_proyecto_publicado">
+            <h1>Sube tu proyecto</h1>
+            <form action="PHP/guardar_proyecto.php" method="POST" enctype="multipart/form-data">
 
-        <!-- post proyectos -->
-<div class="container-picture-dashboard">
-    <?php include("php/cargar_proyectos.php"); ?>
-</div>
 
+                <label for="titulo">Título del proyecto</label>
+                <input type="text" name="titulo" class="input_donacion" required>
+                <label for="categoria">Categoría</label>
+                <select name="categoria" class="input_donacion" required id="selectCategoria"></select>
+
+
+
+                <label for="video_url">Link de YouTube</label>
+                <input type="url" name="video_url" class="input_donacion" required>
+
+                <label for="imagen">Sube una imagen</label>
+                <input type="file" name="imagen" class="input_donacion" accept="image/*" required>
+
+                <label for="descripcion">Descripción</label>
+                <textarea name="descripcion" class="input_donacion" rows="5" required></textarea>
+
+                <label for="meta">Monto meta</label>
+                <input type="number" name="meta" step="0.01" class="input_donacion" required>
+
+                <label for="fecha_limite">Fecha de cierre</label>
+                <input type="date" name="fecha_limite" class="input_donacion" required>
+
+                <button type="submit" class="boton_donacion">Guardar Proyecto</button>
+            </form>
+
+
+
+        </div>
 
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <script src="../BDM_PostArt_V3/js/script.js"></script>
     <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
+    <script src="js/categorias.js"></script>
+
+
 </body>
 
 </html>
