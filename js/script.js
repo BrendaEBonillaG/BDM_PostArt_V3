@@ -72,28 +72,34 @@ Event3menu.forEach(function(icon) {
     });
 });
 
-// Evento para los íconos de configuración
+// Evento para ver donaciones
 const Event4menu = document.querySelectorAll('.bx.bxs-donate-heart');
-
 Event4menu.forEach(function(icon) { 
     icon.addEventListener('click', function(event) {
-        event.stopPropagation(); // Evita que el clic se propague
-        window.location.href = 'donaciones_dash.php'; // Redirige a config.html
+        event.stopPropagation();
+        window.location.href = 'donaciones_dash.php';
     });
 });
 
-// Evento para los íconos de cerrar sesión
-const Event5menu = document.querySelectorAll('.bx.bx-log-out');
-
+// Evento para crear donaciones (corregido)
+const Event5menu = document.querySelectorAll('.bx.bx-plus-circle'); // Asegúrate que tu botón tenga esta clase
 Event5menu.forEach(function(icon) { 
     icon.addEventListener('click', function(event) {
-        event.stopPropagation(); // Evita que el clic se propague
-        document.getElementById('confirmationModal').style.display = 'flex'; // Muestra la ventana modal
-        
-        // Cambia el color de fondo a --black-panel
+        event.stopPropagation();
+        window.location.href = 'proyecto_crear.php';
+    });
+});
+
+// Evento para cerrar sesión (corregido)
+const Event6menu = document.querySelectorAll('.bx.bx-log-out');
+Event6menu.forEach(function(icon) { 
+    icon.addEventListener('click', function(event) {
+        event.stopPropagation();
+        document.getElementById('confirmationModal').style.display = 'flex';
         document.documentElement.style.setProperty('--blue-panel', 'var(--black-panel)');
     });
 });
+
 
 // Manejo del botón "No"
 document.getElementById('noBtn').addEventListener('click', function() {

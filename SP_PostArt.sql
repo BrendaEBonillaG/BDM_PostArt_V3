@@ -241,53 +241,111 @@ END$$
 DELIMITER ;
 
 -- DONACIONES
+
+
 DELIMITER $$
 
-CREATE PROCEDURE SP_GestionarDonacion(
-    IN p_operacion VARCHAR(10),        -- 'crear' o 'actualizar'
-    IN p_Id_Donacion INT,              -- Obligatorio solo si p_operacion = 'actualizar'
+CREATE PROCEDURE SP_InsertarDonacion(
     IN p_Id_usuario INT,
-    IN p_Id_Categoria INT,
-    IN p_Titulo VARCHAR(100),
-    IN p_Contenido TEXT,
-    IN p_Imagen MEDIUMBLOB,
-    IN p_Video_url VARCHAR(255),
-    IN p_Meta DECIMAL(10,2),
-    IN p_Fecha_Limite TIMESTAMP
+    IN p_Id_Categoria INT, -- ← ahora espera el ID directamente
+    IN p_titulo VARCHAR(100),
+    IN p_contenido TEXT,
+    IN p_imagen MEDIUMBLOB,
+    IN p_video_url VARCHAR(255),
+    IN p_meta DECIMAL(10,2),
+    IN p_fecha_limite DATE
 )
 BEGIN
-    IF p_operacion = 'crear' THEN
-        INSERT INTO Donaciones (
-            Id_usuario, Id_Categoria, Titulo, Contenido,
-            Imagen, Video_url, Meta, Fecha_Limite
-        ) VALUES (
-            p_Id_usuario, p_Id_Categoria, p_Titulo, p_Contenido,
-            p_Imagen, p_Video_url, p_Meta, p_Fecha_Limite
-        );
-
-    ELSEIF p_operacion = 'actualizar' THEN
-        UPDATE Donaciones
-        SET
-            Id_usuario = p_Id_usuario,
-            Id_Categoria = p_Id_Categoria,
-            Titulo = p_Titulo,
-            Contenido = p_Contenido,
-            Imagen = p_Imagen,
-            Video_url = p_Video_url,
-            Meta = p_Meta,
-            Fecha_Limite = p_Fecha_Limite
-        WHERE Id_Donacion = p_Id_Donacion;
-
-    ELSE
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Operación no válida. Use "crear" o "actualizar".';
-    END IF;
+    -- Ya no necesitas buscar ni insertar categoría
+    INSERT INTO Donaciones (
+        Id_usuario,
+        Id_Categoria,
+        Titulo,
+        Contenido,
+        Imagen,
+        Video_url,
+        Meta,
+        Fecha_Limite
+    ) VALUES (
+        p_Id_usuario,
+        p_Id_Categoria,
+        p_titulo,
+        p_contenido,
+        p_imagen,
+        p_video_url,
+        p_meta,
+        p_fecha_limite
+    );
 END$$
 
 DELIMITER ;
 
+
+DELIMITER //
+CREATE PROCEDURE SP_ObtenerProyectoCompleto(IN p_id INT)
+BEGIN
+    SELECT d.Titulo, d.Contenido, d.Video_url, d.Imagen, d.Meta, d.Fecha_Limite,
+           c.Nombre AS Categoria, u.Nickname AS Usuario
+    FROM Donaciones d
+    JOIN Categorias c ON d.Id_Categoria = c.Id_Categoria
+    JOIN Usuario u ON d.Id_usuario = u.ID_Usuario
+    WHERE d.Id_Donacion = p_id;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE SP_InsertarProyecto (
+    IN p_id_usuario INT,
+    IN p_id_categoria INT,
+    IN p_titulo VARCHAR(255),
+    IN p_descripcion TEXT,
+    IN p_imagen LONGBLOB,
+    IN p_video_url VARCHAR(255),
+    IN p_meta DECIMAL(10,2),
+    IN p_fecha_limite DATE
+)
+BEGIN
+    INSERT INTO Donaciones (
+        Id_usuario,
+        Id_Categoria,
+        Titulo,
+        Contenido,
+        Imagen,
+        Video_url,
+        Meta,
+        Fecha_Limite
+    ) VALUES (
+        p_id_usuario,
+        p_id_categoria,
+        p_titulo,
+        p_descripcion,
+        p_imagen,
+        p_video_url,
+        p_meta,
+        p_fecha_limite
+    );
+    
+    SELECT LAST_INSERT_ID() AS id_proyecto;
+END //
+DELIMITER ;
+
+
+SELECT 
+    d.Id_Donacion,
+    u.Nickname,
+    c.Nombre AS Categoria,
+    d.Titulo,
+    d.Meta,
+    d.Video_url,
+    d.Fecha_Limite
+FROM Donaciones d
+JOIN Usuario u ON d.Id_usuario = u.ID_Usuario
+JOIN Categorias c ON d.Id_Categoria = c.Id_Categoria
+ORDER BY d.Id_Donacion DESC;
+
 DELIMITER $$
 
+-- DONADOR
 CREATE PROCEDURE SP_InsertarDonador(
     IN p_Id_usuario_donante INT,
     IN p_Id_usuario_artista INT,
