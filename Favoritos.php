@@ -113,11 +113,11 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
         <div class="left-space-zone">
             <div class="contenedor-card-perfil">
                 <div class="avatar-perfil-publicar">
-                   <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
+                    <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
                 </div>
                 <div class="content-perfil-publicar-info-user">
                     <h2><?php echo htmlspecialchars($nickname); ?></h2>
-                <h4><?php echo htmlspecialchars($rol); ?></h4>
+                    <h4><?php echo htmlspecialchars($rol); ?></h4>
                 </div>
             </div>
             <div class="add-homeBtn">
