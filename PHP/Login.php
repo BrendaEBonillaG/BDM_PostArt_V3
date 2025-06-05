@@ -1,5 +1,6 @@
 <?php
 session_start(); 
+require __DIR__ . '/../Conexion.php'; 
 
 require __DIR__ . '/../Conexion.php'; 
 

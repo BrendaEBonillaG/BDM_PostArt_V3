@@ -1,20 +1,33 @@
 <?php
 session_start();
 
+<<<<<<< Updated upstream
 if (isset($_SESSION['usuario'])) {
     $usuario = $_SESSION['usuario'];
     // Ojo, la clave en el array es 'Nickname' (mayúscula N)
     echo "Bienvenido, " . $usuario['Nickname'];
 } else {
     // No imprimir nada antes del header
+=======
+if (!isset($_SESSION['usuario'])) {
+>>>>>>> Stashed changes
     header('Location: ../Login.html');
     exit();
 }
+
+$usuario = $_SESSION['usuario']; // ✅ Esto es lo que define $usuario correctamente
 ?>
 
 
+<<<<<<< Updated upstream
 <!DOCTYPE html>
 <html lang="en">
+=======
+
+<!DOCTYPE html>
+<html lang="en">
+
+>>>>>>> Stashed changes
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,13 +38,23 @@ if (isset($_SESSION['usuario'])) {
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/cartas.css">
     <title>PostArt | Home</title>
 </head>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 <body>
     <header>
         <div class="base-header">
             <!-- barra de logo -->
+<<<<<<< Updated upstream
              <div class="base-header-logo">
                 <img src="../BDM_PostArt_V3/imagenes-prueba/logo1.png" alt="">
              </div>
+=======
+            <div class="base-header-logo">
+                <img src="../BDM_PostArt_V3/imagenes-prueba/logo1.png" alt="">
+            </div>
+>>>>>>> Stashed changes
             <!-- barra de busqueda -->
             <div class="container-base-header-search-bar">
                 <input type="text" class="search-bar-dashboard" placeholder="Search...">
@@ -39,6 +62,7 @@ if (isset($_SESSION['usuario'])) {
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
                 <div class="notify-botton-activity-bar">
+<<<<<<< Updated upstream
                     <i class='bx bxs-message-error' ></i>
                 </div>
                 <div class="message-botton-activity-bar">
@@ -66,22 +90,66 @@ if (isset($_SESSION['usuario'])) {
                 <h3>Jane Doe</h3>
                 <h5>2D artist</h5>
                 <h6>An artist makes dreams real</h6>
+=======
+                    <i class='bx bxs-message-error'></i>
+                </div>
+                <div class="message-botton-activity-bar">
+                    <button onclick="location.href='chat.html'" class="icon-button">
+                        <i class='bx bxs-message-minus'></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- boton menu -->
+    <div class="avatar-boton-card" id="botonAvatarMenujs">
+        <div class="avatar-image">
+            <img src="data:image/jpeg;base64,<?= $usuario['Foto_perfil'] ?>" alt="Avatar">
+
+        </div>
+        <div class="perfile-avatar-status"></div>
+    </div>
+    <!-- menu perfil -->
+    <div class="menu-avatar oculto" id="menuAvatarjs">
+        <div class="avatar-menu">
+            <img src="data:image/jpeg;base64,<?= $usuario['Foto_perfil'] ?>" alt="Avatar">
+
+        </div>
+        <div class="content-menu-perfil">
+            <div class="menu-perfil-nametag">
+                <h3><?= htmlspecialchars($usuario['Nickname']) ?></h3>
+                <h5><?= htmlspecialchars($usuario['Rol']) ?></h5>
+                <h6><?= htmlspecialchars($usuario['Biografia']) ?></h6>
+
+>>>>>>> Stashed changes
             </div>
             <div class="menu-tapa"></div>
             <div class="menu-perfil-btn">
                 <div class="menu-perfil-btn-base1">
                     <div class="menu-perfil-btn-base2">
+<<<<<<< Updated upstream
                         <i class='bx bx-menu' ></i>
+=======
+                        <i class='bx bx-menu'></i>
+>>>>>>> Stashed changes
                     </div>
                 </div>
             </div>
         </div>
         <div class="btns-menu-profile">
+<<<<<<< Updated upstream
             <span><i class='bx bxs-user' ></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
             <span><i class='bx bxs-cog' ></i></span>
             <span><i class='bx bx-log-out' ></i></span>
+=======
+            <span><i class='bx bxs-user'></i></span>
+            <span><i class='bx bxs-hot menu-favoritos'></i></span>
+            <span><i class='bx bxs-add-to-queue'></i></span>
+            <span><i class='bx bxs-cog'></i></span>
+            <span><i class='bx bx-log-out'></i></span>
+>>>>>>> Stashed changes
         </div>
     </div>
     <div class="pantalla-blur oculto" id="pantallaBlurjs"></div>
@@ -96,21 +164,35 @@ if (isset($_SESSION['usuario'])) {
             </div>
         </div>
     </div>
+<<<<<<< Updated upstream
 <!-- posts -->
     <div class="container-picture-dashboard">
         
+=======
+    <!-- posts -->
+    <div class="container-picture-dashboard">
+
+>>>>>>> Stashed changes
         <!-- post- imagen -->
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -121,14 +203,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -139,14 +229,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -157,14 +255,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -175,14 +281,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -193,14 +307,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -211,14 +333,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -229,14 +359,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -247,14 +385,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -265,14 +411,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -283,14 +437,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -301,14 +463,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -319,14 +489,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -337,14 +515,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -355,14 +541,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -373,14 +567,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -391,14 +593,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -409,14 +619,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -427,14 +645,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -445,14 +671,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -463,14 +697,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -481,14 +723,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -499,14 +749,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -517,14 +775,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -535,14 +801,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -553,14 +827,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -571,14 +853,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -589,14 +879,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -607,14 +905,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -625,14 +931,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -643,14 +957,22 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -661,25 +983,41 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
+<<<<<<< Updated upstream
                     <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+=======
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+>>>>>>> Stashed changes
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
+<<<<<<< Updated upstream
             <div class="tag-paw-botton paw-button" >
+=======
+            <div class="tag-paw-botton paw-button">
+>>>>>>> Stashed changes
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
                 <img src="/../BDM_PostArt_V3/imagenes-prueba/2f0bb0f234c9dabd561a55dc1a36a944.jpg">
             </div>
         </div>
+<<<<<<< Updated upstream
         
+=======
+
+>>>>>>> Stashed changes
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <script src="../BDM_PostArt_V3/js/script.js"></script>
     <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
 </body>
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 </html>
