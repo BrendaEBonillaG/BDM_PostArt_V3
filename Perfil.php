@@ -1,26 +1,28 @@
 <?php
 session_start();
 require __DIR__ . '/Conexion.php';
-// Obtener siempre la info del usuario logueado desde la base de datos
-$idUsuarioLog = $_SESSION['usuario']['ID_Usuario'];
-
-$stmtUsuario = $conexion->prepare("SELECT Nickname, Rol, Biografia, Foto_perfil FROM Usuario WHERE ID_Usuario = ?");
-$stmtUsuario->bind_param("i", $idUsuarioLog);
-$stmtUsuario->execute();
-$resUsuario = $stmtUsuario->get_result();
-
-if ($resUsuario->num_rows > 0) {
-    $usuarioLog = $resUsuario->fetch_assoc();
-}
-
 
 if (!isset($_SESSION['usuario'])) {
     header('Location: ../Login.html');
     exit();
 }
 
+$idUsuarioLog = $_SESSION['usuario']['ID_Usuario'];
 
+// Obtener datos del usuario logueado
+$stmtUsuario = $conexion->prepare("CALL GetPerfilInfo(?, ?)");
+$accionUsuario = 'logueado';
+$stmtUsuario->bind_param("si", $accionUsuario, $idUsuarioLog);
+$stmtUsuario->execute();
+$resUsuario = $stmtUsuario->get_result();
 
+if ($resUsuario->num_rows > 0) {
+    $usuarioLog = $resUsuario->fetch_assoc();
+}
+$stmtUsuario->close();
+$conexion->next_result(); // Liberar para siguiente consulta
+
+// Verificación y carga del artista
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header('Location: index.php');
     exit();
@@ -28,21 +30,9 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $idArtista = intval($_GET['id']);
 
-$stmt = $conexion->prepare("
-    SELECT 
-        u.Nickname, u.Rol, u.Biografia, u.Foto_perfil, u.Correo,
-        rs1.Link AS Facebook,
-        rs2.Link AS Instagram,
-        rs3.Link AS Twitter,
-        rs4.Link AS Youtube
-    FROM Usuario u
-    LEFT JOIN Redes_sociales rs1 ON u.ID_Usuario = rs1.Id_usuario AND rs1.Nombre = 'Facebook'
-    LEFT JOIN Redes_sociales rs2 ON u.ID_Usuario = rs2.Id_usuario AND rs2.Nombre = 'Instagram'
-    LEFT JOIN Redes_sociales rs3 ON u.ID_Usuario = rs3.Id_usuario AND rs3.Nombre = 'Twitter'
-    LEFT JOIN Redes_sociales rs4 ON u.ID_Usuario = rs4.Id_usuario AND rs4.Nombre = 'Youtube'
-    WHERE u.ID_Usuario = ?
-");
-$stmt->bind_param("i", $idArtista);
+$stmt = $conexion->prepare("CALL GetPerfilInfo(?, ?)");
+$accionArtista = 'artista';
+$stmt->bind_param("si", $accionArtista, $idArtista);
 $stmt->execute();
 $res = $stmt->get_result();
 
@@ -52,7 +42,10 @@ if ($res->num_rows === 0) {
 }
 
 $artista = $res->fetch_assoc();
+$stmt->close();
+$conexion->next_result(); // Liberar para futuras consultas
 
+// Foto perfil ARTISTA
 $fotoPerfilArtista = !empty($artista['Foto_perfil']) ? 'data:image/jpeg;base64,' . base64_encode($artista['Foto_perfil']) : 'imagenes-prueba/User.jpg';
 $nicknameArtista = htmlspecialchars($artista['Nickname']);
 $rolArtista = htmlspecialchars($artista['Rol']);
@@ -63,6 +56,7 @@ $instagram = $artista['Instagram'] ?? '#';
 $twitter = $artista['Twitter'] ?? '#';
 $youtube = $artista['Youtube'] ?? '#';
 
+// Foto perfil USUARIO
 $fotoUsuario = !empty($usuarioLog['Foto_perfil']) && is_string($usuarioLog['Foto_perfil']) 
     ? 'data:image/jpeg;base64,' . base64_encode($usuarioLog['Foto_perfil']) 
     : 'imagenes-prueba/User.jpg';
@@ -71,6 +65,7 @@ $nicknameUsuario = htmlspecialchars($usuarioLog['Nickname']);
 $rolUsuario = htmlspecialchars($usuarioLog['Rol']);
 $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuarioLog['Biografia']) : 'Sin biografía';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
