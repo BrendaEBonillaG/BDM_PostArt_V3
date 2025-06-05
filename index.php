@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require __DIR__ . '../Conexion.php'; 
+require __DIR__ . '../Conexion.php';
 
 if (!isset($_SESSION['usuario'])) {
     header('Location: ../Login.html');
@@ -53,7 +53,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
                     <i class='bx bxs-message-error'></i>
                 </div>
                 <div class="message-botton-activity-bar">
-                    <button onclick="location.href='chat.html'" class="icon-button">
+                    <button onclick="location.href='Chat.php'" class="icon-button">
                         <i class='bx bxs-message-minus'></i>
                     </button>
                 </div>
@@ -92,7 +92,8 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             <span><i class='bx bxs-user'></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
-            <span><i class='bx bxs-cog'></i></span>
+            <span><i class='bx bxs-donate-heart'></i></span>
+
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
@@ -109,7 +110,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
         </div>
     </div>
-     <div class="container-picture-dashboard">
+    <div class="container-picture-dashboard">
         <?php
         // Consulta para obtener publicaciones activas
         $sql = "SELECT Id_publicacion, Titulo, Imagen FROM Publicaciones WHERE Estado = 'Activo' ORDER BY Fecha_creacion DESC";

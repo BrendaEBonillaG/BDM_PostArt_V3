@@ -83,7 +83,8 @@ if (isset($_SESSION['usuario'])) {
             <span><i class='bx bxs-user'></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
-            <span><i class='bx bxs-cog'></i></span>
+<span><i class='bx bxs-donate-heart'></i></span>
+
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
