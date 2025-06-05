@@ -379,16 +379,16 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 70px;
+    gap: 20px;
 }
 /* diseno de los botones */
 .container-perfil-info .content-perfil-info .details-perfil-info .actionBtn-perfil-info button {
-    padding: 10px 30px;
+    padding: 10px 20px;
     border-radius: 20px;
     border: none;
     outline: none;
     font-size: 1em;
-    font-weight: 500;
+    font-weight: 450;
     background: #05A8EE;
     color: #fff;
     cursor: pointer;

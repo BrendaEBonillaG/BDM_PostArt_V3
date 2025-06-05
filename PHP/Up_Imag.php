@@ -1,6 +1,8 @@
+
 <?php 
 include ('../Conexion.php');
 session_start(); // Ensure session is started
+
 
 if ($_POST["dato"] == 'inserta_archivo') {
     $usuario = $_SESSION['usuario']['ID_Usuario']; // User ID
@@ -18,8 +20,10 @@ if ($_POST["dato"] == 'inserta_archivo') {
         $stmt = $conexion->prepare($sql);
 
         $stmt->bind_param("iisssb", $usuario, $catego, $titulo, $descripcion, $contenidoImagen, $tipo);
+
         $stmt->send_long_data(4, $contenidoImagen); // Ensure correct index for BLOB
         
+
         if ($stmt->execute()) {
             echo "Imagen subida correctamente.";
         } else {

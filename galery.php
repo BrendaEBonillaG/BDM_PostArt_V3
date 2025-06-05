@@ -20,8 +20,6 @@ $rol = $usuario['Rol'];
 $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -33,7 +31,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/header.css">
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/navegador.css">
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/cartas.css">
-    <title>PostArt | Home</title>
+    <title>PostArt | Galeria</title>
 </head>
 
 <body>
@@ -49,7 +47,6 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
-
 
                 <div class="message-botton-activity-bar">
                     <button onclick="location.href='groups_dash.html'">
@@ -99,7 +96,6 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
-
     <div class="pantalla-blur oculto" id="pantallaBlurjs"></div>
     <!-- modal log out-->
     <div id="confirmationModal" class="modal">
@@ -112,51 +108,54 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
         </div>
     </div>
-    <div class="container-picture-dashboard">
-        <?php
-        // Consulta para obtener publicaciones activas
-        $sql = "SELECT p.Id_publicacion, p.Titulo, p.Imagen, u.Foto_perfil, u.Nombre, u.Rol
-        FROM Publicaciones p 
-        JOIN Usuario u ON p.ID_Usuario = u.ID_Usuario 
-        WHERE p.Estado = 'Activo' 
-        ORDER BY p.Fecha_creacion DESC";
-        $resultado = $conexion->query($sql);
+    <div class="space-container-area">
+        <div class="left-space-zone">
+            <div class="contenedor-card-perfil">
+                <div class="avatar-perfil-publicar">
+                    <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
+                </div>
+                <div class="content-perfil-publicar-info-user">
+                    <h2><?php echo htmlspecialchars($nickname); ?></h2>
+                    <h4><?php echo htmlspecialchars($rol); ?></h4>
+                </div>
+            </div>
+            <div class="add-homeBtn">
+                <button onclick="location.href='index.php'" class="icon-button">
+                    <i class='bx bxs-home'></i>
+                </button>
+            </div>
+        </div>
 
-        if ($resultado->num_rows > 0) {
-            while ($fila = $resultado->fetch_assoc()) {
-                // Convertimos el blob de imagen a base64
-                $imagenCodificada = base64_encode($fila['Imagen']);
-                $src = 'data:image/jpeg;base64,' . $imagenCodificada;
 
-                $perfilSrc = !empty($fila['Foto_perfil']) ? 'data:image/jpeg;base64,' . base64_encode($fila['Foto_perfil']) : "imagenes-prueba/User.jpg";
-                $nombre = !empty($fila['Nombre']) ? htmlspecialchars($fila['Nombre']) : "Artista Desconocido";
-                $rol = !empty($fila['Rol']) ? htmlspecialchars($fila['Rol']) : "Rol no definido";
-                $src = !empty($fila['Imagen']) ? 'data:image/jpeg;base64,' . base64_encode($fila['Imagen']) : "imagenes-prueba/default_post.jpg";
-                $titulo = !empty($fila['Titulo']) ? htmlspecialchars($fila['Titulo']) : "Sin título";
+        <!-- posts -->
+        <div class="container-picture-dashboard">
+            <?php
+            $idUsuario = $usuario['ID_Usuario']; // o usa el nombre exacto de la columna en tu sesión
+            
+            $query = "SELECT Imagen FROM Publicaciones WHERE id_usuario = ? ORDER BY Fecha_creacion DESC";
+            $stmt = $conexion->prepare($query);
+            $stmt->bind_param("i", $idUsuario);
+            $stmt->execute();
+            $resultado = $stmt->get_result();
 
-                echo '
-                <div class="card-image-post">
-                    <div class="tag-artist-info">
-                        <div class="tag-artist-avatar">
-                            <img src="' . htmlspecialchars($perfilSrc, ENT_QUOTES) . '" alt="Perfil de Usuario">
-                        </div>
-                        <div class="tag-artist-name">
-                            <h3>' . $nombre . '</h3>
-                            <h6>' . $rol . '</h6>
-                        </div>
-                    </div>
-                    <div class="tag-paw-botton paw-button">
-                        <i class="bx bxs-hot"></i>
-                    </div>
-                    <div class="imag" id="cardImagePost">
-                        <img src="' . $src . '" alt="' . $titulo . '">
-                    </div>
-                </div>';
+            if ($resultado && $resultado->num_rows > 0) {
+                while ($row = $resultado->fetch_assoc()) {
+                    $imagen = base64_encode($row['Imagen']);
+                    echo '
+        <div class="card-image-post">
+            <div class="imag" id="cardImagePost">
+                <img src="data:image/jpeg;base64,' . $imagen . '" />
+            </div>
+        </div>';
+                }
+            } else {
+                echo '<p>No hay publicaciones.</p>';
             }
-        } else {
-            echo "<p>No hay publicaciones disponibles.</p>";
-        }
-        ?>
+            ?>
+
+
+
+
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 

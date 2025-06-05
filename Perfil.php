@@ -1,3 +1,27 @@
+<?php
+session_start();
+
+require __DIR__ . '../Conexion.php';
+
+if (!isset($_SESSION['usuario'])) {
+    header('Location: ../Login.html');
+    exit();
+}
+
+$usuario = $_SESSION['usuario'];
+
+// Convertir la imagen de base64 a src si existe, si no usar imagen por defecto
+$fotoPerfilSrc = $usuario['Foto_perfil']
+    ? 'data:image/jpeg;base64,' . $usuario['Foto_perfil']
+    : 'imagenes-prueba/User.jpg';
+
+$nickname = $usuario['Nickname'];
+$rol = $usuario['Rol'];
+$biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,10 +47,11 @@
             </div>
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
-                <div class="notify-botton-activity-bar">
-                    <i class='bx bxs-message-error' ></i>
-                </div>
+                
                 <div class="message-botton-activity-bar">
+                     <button onclick="location.href='groups_dash.html'">
+                        <i class='bx bxs-message-error'></i>
+                    </button>
                     <button onclick="location.href='Chat.php'" class="icon-button">
                         <i class='bx bxs-message-minus' ></i>
                     </button>
@@ -34,39 +59,41 @@
              </div>
         </div>
     </header>
-<!-- boton menu -->
+  <!-- Botón del menú -->
     <div class="avatar-boton-card" id="botonAvatarMenujs">
         <div class="avatar-image">
-            <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+            <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
         </div>
         <div class="perfile-avatar-status"></div>
     </div>
-<!-- menu perfil -->
+
+    <!-- Menú del perfil -->
     <div class="menu-avatar oculto" id="menuAvatarjs">
         <div class="avatar-menu">
-            <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg" alt="">
+            <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
         </div>
         <div class="content-menu-perfil">
             <div class="menu-perfil-nametag">
-                <h3>Jane Doe</h3>
-                <h5>2D artist</h5>
-                <h6>An artist makes dreams real</h6>
+                <h3><?php echo htmlspecialchars($nickname); ?></h3>
+                <h5><?php echo htmlspecialchars($rol); ?></h5>
+                <h6><?php echo htmlspecialchars($biografia); ?></h6>
             </div>
             <div class="menu-tapa"></div>
             <div class="menu-perfil-btn">
                 <div class="menu-perfil-btn-base1">
                     <div class="menu-perfil-btn-base2">
-                        <i class='bx bx-menu' ></i>
+                        <i class='bx bx-menu'></i>
                     </div>
                 </div>
             </div>
         </div>
         <div class="btns-menu-profile">
-            <span><i class='bx bxs-user' ></i></span>
+            <span><i class='bx bxs-user'></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
-            <span><i class='bx bxs-cog' ></i></span>
-            <span><i class='bx bx-log-out' ></i></span>
+            <span><i class='bx bxs-donate-heart'></i></span>
+
+            <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
     <div class="pantalla-blur oculto" id="pantallaBlurjs"></div>
@@ -110,6 +137,7 @@
     
                     <div class="actionBtn-perfil-info">
                         <button>Follow</button>
+                         <button>Subs</button>
                         <button onclick="location.href='Chat.php'">Message</button>
                     </div>
 
