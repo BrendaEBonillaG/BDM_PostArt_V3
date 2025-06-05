@@ -63,3 +63,41 @@
 .boton_donacion:hover, .boton_unirse:hover {
     background-color: #218838;
 }
+
+
+.contenedor_proyecto_publicado {
+    max-width: 1000px;
+    width: 90%;
+    margin: 40px auto;
+    padding: 40px;
+    background-color: #fdfdfd;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.contenedor_proyecto_publicado h1 {
+    font-size: 2.5em;
+    margin-bottom: 25px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.contenedor_proyecto_publicado form label {
+    font-weight: bold;
+    margin-top: 10px;
+    color: #333;
+}
+
+.input_donacion, textarea.input_donacion {
+    padding: 12px;
+    font-size: 1rem;
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+textarea.input_donacion {
+    resize: vertical;
+    min-height: 120px;
+}
