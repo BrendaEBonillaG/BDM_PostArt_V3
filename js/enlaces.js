@@ -8,7 +8,7 @@ cardImagePosts.forEach(cardImagePost => {
 
     // Agrega evento de clic a la imagen
     cardImage.addEventListener('click', function() {
-        window.location.href = 'Picture.html'; // Redirige a la página de la imagen
+        window.location.href = 'Picture.php'; // Redirige a la página de la imagen
     });
 
     // Agrega evento de clic a la información del artista

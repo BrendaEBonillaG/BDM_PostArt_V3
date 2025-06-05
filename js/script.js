@@ -58,7 +58,7 @@ const Event2menu = document.querySelectorAll('.bx.bxs-hot.menu-favoritos');
 Event2menu.forEach(function(icon) { 
     icon.addEventListener('click', function(event) {
         event.stopPropagation(); // Evita que el clic se propague
-        window.location.href = 'favoritos.html'; // Redirige a favoritos.html
+        window.location.href = 'Favoritos.php'; // Redirige a Favoritos.php
     });
 });
 
@@ -78,7 +78,7 @@ const Event4menu = document.querySelectorAll('.bx.bxs-donate-heart');
 Event4menu.forEach(function(icon) { 
     icon.addEventListener('click', function(event) {
         event.stopPropagation(); // Evita que el clic se propague
-        window.location.href = 'donaciones_dash.html'; // Redirige a config.html
+        window.location.href = 'donaciones_dash.php'; // Redirige a config.html
     });
 });
 
