@@ -1,5 +1,5 @@
-<?php 
-include ('../Conexion.php');
+<?php
+include('../Conexion.php');
 session_start(); // Asegúrate de tener la sesión iniciada
 
 if ($_POST["dato"] == 'inserta_archivo') {
@@ -17,7 +17,8 @@ if ($_POST["dato"] == 'inserta_archivo') {
                 VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conexion->prepare($sql);
 
-        $stmt->bind_param("iissbs", $usuario, $catego, $titulo, $descripcion, $contenidoImagen, $tipo);
+        $stmt->bind_param("iisssb", $usuario, $catego, $titulo, $descripcion, $contenidoImagen, $tipo);
+        $stmt->send_long_data(4, $contenidoImagen);
 
         if ($stmt->execute()) {
             echo "Imagen subida correctamente.";

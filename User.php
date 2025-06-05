@@ -150,7 +150,7 @@ if (isset($_SESSION['usuario'])) {
         <button onclick="location.href='index.php'" class="icon-button">
             <i class='bx bxs-home'></i>
         </button>
-        <button onclick="location.href='galery.html'" class="icon-button">
+        <button onclick="location.href='galery.php'" class="icon-button">
             <i class='bx bxs-photo-album'></i>
         </button>
     </div>
