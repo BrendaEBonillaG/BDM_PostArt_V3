@@ -1,8 +1,8 @@
 <?php
 $servidor = "localhost:3306";
 $usuario = "root";
-$contrasena = "";
-$basedatos = "PostArt1";
+$contrasena = "Admin";
+$basedatos = "PostArt";
 
 
 $conexion = new mysqli($servidor, $usuario, $contrasena, $basedatos);
