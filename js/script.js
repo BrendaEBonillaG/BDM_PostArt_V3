@@ -68,7 +68,7 @@ const Event3menu = document.querySelectorAll('.bx.bxs-add-to-queue');
 Event3menu.forEach(function(icon) { 
     icon.addEventListener('click', function(event) {
         event.stopPropagation(); // Evita que el clic se propague
-        window.location.href = 'Publicar.php'; // Redirige a Publicar.php
+        window.location.href = 'Subir_post.php'; // Redirige a Publicar.php
     });
 });
 
