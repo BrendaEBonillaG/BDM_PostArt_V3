@@ -48,10 +48,11 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
-                <div class="notify-botton-activity-bar">
-                    <i class='bx bxs-message-error'></i>
-                </div>
+               
                 <div class="message-botton-activity-bar">
+                     <button onclick="location.href='groups_dash.html'">
+                        <i class='bx bxs-message-error'></i>
+                    </button>
                     <button onclick="location.href='Chat.php'" class="icon-button">
                         <i class='bx bxs-message-minus'></i>
                     </button>
