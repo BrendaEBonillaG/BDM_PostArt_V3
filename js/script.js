@@ -73,7 +73,7 @@ Event3menu.forEach(function(icon) {
 });
 
 // Evento para los íconos de configuración
-const Event4menu = document.querySelectorAll('.bx.bxs-cog');
+const Event4menu = document.querySelectorAll('.bx.bxs-donate-heart');
 
 Event4menu.forEach(function(icon) { 
     icon.addEventListener('click', function(event) {
