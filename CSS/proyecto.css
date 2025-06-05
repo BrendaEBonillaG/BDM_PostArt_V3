@@ -17,9 +17,12 @@
     color: #555;
 }
 
-.video_del_proyecto {
-    margin: 20px 0;
+.video_del_proyecto iframe {
+    width: 100%;
+    height: 500px;
+    border-radius: 8px;
 }
+
 
 .imagenes_del_proyecto {
     display: flex;

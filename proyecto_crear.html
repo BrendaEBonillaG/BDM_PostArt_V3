@@ -89,29 +89,26 @@
 
         <div class="contenedor_proyecto_publicado">
             <h1>Sube tu proyecto</h1>
-            <form action="#" method="POST" enctype="multipart/form-data"
->
+            <form action="PHP/guardar_proyecto.php" method="POST" enctype="multipart/form-data">
+
 
                 <label for="titulo">Título del proyecto</label>
                 <input type="text" name="titulo" class="input_donacion" required>
 
                 <label for="categoria">Categoría</label>
-                <input type="text" name="categoria" class="input_donacion" 
-                    required>
+                <input type="text" name="categoria" class="input_donacion" required>
 
                 <label for="video_url">Link de YouTube</label>
-                <input type="url" name="video_url" class="input_donacion"
-                     required>
+                <input type="url" name="video_url" class="input_donacion" required>
 
                 <label for="imagen">Sube una imagen</label>
                 <input type="file" name="imagen" class="input_donacion" accept="image/*" required>
 
                 <label for="descripcion">Descripción</label>
-                <textarea name="descripcion" class="input_donacion" rows="5" 
-                    required></textarea>
+                <textarea name="descripcion" class="input_donacion" rows="5" required></textarea>
 
                 <label for="meta">Monto meta</label>
-                <input type="number" name="meta" step="0.01" class="input_donacion"  required>
+                <input type="number" name="meta" step="0.01" class="input_donacion" required>
 
                 <label for="fecha_limite">Fecha de cierre</label>
                 <input type="date" name="fecha_limite" class="input_donacion" required>
