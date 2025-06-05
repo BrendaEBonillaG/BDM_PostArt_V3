@@ -5,7 +5,7 @@ USE PostArt;
 SELECT * FROM Usuario;
 DESCRIBE Usuario;
 SELECT * FROM Publicaciones;
-SELECT * FROM Categorias;
+SELECT * FROM Donaciones;
 
 -- Tabla de Usuarios
 CREATE TABLE Usuario (
