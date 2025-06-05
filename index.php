@@ -1,20 +1,28 @@
 <?php
 session_start();
 
-if (isset($_SESSION['usuario'])) {
-    $usuario = $_SESSION['usuario'];
-    // Ojo, la clave en el array es 'Nickname' (mayúscula N)
-    echo "Bienvenido, " . $usuario['Nickname'];
-} else {
-    // No imprimir nada antes del header
+if (!isset($_SESSION['usuario'])) {
     header('Location: ../Login.html');
     exit();
 }
+
+$usuario = $_SESSION['usuario'];
+
+// Convertir la imagen de base64 a src si existe, si no usar imagen por defecto
+$fotoPerfilSrc = $usuario['Foto_perfil']
+    ? 'data:image/jpeg;base64,' . $usuario['Foto_perfil']
+    : 'imagenes-prueba/User.jpg';
+
+$nickname = $usuario['Nickname'];
+$rol = $usuario['Rol'];
+$biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
 ?>
+
 
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,13 +33,14 @@ if (isset($_SESSION['usuario'])) {
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/cartas.css">
     <title>PostArt | Home</title>
 </head>
+
 <body>
     <header>
         <div class="base-header">
             <!-- barra de logo -->
-             <div class="base-header-logo">
+            <div class="base-header-logo">
                 <img src="../BDM_PostArt_V3/imagenes-prueba/logo1.png" alt="">
-             </div>
+            </div>
             <!-- barra de busqueda -->
             <div class="container-base-header-search-bar">
                 <input type="text" class="search-bar-dashboard" placeholder="Search...">
@@ -39,51 +48,53 @@ if (isset($_SESSION['usuario'])) {
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
                 <div class="notify-botton-activity-bar">
-                    <i class='bx bxs-message-error' ></i>
+                    <i class='bx bxs-message-error'></i>
                 </div>
                 <div class="message-botton-activity-bar">
-                    <button onclick="location.href='Chat.php'" class="icon-button">
-                        <i class='bx bxs-message-minus' ></i>
+                    <button onclick="location.href='chat.html'" class="icon-button">
+                        <i class='bx bxs-message-minus'></i>
                     </button>
                 </div>
-             </div>
+            </div>
         </div>
     </header>
-<!-- boton menu -->
+    <!-- Botón del menú -->
     <div class="avatar-boton-card" id="botonAvatarMenujs">
         <div class="avatar-image">
-            <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+            <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
         </div>
         <div class="perfile-avatar-status"></div>
     </div>
-<!-- menu perfil -->
+
+    <!-- Menú del perfil -->
     <div class="menu-avatar oculto" id="menuAvatarjs">
         <div class="avatar-menu">
-            <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg" alt="">
+            <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
         </div>
         <div class="content-menu-perfil">
             <div class="menu-perfil-nametag">
-                <h3>Jane Doe</h3>
-                <h5>2D artist</h5>
-                <h6>An artist makes dreams real</h6>
+                <h3><?php echo htmlspecialchars($nickname); ?></h3>
+                <h5><?php echo htmlspecialchars($rol); ?></h5>
+                <h6><?php echo htmlspecialchars($biografia); ?></h6>
             </div>
             <div class="menu-tapa"></div>
             <div class="menu-perfil-btn">
                 <div class="menu-perfil-btn-base1">
                     <div class="menu-perfil-btn-base2">
-                        <i class='bx bx-menu' ></i>
+                        <i class='bx bx-menu'></i>
                     </div>
                 </div>
             </div>
         </div>
         <div class="btns-menu-profile">
-            <span><i class='bx bxs-user' ></i></span>
+            <span><i class='bx bxs-user'></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
-            <span><i class='bx bxs-cog' ></i></span>
-            <span><i class='bx bx-log-out' ></i></span>
+            <span><i class='bx bxs-cog'></i></span>
+            <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
+
     <div class="pantalla-blur oculto" id="pantallaBlurjs"></div>
     <!-- modal log out-->
     <div id="confirmationModal" class="modal">
@@ -96,21 +107,21 @@ if (isset($_SESSION['usuario'])) {
             </div>
         </div>
     </div>
-<!-- posts -->
+    <!-- posts -->
     <div class="container-picture-dashboard">
-        
+
         <!-- post- imagen -->
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -121,14 +132,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -139,14 +150,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -157,14 +168,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -175,14 +186,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -193,14 +204,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -211,14 +222,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -229,14 +240,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -247,14 +258,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -265,14 +276,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -283,14 +294,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -301,14 +312,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -319,14 +330,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -337,14 +348,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -355,14 +366,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -373,14 +384,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -391,14 +402,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -409,14 +420,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -427,14 +438,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -445,14 +456,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -463,14 +474,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -481,14 +492,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -499,14 +510,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -517,14 +528,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -535,14 +546,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -553,14 +564,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -571,14 +582,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -589,14 +600,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -607,14 +618,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -625,14 +636,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -643,14 +654,14 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
@@ -661,25 +672,26 @@ if (isset($_SESSION['usuario'])) {
         <div class="card-image-post">
             <div class="tag-artist-info">
                 <div class="tag-artist-avatar">
-                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">  
+                    <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
                 </div>
                 <div class="tag-artist-name">
                     <h3>Blackat</h3>
                     <h6>2D artist</h6>
                 </div>
             </div>
-            <div class="tag-paw-botton paw-button" >
+            <div class="tag-paw-botton paw-button">
                 <i class='bx bxs-hot'></i>
             </div>
             <div class="imag" id="cardImagePost">
                 <img src="/../BDM_PostArt_V3/imagenes-prueba/2f0bb0f234c9dabd561a55dc1a36a944.jpg">
             </div>
         </div>
-        
+
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <script src="../BDM_PostArt_V3/js/script.js"></script>
     <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
 </body>
+
 </html>
