@@ -18,6 +18,38 @@ $fotoPerfilSrc = $usuario['Foto_perfil']
 $nickname = $usuario['Nickname'];
 $rol = $usuario['Rol'];
 $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
+
+
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("ID de publicación no válido.");
+}
+
+$idPublicacion = intval($_GET['id']);
+
+
+$stmt = $conexion->prepare("CALL SP_ObtenerPublicacionPorID(?)");
+$stmt->bind_param("i", $idPublicacion);
+$stmt->execute();
+$res = $stmt->get_result();
+
+if ($res->num_rows === 0) {
+    die("Publicación no encontrada.");
+}
+
+$publicacion = $res->fetch_assoc();
+$stmt->close();
+
+$tituloPublicacion = $publicacion['Titulo'];
+$imagenPublicacion = $publicacion['Imagen'];
+$imagenSrc = 'data:image/jpeg;base64,' . base64_encode($imagenPublicacion);
+
+$nicknamePost = $publicacion['Nickname'];
+$rolPost = $publicacion['Rol'];
+$fotoAutorPost = $publicacion['Foto_perfil']
+    ? 'data:image/jpeg;base64,' . base64_encode($publicacion['Foto_perfil'])
+    : 'imagenes-prueba/User.jpg';
+
+
 ?>
 
 <!DOCTYPE html>
@@ -47,7 +79,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
-               
+
                 <div class="message-botton-activity-bar">
                     <button onclick="location.href='groups_dash.html'">
                         <i class='bx bxs-message-error'></i>
@@ -121,27 +153,45 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
                 </div>
             </div>
             <div class="add-homeBtn">
-                <button onclick="location.href='index.php'" class="icon-button">
+                <!-- Botón de inicio  -->
+                <button onclick="location.href='index.php'" class="icon-button" title="Inicio">
                     <i class='bx bxs-home'></i>
                 </button>
+
+                <!-- Botón de perfil del creador -->
+                <button onclick="location.href='Perfil.php?id=<?php echo $id_creador; ?>'" class="icon-button" title="Perfil del creador">
+                    <i class='bx bxs-user'></i>
+                </button>
+
+                <!-- Botón de seguir -->
+                <button onclick="seguirUsuario(<?php echo $id_creador; ?>)" class="icon-button" title="Seguir">
+                    <i class='bx bxs-user-plus'></i>
+                </button>
+
+                <!-- Botón de like -->
+                <button onclick="darLike(<?php echo $id_post; ?>)" class="icon-button" title="Me gusta">
+                    <i class='bx bxs-like'></i>
+                </button>
             </div>
+
+    </div>
+
+    <div class="center-space-zone">
+        <div class="upload-space-zone">
+            <img src="<?php echo $imagenSrc; ?>" alt="<?php echo htmlspecialchars($tituloPublicacion); ?>">
         </div>
 
-        <div class="center-space-zone">
-            <div class="upload-space-zone">
-                <img src="../BDM_PostArt_V3/imagenes-prueba/11.jpg" alt="" srcset="">
-            </div>
-        </div>
+    </div>
 
 
-        <div class="right-space-zone">
-            <div class="upload-space-zone-info">
-                <div class="upload-space-zone-title-form-container">
-
-                </div>
+    <div class="right-space-zone">
+        <div class="upload-space-zone-info">
+            <div class="upload-space-zone-title-form-container">
 
             </div>
+
         </div>
+    </div>
 
 
     </div>
