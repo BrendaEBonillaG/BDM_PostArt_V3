@@ -1,3 +1,4 @@
+
 <?php
 include("Conexion.php");
 
@@ -75,6 +76,7 @@ $video_embed_url = obtenerEmbedYouTube($video_url);
 <head>
     <meta charset="UTF-8">
     <title>PostArt | Proyecto</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/stylex.css">
@@ -82,6 +84,7 @@ $video_embed_url = obtenerEmbedYouTube($video_url);
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/navegador.css">
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/cartas.css">
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/proyecto.css">
+
 </head>
 
 <body>
@@ -106,12 +109,15 @@ $video_embed_url = obtenerEmbedYouTube($video_url);
         </div>
     </header>
 
+
     <div class="avatar-boton-card" id="botonAvatarMenujs">
         <div class="avatar-image">
             <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
         </div>
         <div class="perfile-avatar-status"></div>
     </div>
+
+<!-- menu perfil -->
 
     <div class="menu-avatar oculto" id="menuAvatarjs">
         <div class="avatar-menu">
@@ -123,15 +129,18 @@ $video_embed_url = obtenerEmbedYouTube($video_url);
                 <h5>2D artist</h5>
                 <h6>An artist makes dreams real</h6>
             </div>
+
             <div class="menu-perfil-btn">
                 <div class="menu-perfil-btn-base1">
                     <div class="menu-perfil-btn-base2">
                         <i class='bx bx-menu'></i>
+
                     </div>
                 </div>
             </div>
         </div>
         <div class="btns-menu-profile">
+
             <span><i class='bx bxs-user'></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
@@ -178,11 +187,13 @@ $video_embed_url = obtenerEmbedYouTube($video_url);
                 <p>Recaudado: <strong>$<?php echo number_format($recaudado, 2); ?></strong> de una meta de <strong>$<?php echo number_format($meta, 2); ?></strong></p>
             </div>
 
+
             <div class="barra_donacion">
                 <h2>Contribuye al proyecto</h2>
                 <input type="number" placeholder="Cantidad a donar" class="input_donacion">
                 <button class="boton_donacion">Donar</button>
             </div>
+
         </div>
 
     </div>

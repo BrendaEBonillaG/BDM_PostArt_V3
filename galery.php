@@ -20,7 +20,6 @@ $rol = $usuario['Rol'];
 $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,8 +31,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/header.css">
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/navegador.css">
     <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/cartas.css">
-    <link rel="stylesheet" href="../BDM_PostArt_V3/CSS/style_container_img.css">
-    <title>PostArt | publicar</title>
+    <title>PostArt | Galeria</title>
 </head>
 
 <body>
@@ -41,7 +39,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
         <div class="base-header">
             <!-- barra de logo -->
             <div class="base-header-logo">
-                <img src="imagenes-prueba/logo1.png" alt="">
+                <img src="../BDM_PostArt_V3/imagenes-prueba/logo1.png" alt="">
             </div>
             <!-- barra de busqueda -->
             <div class="container-base-header-search-bar">
@@ -49,9 +47,9 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
-                
+
                 <div class="message-botton-activity-bar">
-                     <button onclick="location.href='groups_dash.html'">
+                    <button onclick="location.href='groups_dash.html'">
                         <i class='bx bxs-message-error'></i>
                     </button>
                     <button onclick="location.href='Chat.php'" class="icon-button">
@@ -98,7 +96,6 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
-
     <div class="pantalla-blur oculto" id="pantallaBlurjs"></div>
     <!-- modal log out-->
     <div id="confirmationModal" class="modal">
@@ -111,59 +108,59 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
         </div>
     </div>
-
-
-<div class="container mt-5">
-    <h1>Subir Imagen</h1>
-    <form method="POST" action="PHP/Up_Imag.php" enctype="multipart/form-data">
-        <input type="hidden" name="dato" value="inserta_archivo">
-
-        <div class="form-group">
-            <label for="titulo">Título:</label>
-            <input type="text" class="form-control" name="titulo" id="titulo" placeholder="Ingrese el título" required>
-
-            <label for="descripcion">Descripción:</label>
-            <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Ingrese descripción" required>
-
-            <label for="tipo">Tipo:</label>
-            <select class="form-control" name="tipo" id="tipo" required>
-                <option value="Publica">Pública</option>
-                <option value="Suscripcion">Por Suscripción</option>
-            </select>
-
-            <label for="categoria">Categoría:</label>
-            <?php
-            include ('Conexion.php'); // Ensure database connection
-            $sql = "SELECT Id_Categoria, Nombre FROM Categorias";
-            $resultado = $conexion->query($sql);
-
-            echo '<select class="form-control" name="categoria" id="categoria" required>';
-            while ($fila = $resultado->fetch_assoc()) {
-                echo '<option value="' . $fila['Id_Categoria'] . '">' . htmlspecialchars($fila['Nombre']) . '</option>';
-            }
-            echo '</select>';
-            ?>
-        </div>
-
-        <div class="form-group">
-            <div class="drop-area" id="dropArea">
-                Arrastre y suelte la imagen aquí o haga clic para seleccionar
+    <div class="space-container-area">
+        <div class="left-space-zone">
+            <div class="contenedor-card-perfil">
+                <div class="avatar-perfil-publicar">
+                    <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
+                </div>
+                <div class="content-perfil-publicar-info-user">
+                    <h2><?php echo htmlspecialchars($nickname); ?></h2>
+                    <h4><?php echo htmlspecialchars($rol); ?></h4>
+                </div>
             </div>
-            <input type="file" class="form-control-file" name="imagen" id="imagen" style="display: none;" required>
-            <div class="file-list" id="filelist"></div>
+            <div class="add-homeBtn">
+                <button onclick="location.href='index.php'" class="icon-button">
+                    <i class='bx bxs-home'></i>
+                </button>
+            </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Enviar</button>
-    </form>
-</div>
+
+        <!-- posts -->
+        <div class="container-picture-dashboard">
+            <?php
+            $idUsuario = $usuario['ID_Usuario']; // o usa el nombre exacto de la columna en tu sesión
+            
+            $query = "SELECT Imagen FROM Publicaciones WHERE id_usuario = ? ORDER BY Fecha_creacion DESC";
+            $stmt = $conexion->prepare($query);
+            $stmt->bind_param("i", $idUsuario);
+            $stmt->execute();
+            $resultado = $stmt->get_result();
+
+            if ($resultado && $resultado->num_rows > 0) {
+                while ($row = $resultado->fetch_assoc()) {
+                    $imagen = base64_encode($row['Imagen']);
+                    echo '
+        <div class="card-image-post">
+            <div class="imag" id="cardImagePost">
+                <img src="data:image/jpeg;base64,' . $imagen . '" />
+            </div>
+        </div>';
+                }
+            } else {
+                echo '<p>No hay publicaciones.</p>';
+            }
+            ?>
 
 
 
+
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-    <script src="js/script.js"></script>
-    <script src="js/enlaces.js"></script>
-    <script src="js/cargar_img.js"></script>
+    <script src="../BDM_PostArt_V3/js/script.js"></script>
+    <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
 </body>
 
 </html>
