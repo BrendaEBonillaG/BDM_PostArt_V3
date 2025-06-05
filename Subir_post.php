@@ -85,27 +85,45 @@
     </div>
 
 <div class="container mt-5">
-    <h1>Subir Imagenes</h1>
+    <h1>Subir Imagen</h1>
     <form method="POST" action="PHP/Up_Imag.php" enctype="multipart/form-data">
         <input type="hidden" name="dato" value="inserta_archivo">
+
         <div class="form-group">
             <label for="titulo">Título:</label>
             <input type="text" class="form-control" name="titulo" id="titulo" placeholder="Ingrese el título" required>
+
             <label for="descripcion">Descripción:</label>
             <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Ingrese descripción" required>
+
             <label for="tipo">Tipo:</label>
             <select class="form-control" name="tipo" id="tipo" required>
                 <option value="Publica">Pública</option>
                 <option value="Suscripcion">Por Suscripción</option>
             </select>
+
+            <label for="categoria">Categoría:</label>
+            <?php
+            include ('Conexion.php'); // Ensure database connection
+            $sql = "SELECT Id_Categoria, Nombre FROM Categorias";
+            $resultado = $conexion->query($sql);
+
+            echo '<select class="form-control" name="categoria" id="categoria" required>';
+            while ($fila = $resultado->fetch_assoc()) {
+                echo '<option value="' . $fila['Id_Categoria'] . '">' . htmlspecialchars($fila['Nombre']) . '</option>';
+            }
+            echo '</select>';
+            ?>
         </div>
+
         <div class="form-group">
             <div class="drop-area" id="dropArea">
                 Arrastre y suelte la imagen aquí o haga clic para seleccionar
             </div>
-            <input type="file" class="form-control-file" name="imagen" id="imagen" style="display: none;">
+            <input type="file" class="form-control-file" name="imagen" id="imagen" style="display: none;" required>
             <div class="file-list" id="filelist"></div>
         </div>
+
         <button type="submit" class="btn btn-primary">Enviar</button>
     </form>
 </div>
