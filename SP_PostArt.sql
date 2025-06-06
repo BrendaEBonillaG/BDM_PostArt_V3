@@ -293,6 +293,7 @@ BEGIN
 END //
 DELIMITER ;
 
+DROP PROCEDURE SP_InsertarProyecto;
 DELIMITER //
 CREATE PROCEDURE SP_InsertarProyecto (
     IN p_id_usuario INT,
@@ -328,6 +329,7 @@ BEGIN
     SELECT LAST_INSERT_ID() AS id_proyecto;
 END //
 DELIMITER ;
+
 
 
 SELECT 
@@ -721,17 +723,19 @@ DELIMITER ;
 
 
 
+DROP PROCEDURE SP_ObtenerCategorias;
+DROP PROCEDURE IF EXISTS SP_ObtenerCategorias;
 
 DELIMITER //
 
 CREATE PROCEDURE SP_ObtenerCategorias()
 BEGIN
     SELECT Id_Categoria, Nombre
-    FROM Categorias
-    WHERE Estado = 'Activo'; -- Puedes omitir esto si no filtras por estado
+    FROM Categorias;
 END //
 
 DELIMITER ;
+
 
 
 
