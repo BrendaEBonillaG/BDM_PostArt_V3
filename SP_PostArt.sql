@@ -508,6 +508,18 @@ END$$
 
 DELIMITER ;
 
+DELIMITER //
+
+CREATE PROCEDURE SP_ObtenerPublicacionPorID(IN p_id INT)
+BEGIN
+    SELECT p.Titulo, p.Imagen, u.Foto_perfil, u.Nickname, u.Rol
+    FROM Publicaciones p
+    JOIN Usuario u ON p.ID_Usuario = u.ID_Usuario
+    WHERE p.Id_publicacion = p_id;
+END //
+
+DELIMITER ;
+
 
 -- REDES SOCIALES
 DELIMITER $$
@@ -626,6 +638,140 @@ DELIMITER ;
 
 
 -- CHAT PRIVADO
+DELIMITER //
+
+CREATE PROCEDURE SP_ObtenerChatPrivado (
+    IN rem1 INT,
+    IN em1 INT,
+    IN rem2 INT,
+    IN em2 INT
+)
+BEGIN
+    SELECT id_chat FROM Chat_Privado 
+    WHERE (id_remitente = rem1 AND id_emisor = em1)
+       OR (id_remitente = rem2 AND id_emisor = em2)
+    LIMIT 1;
+END //
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE SP_CrearChatPrivado (
+    IN remitente INT,
+    IN emisor INT
+)
+BEGIN
+    INSERT INTO Chat_Privado (id_remitente, id_emisor)
+    VALUES (remitente, emisor);
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE SP_VerificarUsuario(
+    IN p_usuario VARCHAR(255)
+)
+BEGIN
+    SELECT 1 FROM Usuarios WHERE usuario = p_usuario LIMIT 1;
+END //
+
+DELIMITER ;
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE SP_ObtenerPublicacionesPorUsuario(
+    IN p_id_usuario INT
+)
+BEGIN
+    SELECT Imagen 
+    FROM Publicaciones 
+    WHERE id_usuario = p_id_usuario 
+    ORDER BY Fecha_creacion DESC;
+END //
+
+DELIMITER ;
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE SP_ObtenerPublicacionesActivas()
+BEGIN
+    SELECT 
+        p.Id_publicacion, 
+        p.Titulo, 
+        p.Imagen, 
+        u.ID_Usuario, 
+        u.Foto_perfil, 
+        u.Nombre, 
+        u.Rol
+    FROM Publicaciones p 
+    JOIN Usuario u ON p.ID_Usuario = u.ID_Usuario 
+    WHERE p.Estado = 'Activo' 
+    ORDER BY p.Fecha_creacion DESC;
+END //
+
+DELIMITER ;
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE SP_ObtenerCategorias()
+BEGIN
+    SELECT Id_Categoria, Nombre
+    FROM Categorias
+    WHERE Estado = 'Activo'; -- Puedes omitir esto si no filtras por estado
+END //
+
+DELIMITER ;
+
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE SP_InsertarPublicacion (
+    IN p_id_usuario INT,
+    IN p_id_categoria INT,
+    IN p_titulo VARCHAR(255),
+    IN p_contenido TEXT,
+    IN p_imagen LONGBLOB,
+    IN p_tipo VARCHAR(50)
+)
+BEGIN
+    INSERT INTO Publicaciones (
+        Id_usuario,
+        Id_Categoria,
+        Titulo,
+        Contenido,
+        Imagen,
+        Tipo,
+        Fecha_creacion,
+        Estado
+    ) VALUES (
+        p_id_usuario,
+        p_id_categoria,
+        p_titulo,
+        p_contenido,
+        p_imagen,
+        p_tipo,
+        NOW(),
+        'Activo'
+    );
+END //
+
+DELIMITER ;
+
+
 DELIMITER //
 CREATE PROCEDURE ObtenerUsuariosYChatsPrivados(IN p_id_usuario INT)
 BEGIN
