@@ -11,7 +11,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $id_categoria = intval($_POST['categoria']);
     $titulo = $_POST['titulo'];
     $descripcion = $_POST['descripcion'];
-    $video_url = $_POST['video_url'];
     $meta = floatval($_POST['meta']);
     $fecha_limite = $_POST['fecha_limite'];
 
@@ -21,6 +20,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $imagen_binario = file_get_contents($_FILES['imagen']['tmp_name']);
     }
 
+    // Procesar video y moverlo a la carpeta
+    $video_url = null;
+    if (isset($_FILES['video']) && $_FILES['video']['error'] === UPLOAD_ERR_OK) {
+        $video_tmp = $_FILES['video']['tmp_name'];
+        $video_nombre = basename($_FILES['video']['name']);
+        $ruta_destino = "../uploads/videos/" . uniqid() . "_" . $video_nombre;
+
+        if (move_uploaded_file($video_tmp, $ruta_destino)) {
+            $video_url = $ruta_destino;
+        } else {
+            echo "<script>alert('Error al subir el video.');</script>";
+            exit();
+        }
+    }
+
+    // Insertar en la BD usando el SP
     $stmt = $conexion->prepare("CALL SP_InsertarProyecto(?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param(
         "iissssds",

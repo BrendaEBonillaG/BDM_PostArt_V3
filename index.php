@@ -95,7 +95,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
             <span><i class='bx bxs-donate-heart'></i></span>
-            <span ><i class='bx bx-plus-circle'></i></span>
+            <span><i class='bx bx-plus-circle'></i></span>
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
@@ -114,15 +114,12 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
     </div>
     <div class="container-picture-dashboard">
         <?php
-        // Consulta para obtener publicaciones activas
-        $sql = "SELECT p.Id_publicacion, p.Titulo, p.Imagen, u.ID_Usuario, u.Foto_perfil, u.Nombre, u.Rol
-        FROM Publicaciones p 
-        JOIN Usuario u ON p.ID_Usuario = u.ID_Usuario 
-        WHERE p.Estado = 'Activo' 
-        ORDER BY p.Fecha_creacion DESC";
-        $resultado = $conexion->query($sql);
+     
+        $stmt = $conexion->prepare("CALL SP_ObtenerPublicacionesActivas()");
+        $stmt->execute();
+        $resultado = $stmt->get_result();
 
-        if ($resultado->num_rows > 0) {
+        if ($resultado && $resultado->num_rows > 0) {
             while ($fila = $resultado->fetch_assoc()) {
                 $imagenCodificada = base64_encode($fila['Imagen']);
                 $src = !empty($fila['Imagen']) ? 'data:image/jpeg;base64,' . $imagenCodificada : "imagenes-prueba/default_post.jpg";
@@ -151,12 +148,17 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
         <img src="' . $src . '" alt="' . $titulo . '">
     </a>
 </div>';
-
             }
         } else {
             echo "<p>No hay publicaciones disponibles.</p>";
         }
 
+        while ($conexion->more_results() && $conexion->next_result()) {
+            $extra = $conexion->use_result();
+            if ($extra instanceof mysqli_result) {
+                $extra->free();
+            }
+        }
         ?>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>

@@ -87,12 +87,12 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
                 </div>
             </div>
         </div>
-         <div class="btns-menu-profile">
+        <div class="btns-menu-profile">
             <span><i class='bx bxs-user'></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
             <span><i class='bx bxs-donate-heart'></i></span>
-            <span ><i class='bx bx-plus-circle'></i></span>
+            <span><i class='bx bx-plus-circle'></i></span>
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
@@ -130,10 +130,10 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
         <!-- posts -->
         <div class="container-picture-dashboard">
             <?php
-            $idUsuario = $usuario['ID_Usuario']; // o usa el nombre exacto de la columna en tu sesión
-            
-            $query = "SELECT Imagen FROM Publicaciones WHERE id_usuario = ? ORDER BY Fecha_creacion DESC";
-            $stmt = $conexion->prepare($query);
+
+            $idUsuario = $usuario['ID_Usuario'];
+
+            $stmt = $conexion->prepare("CALL SP_ObtenerPublicacionesPorUsuario(?)");
             $stmt->bind_param("i", $idUsuario);
             $stmt->execute();
             $resultado = $stmt->get_result();
@@ -142,25 +142,34 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
                 while ($row = $resultado->fetch_assoc()) {
                     $imagen = base64_encode($row['Imagen']);
                     echo '
-        <div class="card-image-post">
-            <div class="imag" id="cardImagePost">
-                <img src="data:image/jpeg;base64,' . $imagen . '" />
-            </div>
-        </div>';
+<div class="card-image-post">
+    <div class="imag" id="cardImagePost">
+        <img src="data:image/jpeg;base64,' . $imagen . '" />
+    </div>
+</div>';
                 }
             } else {
                 echo '<p>No hay publicaciones.</p>';
             }
+
+            while ($conexion->more_results() && $conexion->next_result()) {
+                $extra = $conexion->use_result();
+                if ($extra instanceof mysqli_result) {
+                    $extra->free();
+                }
+            }
+
+
             ?>
 
 
 
 
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-    <script src="../BDM_PostArt_V3/js/script.js"></script>
-    <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
+        <script src="../BDM_PostArt_V3/js/script.js"></script>
+        <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
 </body>
 
 </html>

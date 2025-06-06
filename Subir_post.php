@@ -49,9 +49,9 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
-                
+
                 <div class="message-botton-activity-bar">
-                     <button onclick="location.href='groups_dash.html'">
+                    <button onclick="location.href='groups_dash.html'">
                         <i class='bx bxs-message-error'></i>
                     </button>
                     <button onclick="location.href='Chat.php'" class="icon-button">
@@ -94,7 +94,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
             <span><i class='bx bxs-donate-heart'></i></span>
-            <span ><i class='bx bx-plus-circle'></i></span>
+            <span><i class='bx bx-plus-circle'></i></span>
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
@@ -113,49 +113,60 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
     </div>
 
 
-<div class="container mt-5">
-    <h1>Subir Imagen</h1>
-    <form method="POST" action="PHP/Up_Imag.php" enctype="multipart/form-data">
-        <input type="hidden" name="dato" value="inserta_archivo">
+    <div class="container mt-5">
+        <h1>Subir Imagen</h1>
+        <form method="POST" action="PHP/Up_Imag.php" enctype="multipart/form-data">
+            <input type="hidden" name="dato" value="inserta_archivo">
 
-        <div class="form-group">
-            <label for="titulo">Título:</label>
-            <input type="text" class="form-control" name="titulo" id="titulo" placeholder="Ingrese el título" required>
+            <div class="form-group">
+                <label for="titulo">Título:</label>
+                <input type="text" class="form-control" name="titulo" id="titulo" placeholder="Ingrese el título"
+                    required>
 
-            <label for="descripcion">Descripción:</label>
-            <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Ingrese descripción" required>
+                <label for="descripcion">Descripción:</label>
+                <input type="text" class="form-control" name="descripcion" id="descripcion"
+                    placeholder="Ingrese descripción" required>
 
-            <label for="tipo">Tipo:</label>
-            <select class="form-control" name="tipo" id="tipo" required>
-                <option value="Publica">Pública</option>
-                <option value="Suscripcion">Por Suscripción</option>
-            </select>
+                <label for="tipo">Tipo:</label>
+                <select class="form-control" name="tipo" id="tipo" required>
+                    <option value="Publica">Pública</option>
+                    <option value="Suscripcion">Por Suscripción</option>
+                </select>
 
-            <label for="categoria">Categoría:</label>
-            <?php
-            include ('Conexion.php'); // Ensure database connection
-            $sql = "SELECT Id_Categoria, Nombre FROM Categorias";
-            $resultado = $conexion->query($sql);
+                <label for="categoria">Categoría:</label>
+                <?php
+                include('Conexion.php');
 
-            echo '<select class="form-control" name="categoria" id="categoria" required>';
-            while ($fila = $resultado->fetch_assoc()) {
-                echo '<option value="' . $fila['Id_Categoria'] . '">' . htmlspecialchars($fila['Nombre']) . '</option>';
-            }
-            echo '</select>';
-            ?>
-        </div>
+                $resultado = $conexion->query("CALL SP_ObtenerCategorias()");
 
-        <div class="form-group">
-            <div class="drop-area" id="dropArea">
-                Arrastre y suelte la imagen aquí o haga clic para seleccionar
+                echo '<select class="form-control" name="categoria" id="categoria" required>';
+                while ($fila = $resultado->fetch_assoc()) {
+                    echo '<option value="' . $fila['Id_Categoria'] . '">' . htmlspecialchars($fila['Nombre']) . '</option>';
+                }
+                echo '</select>';
+
+                // Limpieza de resultados múltiples
+                while ($conexion->more_results() && $conexion->next_result()) {
+                    $extra = $conexion->use_result();
+                    if ($extra instanceof mysqli_result) {
+                        $extra->free();
+                    }
+                }
+                ?>
+
             </div>
-            <input type="file" class="form-control-file" name="imagen" id="imagen" style="display: none;" required>
-            <div class="file-list" id="filelist"></div>
-        </div>
 
-        <button type="submit" class="btn btn-primary">Enviar</button>
-    </form>
-</div>
+            <div class="form-group">
+                <div class="drop-area" id="dropArea">
+                    Arrastre y suelte la imagen aquí o haga clic para seleccionar
+                </div>
+                <input type="file" class="form-control-file" name="imagen" id="imagen" style="display: none;" required>
+                <div class="file-list" id="filelist"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+    </div>
 
 
 
