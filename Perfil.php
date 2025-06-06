@@ -1,3 +1,4 @@
+damelo con procedures no puedo tener querys aqui
 <?php
 session_start();
 require __DIR__ . '/Conexion.php';
