@@ -1,11 +1,23 @@
-damelo con procedures no puedo tener querys aqui
 <?php
 session_start();
 require __DIR__ . '/Conexion.php';
-// Obtener siempre la info del usuario logueado desde la base de datos
-$idUsuarioLog = $_SESSION['usuario']['ID_Usuario'];
 
-$stmtUsuario = $conexion->prepare("SELECT Nickname, Rol, Biografia, Foto_perfil FROM Usuario WHERE ID_Usuario = ?");
+// Validación de sesión
+if (!isset($_SESSION['usuario'])) {
+    header('Location: ../Login.html');
+    exit();
+}
+
+// Validar ID del artista por GET
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    header('Location: index.php');
+    exit();
+}
+$idArtista = intval($_GET['id']);
+
+// Obtener datos del usuario logueado
+$idUsuarioLog = $_SESSION['usuario']['ID_Usuario'];
+$stmtUsuario = $conexion->prepare("CALL ObtenerDatosUsuario(?)");
 $stmtUsuario->bind_param("i", $idUsuarioLog);
 $stmtUsuario->execute();
 $resUsuario = $stmtUsuario->get_result();
@@ -13,21 +25,10 @@ $resUsuario = $stmtUsuario->get_result();
 if ($resUsuario->num_rows > 0) {
     $usuarioLog = $resUsuario->fetch_assoc();
 }
+$stmtUsuario->close();
+while ($conexion->more_results() && $conexion->next_result()) { $conexion->use_result(); }
 
-
-if (!isset($_SESSION['usuario'])) {
-    header('Location: ../Login.html');
-    exit();
-}
-
-
-
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    header('Location: index.php');
-    exit();
-}
-
-$idArtista = intval($_GET['id']);
+// Obtener total de seguidores del artista
 $stmtSeguidores = $conexion->prepare("CALL ObtenerTotalSeguidores(?)");
 $stmtSeguidores->bind_param("i", $idArtista);
 $stmtSeguidores->execute();
@@ -38,35 +39,12 @@ if ($resSeguidores && $resSeguidores->num_rows > 0) {
     $fila = $resSeguidores->fetch_assoc();
     $totalSeguidores = $fila['total_seguidores'];
 }
-
-// 🔒 Muy importante: liberar resultados y cerrar el statement
 $resSeguidores->close();
 $stmtSeguidores->close();
+while ($conexion->more_results() && $conexion->next_result()) { $conexion->use_result(); }
 
-// 🔁 También es buena práctica limpiar cualquier resultado adicional (en caso de múltiples)
-while ($conexion->more_results() && $conexion->next_result()) {
-    $extraResult = $conexion->use_result();
-    if ($extraResult instanceof mysqli_result) {
-        $extraResult->free();
-    }
-}
-
-
-
-$stmt = $conexion->prepare("
-    SELECT 
-        u.Nickname, u.Rol, u.Biografia, u.Foto_perfil, u.Correo,
-        rs1.Link AS Facebook,
-        rs2.Link AS Instagram,
-        rs3.Link AS Twitter,
-        rs4.Link AS Youtube
-    FROM Usuario u
-    LEFT JOIN Redes_sociales rs1 ON u.ID_Usuario = rs1.Id_usuario AND rs1.Nombre = 'Facebook'
-    LEFT JOIN Redes_sociales rs2 ON u.ID_Usuario = rs2.Id_usuario AND rs2.Nombre = 'Instagram'
-    LEFT JOIN Redes_sociales rs3 ON u.ID_Usuario = rs3.Id_usuario AND rs3.Nombre = 'Twitter'
-    LEFT JOIN Redes_sociales rs4 ON u.ID_Usuario = rs4.Id_usuario AND rs4.Nombre = 'Youtube'
-    WHERE u.ID_Usuario = ?
-");
+// Obtener datos del artista
+$stmt = $conexion->prepare("CALL ObtenerDatosPerfilArtista(?)");
 $stmt->bind_param("i", $idArtista);
 $stmt->execute();
 $res = $stmt->get_result();
@@ -77,7 +55,10 @@ if ($res->num_rows === 0) {
 }
 
 $artista = $res->fetch_assoc();
+$stmt->close();
+while ($conexion->more_results() && $conexion->next_result()) { $conexion->use_result(); }
 
+// Datos del artista
 $fotoPerfilArtista = !empty($artista['Foto_perfil']) ? 'data:image/jpeg;base64,' . base64_encode($artista['Foto_perfil']) : 'imagenes-prueba/User.jpg';
 $nicknameArtista = htmlspecialchars($artista['Nickname']);
 $rolArtista = htmlspecialchars($artista['Rol']);
@@ -88,6 +69,7 @@ $instagram = $artista['Instagram'] ?? '#';
 $twitter = $artista['Twitter'] ?? '#';
 $youtube = $artista['Youtube'] ?? '#';
 
+// Datos del usuario logueado
 $fotoUsuario = !empty($usuarioLog['Foto_perfil']) && is_string($usuarioLog['Foto_perfil'])
     ? 'data:image/jpeg;base64,' . base64_encode($usuarioLog['Foto_perfil'])
     : 'imagenes-prueba/User.jpg';
@@ -96,6 +78,7 @@ $nicknameUsuario = htmlspecialchars($usuarioLog['Nickname']);
 $rolUsuario = htmlspecialchars($usuarioLog['Rol']);
 $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuarioLog['Biografia']) : 'Sin biografía';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
