@@ -412,6 +412,60 @@ END$$
 DELIMITER ;
 
 -- SEGUIDORES
+DROP PROCEDURE IF EXISTS SeguirArtista;
+
+DELIMITER //
+
+CREATE PROCEDURE SeguirArtista(
+    IN p_id_seguidor INT,
+    IN p_id_artista INT
+)
+fin: BEGIN
+    -- Validación: no puede seguirse a sí mismo
+    IF p_id_seguidor = p_id_artista THEN
+        SELECT 'error_mismo_usuario' AS resultado;
+        LEAVE fin;
+    END IF;
+
+    -- Validación: verificar si ya lo sigue
+    IF EXISTS (
+        SELECT 1 
+        FROM Seguidores 
+        WHERE Id_usuario_seguidor = p_id_seguidor AND Id_usuario_artista = p_id_artista
+    ) THEN
+        SELECT 'ya' AS resultado;
+        LEAVE fin;
+    END IF;
+
+    -- Insertar nuevo seguimiento
+    INSERT INTO Seguidores (Id_usuario_seguidor, Id_usuario_artista)
+    VALUES (p_id_seguidor, p_id_artista);
+
+    SELECT 'ok' AS resultado;
+END;
+//
+
+DELIMITER ;
+
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE ObtenerTotalSeguidores (
+    IN p_id_artista INT
+)
+BEGIN
+    SELECT COUNT(*) AS total_seguidores
+    FROM Seguidores
+    WHERE Id_usuario_artista = p_id_artista;
+END;
+//
+
+DELIMITER ;
+
+
+
 DELIMITER $$
 
 CREATE PROCEDURE GestionarSeguimiento (

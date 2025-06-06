@@ -27,6 +27,30 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 }
 
 $idArtista = intval($_GET['id']);
+$stmtSeguidores = $conexion->prepare("CALL ObtenerTotalSeguidores(?)");
+$stmtSeguidores->bind_param("i", $idArtista);
+$stmtSeguidores->execute();
+$resSeguidores = $stmtSeguidores->get_result();
+
+$totalSeguidores = 0;
+if ($resSeguidores && $resSeguidores->num_rows > 0) {
+    $fila = $resSeguidores->fetch_assoc();
+    $totalSeguidores = $fila['total_seguidores'];
+}
+
+// 🔒 Muy importante: liberar resultados y cerrar el statement
+$resSeguidores->close();
+$stmtSeguidores->close();
+
+// 🔁 También es buena práctica limpiar cualquier resultado adicional (en caso de múltiples)
+while ($conexion->more_results() && $conexion->next_result()) {
+    $extraResult = $conexion->use_result();
+    if ($extraResult instanceof mysqli_result) {
+        $extraResult->free();
+    }
+}
+
+
 
 $stmt = $conexion->prepare("
     SELECT 
@@ -63,8 +87,8 @@ $instagram = $artista['Instagram'] ?? '#';
 $twitter = $artista['Twitter'] ?? '#';
 $youtube = $artista['Youtube'] ?? '#';
 
-$fotoUsuario = !empty($usuarioLog['Foto_perfil']) && is_string($usuarioLog['Foto_perfil']) 
-    ? 'data:image/jpeg;base64,' . base64_encode($usuarioLog['Foto_perfil']) 
+$fotoUsuario = !empty($usuarioLog['Foto_perfil']) && is_string($usuarioLog['Foto_perfil'])
+    ? 'data:image/jpeg;base64,' . base64_encode($usuarioLog['Foto_perfil'])
     : 'imagenes-prueba/User.jpg';
 
 $nicknameUsuario = htmlspecialchars($usuarioLog['Nickname']);
@@ -74,6 +98,7 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>PostArt | Perfil</title>
@@ -84,6 +109,7 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
     <link rel="stylesheet" href="../BDM_POSTART_V3/CSS/cartas.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
+
 <body>
     <header>
         <div class="base-header">
@@ -133,12 +159,12 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
                 </div>
             </div>
         </div>
-         <div class="btns-menu-profile">
+        <div class="btns-menu-profile">
             <span><i class='bx bxs-user'></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
             <span><i class='bx bxs-donate-heart'></i></span>
-            <span ><i class='bx bx-plus-circle'></i></span>
+            <span><i class='bx bx-plus-circle'></i></span>
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
@@ -167,11 +193,13 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
                     <br>
                     <div class="data-perfil-info">
                         <h3>--<br><span>Post</span></h3>
-                        <h3>--<br><span>Followers</span></h3>
+                      <h3><?php echo $totalSeguidores; ?><br><span>Followers</span></h3>
+
                         <h3>--<br><span>Following</span></h3>
                     </div>
                     <div class="actionBtn-perfil-info" style="gap: 8px;">
-                        <button>Follow</button>
+                        <button id="btnFollow" data-artista="<?php echo $idArtista; ?>">Follow</button>
+
                         <button>Subs</button>
                         <button onclick="location.href='Chat.php'">Message</button>
                     </div>
@@ -184,18 +212,49 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
                     </div>
                     <span class="perfil-info-social-text"><?php echo $correoArtista; ?></span>
                     <ul class="perfil-info-social-list">
-                        <a href="<?php echo $facebook; ?>" class="perfil-info-social-link" target="_blank"><i class='bx bxl-linkedin'></i></a>
-                        <a href="<?php echo $instagram; ?>" class="perfil-info-social-link" target="_blank"><i class='bx bxl-instagram'></i></a>
-                        <a href="<?php echo $twitter; ?>" class="perfil-info-social-link" target="_blank"><i class='bx bxl-twitter'></i></a>
-                        <a href="<?php echo $youtube; ?>" class="perfil-info-social-link" target="_blank"><i class='bx bxl-youtube'></i></a>
+                        <a href="<?php echo $facebook; ?>" class="perfil-info-social-link" target="_blank"><i
+                                class='bx bxl-linkedin'></i></a>
+                        <a href="<?php echo $instagram; ?>" class="perfil-info-social-link" target="_blank"><i
+                                class='bx bxl-instagram'></i></a>
+                        <a href="<?php echo $twitter; ?>" class="perfil-info-social-link" target="_blank"><i
+                                class='bx bxl-twitter'></i></a>
+                        <a href="<?php echo $youtube; ?>" class="perfil-info-social-link" target="_blank"><i
+                                class='bx bxl-youtube'></i></a>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="../BDM_PostArt_V3/js/script.js"></script>
-    <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="../BDM_PostArt_V3/js/script.js"></script>
+<script src="../BDM_PostArt_V3/js/enlaces.js"></script>
+
+<script>
+    $('#btnFollow').on('click', function () {
+        const idArtista = $(this).data('artista');
+
+        $.ajax({
+            url: 'PHP/follow.php',
+            method: 'POST',
+            data: {
+                artista_id: idArtista
+            },
+            success: function (response) {
+                if (response === 'ok') {
+                    alert('Ahora sigues a este artista.');
+                    $('#btnFollow').text('Following').prop('disabled', true);
+                } else {
+                    alert('Error al seguir al artista.');
+                }
+            },
+            error: function () {
+                alert('Error de conexión con el servidor.');
+            }
+        });
+    });
+</script>
+
 </body>
+
 </html>
