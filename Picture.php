@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 require __DIR__ . '../Conexion.php';
 
 if (!isset($_SESSION['usuario'])) {
@@ -10,7 +9,7 @@ if (!isset($_SESSION['usuario'])) {
 
 $usuario = $_SESSION['usuario'];
 
-// Convertir la imagen de base64 a src si existe, si no usar imagen por defecto
+// Variables del NAVBAR (dejan igual)
 $fotoPerfilSrc = $usuario['Foto_perfil']
     ? 'data:image/jpeg;base64,' . $usuario['Foto_perfil']
     : 'imagenes-prueba/User.jpg';
@@ -18,7 +17,42 @@ $fotoPerfilSrc = $usuario['Foto_perfil']
 $nickname = $usuario['Nickname'];
 $rol = $usuario['Rol'];
 $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
+
+// Validar ID del post
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("ID de publicación no válido.");
+}
+
+$idPublicacion = intval($_GET['id']);
+
+// Obtener datos del post y su autor
+$stmt = $conexion->prepare("CALL SP_ObtenerPublicacionPorID(?)");
+$stmt->bind_param("i", $idPublicacion);
+$stmt->execute();
+$res = $stmt->get_result();
+
+if ($res->num_rows === 0) {
+    die("Publicación no encontrada.");
+}
+
+$publicacion = $res->fetch_assoc();
+$stmt->close();
+
+// Variables del POST
+$tituloPublicacion = $publicacion['Titulo'];
+$imagenPublicacion = $publicacion['Imagen'];
+$imagenSrc = 'data:image/jpeg;base64,' . base64_encode($imagenPublicacion);
+
+// Variables del AUTOR del POST (nuevas variables)
+$autorNickname = $publicacion['Nickname'];
+$autorRol = $publicacion['Rol'];
+$autorFotoPerfil = $publicacion['Foto_perfil']
+    ? 'data:image/jpeg;base64,' . base64_encode($publicacion['Foto_perfil'])
+    : 'imagenes-prueba/User.jpg';
+$id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también devuelve esto
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -47,7 +81,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
-               
+
                 <div class="message-botton-activity-bar">
                     <button onclick="location.href='groups_dash.html'">
                         <i class='bx bxs-message-error'></i>
@@ -112,36 +146,55 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
     <div class="space-container-area">
         <<div class="left-space-zone">
             <div class="contenedor-card-perfil">
-                <div class="avatar-perfil-publicar">
-                    <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
-                </div>
-                <div class="content-perfil-publicar-info-user">
-                    <h2><?php echo htmlspecialchars($nickname); ?></h2>
-                    <h4><?php echo htmlspecialchars($rol); ?></h4>
-                </div>
-            </div>
+    <div class="avatar-perfil-publicar">
+        <img src="<?php echo $autorFotoPerfil; ?>" alt="Avatar del autor">
+    </div>
+    <div class="content-perfil-publicar-info-user">
+        <h2><?php echo htmlspecialchars($autorNickname); ?></h2>
+        <h4><?php echo htmlspecialchars($autorRol); ?></h4>
+    </div>
+</div>
+
             <div class="add-homeBtn">
-                <button onclick="location.href='index.php'" class="icon-button">
+                <!-- Botón de inicio  -->
+                <button onclick="location.href='index.php'" class="icon-button" title="Inicio">
                     <i class='bx bxs-home'></i>
                 </button>
+
+                <!-- Botón de perfil del creador -->
+                <button onclick="location.href='Perfil.php?id=<?php echo $id_creador; ?>'" class="icon-button" title="Perfil del creador">
+                    <i class='bx bxs-user'></i>
+                </button>
+
+                <!-- Botón de seguir -->
+                <button onclick="seguirUsuario(<?php echo $id_creador; ?>)" class="icon-button" title="Seguir">
+                    <i class='bx bxs-user-plus'></i>
+                </button>
+
+                <!-- Botón de like -->
+                <button onclick="darLike(<?php echo $id_post; ?>)" class="icon-button" title="Me gusta">
+                    <i class='bx bxs-like'></i>
+                </button>
             </div>
+
+    </div>
+
+    <div class="center-space-zone">
+        <div class="upload-space-zone">
+            <img src="<?php echo $imagenSrc; ?>" alt="<?php echo htmlspecialchars($tituloPublicacion); ?>">
         </div>
 
-        <div class="center-space-zone">
-            <div class="upload-space-zone">
-                <img src="../BDM_PostArt_V3/imagenes-prueba/11.jpg" alt="" srcset="">
-            </div>
-        </div>
+    </div>
 
 
-        <div class="right-space-zone">
-            <div class="upload-space-zone-info">
-                <div class="upload-space-zone-title-form-container">
-
-                </div>
+    <div class="right-space-zone">
+        <div class="upload-space-zone-info">
+            <div class="upload-space-zone-title-form-container">
 
             </div>
+
         </div>
+    </div>
 
 
     </div>

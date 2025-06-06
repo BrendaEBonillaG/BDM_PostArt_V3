@@ -134,23 +134,24 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
                 $idUsuario = intval($fila['ID_Usuario']);
 
                 echo '
-        <div class="card-image-post">
-            <a href="Perfil.php?id=' . $idUsuario . '" class="tag-artist-info">
-                <div class="tag-artist-avatar">
-                    <img src="' . htmlspecialchars($perfilSrc, ENT_QUOTES) . '" alt="Perfil de Usuario">
-                </div>
-                <div class="tag-artist-name">
-                    <h3>' . $nombre . '</h3>
-                    <h6>' . $rol . '</h6>
-                </div>
-            </a>
-            <div class="tag-paw-botton paw-button">
-                <i class="bx bxs-hot"></i>
-            </div>
-            <div class="imag" id="cardImagePost">
-                <img src="' . $src . '" alt="' . $titulo . '">
-            </div>
-        </div>';
+<div class="card-image-post">
+    <a href="Picture.php?id=' . $fila['Id_publicacion'] . '" class="tag-artist-info">
+        <div class="tag-artist-avatar">
+            <img src="' . htmlspecialchars($perfilSrc, ENT_QUOTES) . '" alt="Perfil de Usuario">
+        </div>
+        <div class="tag-artist-name">
+            <h3>' . $nombre . '</h3>
+            <h6>' . $rol . '</h6>
+        </div>
+    </a>
+    <div class="tag-paw-botton paw-button">
+        <i class="bx bxs-hot"></i>
+    </div>
+    <a href="Picture.php?id=' . $fila['Id_publicacion'] . '" class="imag" id="cardImagePost">
+        <img src="' . $src . '" alt="' . $titulo . '">
+    </a>
+</div>';
+
             }
         } else {
             echo "<p>No hay publicaciones disponibles.</p>";
