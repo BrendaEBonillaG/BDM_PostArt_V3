@@ -298,3 +298,8 @@
     transform: rotate(90deg) translateX(160px) translateY(-45px) rotate(-90deg);
     transition-delay: 0.4s;
 }
+.menu-avatar .btns-menu-profile.open span:nth-of-type(6){
+    transform: rotate(135deg) translateX(145px) translateY(-15px) rotate(-135deg);
+    transition-delay: 0.5s;
+}
+

@@ -4,7 +4,9 @@ CREATE DATABASE IF NOT EXISTS PostArt;
 USE PostArt;
 SELECT * FROM Usuario;
 DESCRIBE Usuario;
-SELECT * FROM Donaciones;
+
+SELECT * FROM Publicaciones;
+
 SELECT * FROM Seguidores;
 
 -- Tabla de Usuarios

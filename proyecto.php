@@ -139,12 +139,12 @@ $video_embed_url = obtenerEmbedYouTube($video_url);
                 </div>
             </div>
         </div>
-        <div class="btns-menu-profile">
-
+       <div class="btns-menu-profile">
             <span><i class='bx bxs-user'></i></span>
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
-            <span><i class='bx bxs-cog'></i></span>
+            <span><i class='bx bxs-donate-heart'></i></span>
+            <span ><i class='bx bx-plus-circle'></i></span>
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
