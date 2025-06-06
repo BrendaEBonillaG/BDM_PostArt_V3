@@ -4,7 +4,9 @@ CREATE DATABASE IF NOT EXISTS PostArt;
 USE PostArt;
 SELECT * FROM Usuario;
 DESCRIBE Usuario;
+
 SELECT * FROM Publicaciones;
+
 SELECT * FROM Seguidores;
 
 -- Tabla de Usuarios
@@ -187,3 +189,9 @@ CREATE TABLE Redes_sociales(
     Link VARCHAR(255) NOT NULL COMMENT 'Enlace al perfil de red social del usuario',
     FOREIGN KEY (Id_usuario) REFERENCES Usuario(Id_usuario)
 );
+
+
+SELECT * FROM DONACIONES;
+SELECT * FROM USUARIO;
+SELECT * FROM PUBLICACIONES;
+
