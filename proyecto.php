@@ -139,15 +139,15 @@ $recaudado = $recaudado ?? 0;
             <div class="video_del_proyecto">
                 <div class="video-wrapper">
                     <?php
-                    if ($video_url && file_exists(__DIR__ . '/../videos/' . $video_url)) {
+                    if ($video_url && file_exists(__DIR__ . '/../' . $video_url)) {
                         ?>
                         <video width="100%" height="360" controls>
-                            <source src="../videos/<?php echo htmlspecialchars($video_url); ?>" type="video/mp4">
+                            <source src="../<?php echo htmlspecialchars($video_url); ?>" type="video/mp4">
                             Tu navegador no soporta el elemento de video.
                         </video>
                         <?php
                     } else {
-                        echo '<p>No hay video disponible.</p>';
+                        echo '<p>Contenido de $video_url: ' . htmlspecialchars($video_url) . '</p>';
                     }
                     ?>
                 </div>
