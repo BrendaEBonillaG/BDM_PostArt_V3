@@ -136,22 +136,31 @@ $recaudado = $recaudado ?? 0;
                 <p class="categoria_del_proyecto">Categoría: <span><?php echo htmlspecialchars($categoria_nombre); ?></span></p>
             </div>
 
-            <div class="video_del_proyecto">
-                <div class="video-wrapper">
-                    <?php
-                    if ($video_url && file_exists(__DIR__ . '/../' . $video_url)) {
-                        ?>
-                        <video width="100%" height="360" controls>
-                            <source src="../<?php echo htmlspecialchars($video_url); ?>" type="video/mp4">
-                            Tu navegador no soporta el elemento de video.
-                        </video>
-                        <?php
-                    } else {
-                        echo '<p>Contenido de $video_url: ' . htmlspecialchars($video_url) . '</p>';
-                    }
-                    ?>
-                </div>
+<div class="video_del_proyecto">
+    <div class="video-wrapper">
+        <?php
+        if ($video_url && file_exists(__DIR__ . '/' . $video_url)) {
+            ?>
+            <video width="100%" height="360" controls preload="metadata">
+                <source src="<?php echo htmlspecialchars($video_url); ?>" type="video/mp4">
+                Tu navegador no soporta el elemento de video.
+            </video>
+            
+            <!-- Debugging info (eliminar en producción) -->
+            <div style="margin-top: 10px; font-size: 12px; color: #666;">
+                <p>Ruta del video: <?php echo htmlspecialchars($video_url); ?></p>
+                <p>Archivo existe: <?php echo file_exists(__DIR__ . '/' . $video_url) ? 'Sí' : 'No'; ?></p>
+                <p>Tamaño del archivo: <?php echo file_exists(__DIR__ . '/' . $video_url) ? filesize(__DIR__ . '/' . $video_url) . ' bytes' : 'N/A'; ?></p>
             </div>
+            
+            <?php
+        } else {
+            echo '<p>Video no encontrado. Ruta: ' . htmlspecialchars($video_url) . '</p>';
+            echo '<p>Verificando en: ' . __DIR__ . '/' . $video_url . '</p>';
+        }
+        ?>
+    </div>
+</div>
 
 
             <div class="imagen_del_proyecto">
