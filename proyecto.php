@@ -45,29 +45,6 @@ $stmt->fetch();
 $stmt->close();
 
 $recaudado = $recaudado ?? 0;
-
-// Función para transformar a embed
-function obtenerEmbedYouTube($url)
-{
-    if (strpos($url, 'watch?v=') !== false) {
-        parse_str(parse_url($url, PHP_URL_QUERY), $vars);
-        return 'https://www.youtube.com/embed/' . $vars['v'];
-    }
-
-    if (strpos($url, 'youtu.be/') !== false) {
-        $id = explode('youtu.be/', $url)[1];
-        $id = strtok($id, '?');
-        return 'https://www.youtube.com/embed/' . $id;
-    }
-
-    if (strpos($url, 'youtube.com/embed/') !== false) {
-        return $url;
-    }
-
-    return '';
-}
-$video_embed_url = obtenerEmbedYouTube($video_url);
-
 ?>
 
 <!DOCTYPE html>
@@ -161,7 +138,18 @@ $video_embed_url = obtenerEmbedYouTube($video_url);
 
             <div class="video_del_proyecto">
                 <div class="video-wrapper">
-                    <iframe src="<?= $video_embed_url ?>" frameborder="0" allowfullscreen></iframe>
+                    <?php
+                    if ($video_url && file_exists(__DIR__ . '/../videos/' . $video_url)) {
+                        ?>
+                        <video width="100%" height="360" controls>
+                            <source src="../videos/<?php echo htmlspecialchars($video_url); ?>" type="video/mp4">
+                            Tu navegador no soporta el elemento de video.
+                        </video>
+                        <?php
+                    } else {
+                        echo '<p>No hay video disponible.</p>';
+                    }
+                    ?>
                 </div>
             </div>
 
