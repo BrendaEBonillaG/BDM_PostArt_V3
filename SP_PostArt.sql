@@ -331,7 +331,7 @@ END //
 DELIMITER ;
 
 
-
+--------------------------------------------------------------------
 SELECT 
     d.Id_Donacion,
     u.Nickname,
@@ -344,7 +344,7 @@ FROM Donaciones d
 JOIN Usuario u ON d.Id_usuario = u.ID_Usuario
 JOIN Categorias c ON d.Id_Categoria = c.Id_Categoria
 ORDER BY d.Id_Donacion DESC;
-
+-----------------------------------------------------------------------
 DELIMITER $$
 
 -- DONADOR
