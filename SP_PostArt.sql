@@ -1,7 +1,7 @@
 USE PostArt;
 
 SHOW PROCEDURE STATUS WHERE Db = 'PostArt';
-
+SHOW PROCEDURE ObtenerDatosUsuario;
 DROP PROCEDURE LoginUsuario;
 -- LOGIN
 DROP PROCEDURE IF EXISTS LoginUsuario;
@@ -116,72 +116,7 @@ END$$
 DELIMITER ;
 
 
--- USUARIOS DEFINITIVO 
-DELIMITER $$
 
-CREATE PROCEDURE GestionUsuario(
-    IN p_accion VARCHAR(20),         -- Acción a realizar: 'login', 'registro', 'verificar', 'mostrar', 'actualizar'
-    
-    -- Parámetros comunes
-    IN p_id_usuario INT,
-    IN p_nombre VARCHAR(50),
-    IN p_apepa VARCHAR(50),
-    IN p_apema VARCHAR(50),
-    IN p_nickname VARCHAR(50),
-    IN p_correo VARCHAR(100),
-    IN p_contrasena VARCHAR(255),
-    IN p_biografia TEXT,
-    IN p_foto MEDIUMBLOB,
-    IN p_rol VARCHAR(20),
-
-    OUT p_existe INT -- Para la acción 'verificar'
-)
-BEGIN
-    IF p_accion = 'login' THEN
-        SELECT ID_Usuario, Nombre, Nickname, Correo, Rol
-        FROM Usuario
-        WHERE Nickname = p_nickname AND Contrasena = p_contrasena;
-
-    ELSEIF p_accion = 'registro' THEN
-        INSERT INTO Usuario (Nombre, ApePa, ApeMa, Nickname, Correo, Contrasena, Foto_perfil, Biografia, Rol, Estado)
-        VALUES (
-            p_nombre, 
-            COALESCE(p_apepa, 'agregar'), 
-            COALESCE(p_apema, 'agregar'), 
-            p_nickname, 
-            p_correo, 
-            p_contrasena, 
-            p_foto, 
-            COALESCE(p_biografia, 'agregar'), 
-            p_rol, 
-            'Activo'
-        );
-
-    ELSEIF p_accion = 'verificar' THEN
-        SELECT COUNT(*) INTO p_existe
-        FROM Usuario
-        WHERE correo = p_correo;
-
-    ELSEIF p_accion = 'mostrar' THEN
-        SELECT ID_Usuario, Nombre, ApePa, ApeMa, Nickname, Correo, Biografia, Foto_perfil, Rol
-        FROM Usuario
-        WHERE ID_Usuario = p_id_usuario;
-
-    ELSEIF p_accion = 'actualizar' THEN
-        UPDATE Usuario
-        SET 
-            Nombre = p_nombre,
-            ApePa = p_apepa,
-            ApeMa = p_apema,
-            Correo = p_correo,
-            Biografia = p_biografia,
-            Foto_perfil = IF(p_foto IS NOT NULL AND LENGTH(p_foto) > 0, p_foto, Foto_perfil)
-        WHERE ID_Usuario = p_id_usuario;
-
-    END IF;
-END$$
-
-DELIMITER ;
 
 
 
