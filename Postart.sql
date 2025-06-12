@@ -85,7 +85,7 @@ CREATE TABLE Donadores (
 ALTER TABLE Donadores
 ADD COLUMN Id_donacion INT NOT NULL COMMENT 'ID de la donación relacionada',
 ADD FOREIGN KEY (Id_donacion) REFERENCES Donaciones(Id_donacion);
-
+SELECT * FROM Donaciones;
 -- Tabla de Donaciones (campañas de donación)
 CREATE TABLE Donaciones(
     Id_Donacion INT AUTO_INCREMENT PRIMARY KEY,
@@ -141,7 +141,7 @@ CREATE TABLE Mensajes_Privado (
     FOREIGN KEY (id_usuario) REFERENCES Usuario(Id_usuario) ON DELETE CASCADE
 );
 
-
+SELECT * FROM USUARIO;
 CREATE TABLE Chat_Grupal (
     id_chat INT AUTO_INCREMENT PRIMARY KEY,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
