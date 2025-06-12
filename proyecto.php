@@ -1,5 +1,34 @@
 <?php
+session_start();
 include("Conexion.php");
+
+
+if (!isset($_SESSION['usuario'])) {
+    header('Location: Login.html');
+    exit();
+}
+
+$usuario = $_SESSION['usuario'];
+
+if (!empty($usuario['Foto_perfil'])) {
+    // Si es binario, codifica; si ya es base64, úsalo
+    if (base64_encode(base64_decode($usuario['Foto_perfil'], true)) === $usuario['Foto_perfil']) {
+        // Ya viene en base64 (no vuelvas a codificar)
+        $fotoPerfilSrc = 'data:image/jpeg;base64,' . $usuario['Foto_perfil'];
+    } else {
+        // Viene en binario (normal en blobs directos de MySQL)
+        $fotoPerfilSrc = 'data:image/jpeg;base64,' . base64_encode($usuario['Foto_perfil']);
+    }
+} else {
+    $fotoPerfilSrc = '../BDM_PostArt_V3/imagenes-prueba/User.jpg';
+}
+
+
+
+$nickname = $usuario['Nickname'];
+$rol = $usuario['Rol'];
+$biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
+
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("ID de proyecto no válido.");
@@ -30,30 +59,37 @@ $numero_participantes = 0;
 $stmt->close();
 $conexion->next_result(); // Para liberar el SP
 
-// Calcular días restantes
+// Calcular días restantes correctamente (solo fecha, sin horas)
 $fecha_limite = new DateTime($proyecto['Fecha_Limite']);
 $hoy = new DateTime();
-$dias_restantes = $hoy->diff($fecha_limite)->format('%r%a');
+$hoy = new DateTime($hoy->format('Y-m-d'));  // Normalizamos la fecha de hoy quitando la hora
 
-// Consulta del monto recaudado
-$stmt = $conexion->prepare("SELECT SUM(Monto) AS Recaudado FROM Donadores WHERE Id_donacion = ?");
+if ($hoy > $fecha_limite) {
+    $dias_restantes = 0;
+} else {
+    $intervalo = $hoy->diff($fecha_limite);
+    $dias_restantes = $intervalo->days;
+}
+
+
+
+$stmt = $conexion->prepare("CALL SP_ObtenerResumenDonacion(?)");
 $stmt->bind_param("i", $idProyecto);
 $stmt->execute();
-$stmt->bind_result($recaudado);
-$stmt->fetch();
+
+$res = $stmt->get_result();
+$row = $res->fetch_assoc();
+
+$recaudado = $row['Recaudado'] ?? 0;
+$numero_participantes = $row['Participantes'] ?? 0;
+$completado = ($recaudado >= $meta || $dias_restantes <= 0);
+
+
+
+
 $stmt->close();
+$conexion->next_result(); // Siempre después de un CALL
 
-$recaudado = $recaudado ?? 0;
-
-// Consulta del número de participantes (cantidad de donadores distintos)
-$stmt = $conexion->prepare("SELECT COUNT(DISTINCT Id_usuario_donante) AS Participantes FROM Donadores WHERE Id_donacion = ?");
-$stmt->bind_param("i", $idProyecto);
-$stmt->execute();
-$stmt->bind_result($numero_participantes);
-$stmt->fetch();
-$stmt->close();
-
-$numero_participantes = $numero_participantes ?? 0;
 
 ?>
 
@@ -96,32 +132,30 @@ $numero_participantes = $numero_participantes ?? 0;
         </div>
     </header>
 
-
+    <!-- Botón del menú -->
     <div class="avatar-boton-card" id="botonAvatarMenujs">
         <div class="avatar-image">
-            <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg">
+            <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
         </div>
         <div class="perfile-avatar-status"></div>
     </div>
 
-    <!-- menu perfil -->
-
+    <!-- Menú del perfil -->
     <div class="menu-avatar oculto" id="menuAvatarjs">
         <div class="avatar-menu">
-            <img src="/../BDM_PostArt_V3/imagenes-prueba/User.jpg" alt="">
+            <img src="<?php echo $fotoPerfilSrc; ?>" alt="Avatar">
         </div>
         <div class="content-menu-perfil">
             <div class="menu-perfil-nametag">
-                <h3>Jane Doe</h3>
-                <h5>2D artist</h5>
-                <h6>An artist makes dreams real</h6>
+                <h3><?php echo htmlspecialchars($nickname); ?></h3>
+                <h5><?php echo htmlspecialchars($rol); ?></h5>
+                <h6><?php echo htmlspecialchars($biografia); ?></h6>
             </div>
-
+            <div class="menu-tapa"></div>
             <div class="menu-perfil-btn">
                 <div class="menu-perfil-btn-base1">
                     <div class="menu-perfil-btn-base2">
                         <i class='bx bx-menu'></i>
-
                     </div>
                 </div>
             </div>
@@ -207,14 +241,22 @@ $numero_participantes = $numero_participantes ?? 0;
 
             <div class="barra_donacion">
                 <h2>Contribuye al proyecto</h2>
-                <form method="POST" action="PHP/Donar.php">
-                    <input type="hidden" name="id_donacion" value="<?php echo $idProyecto; ?>">
-                    <input type="hidden" name="id_usuario_artista" value="<?php echo $proyecto['Id_usuario']; ?>">
-                    <input type="number" name="monto" placeholder="Cantidad a donar" class="input_donacion" step="0.01"
-                        required>
-                    <button type="submit" class="boton_donacion">Donar</button>
-                </form>
+
+                <?php if ($completado): ?>
+                    <button class="boton_donacion" style="background-color: black; cursor: not-allowed;" disabled>
+                        Meta alcanzada
+                    </button>
+                <?php else: ?>
+                    <form method="POST" action="PHP/Donar.php">
+                        <input type="hidden" name="id_donacion" value="<?php echo $idProyecto; ?>">
+                        <input type="hidden" name="id_usuario_artista" value="<?php echo $proyecto['Id_usuario']; ?>">
+                        <input type="number" name="monto" placeholder="Cantidad a donar" class="input_donacion" step="0.01"
+                            required>
+                        <button type="submit" class="boton_donacion">Donar</button>
+                    </form>
+                <?php endif; ?>
             </div>
+
 
 
         </div>
@@ -224,6 +266,7 @@ $numero_participantes = $numero_participantes ?? 0;
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="../BDM_PostArt_V3/js/script.js"></script>
     <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
+
 </body>
 
 </html>

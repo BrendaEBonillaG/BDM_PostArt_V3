@@ -468,6 +468,18 @@ END //
 
 DELIMITER ;
 
+DELIMITER //
+
+CREATE PROCEDURE SP_ObtenerResumenDonacion(IN p_id_donacion INT)
+BEGIN
+    SELECT 
+        IFNULL(SUM(Monto), 0) AS Recaudado,
+        COUNT(DISTINCT Id_usuario_donante) AS Participantes
+    FROM Donadores
+    WHERE Id_donacion = p_id_donacion;
+END //
+
+DELIMITER ;
 
 -- CATEGORIAS ____________________________________________________________________________________________
 
