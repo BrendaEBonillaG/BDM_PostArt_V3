@@ -188,6 +188,22 @@ fin: BEGIN
 END;
 //
 
+DROP PROCEDURE IF EXISTS SP_ObtenerEstadisticasPerfil;
+
+DELIMITER //
+
+CREATE PROCEDURE SP_ObtenerEstadisticasPerfil(IN p_id_usuario INT)
+BEGIN
+    -- Total de publicaciones del usuario
+    SELECT
+        (SELECT COUNT(*) FROM Publicaciones WHERE Id_usuario = p_id_usuario) AS posts,
+        (SELECT COUNT(*) FROM Seguidores WHERE Id_usuario_artista = p_id_usuario) AS followers,
+        (SELECT COUNT(*) FROM Seguidores WHERE Id_usuario_seguidor = p_id_usuario) AS following;
+END //
+
+DELIMITER ;
+
+
 -- CHATS _______________________________________________________________________________________________
 
 DELIMITER //
@@ -425,33 +441,71 @@ END$$
 
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS SP_InsertarDonador;
+DROP PROCEDURE IF EXISTS SP_InsertarDonacionCompleta;
 SELECT * FROM Donadores;
 DELIMITER //
 
-CREATE PROCEDURE SP_InsertarDonador (
+CREATE PROCEDURE SP_InsertarDonacionCompleta(
     IN p_id_usuario_donante INT,
     IN p_id_usuario_artista INT,
     IN p_id_donacion INT,
     IN p_monto DECIMAL(10,2)
 )
 BEGIN
-    INSERT INTO Donadores (
-        Id_usuario_donante,
-        Id_usuario_artista,
-        Id_donacion,
-        Monto,
-        Fecha_donacionSP_ObtenerProyectoCompleto
-    ) VALUES (
-        p_id_usuario_donante,
-        p_id_usuario_artista,
-        p_id_donacion,
-        p_monto,
-        NOW()
-    );
+    DECLARE v_meta DECIMAL(10,2);
+    DECLARE v_fecha_limite DATE;
+    DECLARE v_recaudado DECIMAL(10,2) DEFAULT 0;
+    DECLARE v_donado_por_usuario DECIMAL(10,2) DEFAULT 0;
+
+    -- Validación de monto mayor a 0
+    IF p_monto <= 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El monto debe ser mayor a cero.';
+    END IF;
+
+    -- Obtener meta y fecha límite
+    SELECT Meta, Fecha_Limite INTO v_meta, v_fecha_limite
+    FROM Donaciones
+    WHERE Id_Donacion = p_id_donacion;
+
+    -- Validar existencia del proyecto
+    IF v_meta IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Proyecto de donación no encontrado.';
+    END IF;
+
+    -- Validar fecha límite
+    IF CURDATE() > v_fecha_limite THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La campaña ya ha finalizado.';
+    END IF;
+
+    -- Obtener lo recaudado actual
+    SELECT COALESCE(SUM(Monto),0) INTO v_recaudado
+    FROM Donadores
+    WHERE Id_donacion = p_id_donacion;
+
+    -- Validar no superar meta general
+    IF (v_recaudado + p_monto) > v_meta THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Esta donación supera la meta permitida.';
+    END IF;
+
+    -- Obtener cuánto ya ha donado este usuario en esta donación
+    SELECT COALESCE(SUM(Monto),0) INTO v_donado_por_usuario
+    FROM Donadores
+    WHERE Id_donacion = p_id_donacion AND Id_usuario_donante = p_id_usuario_donante;
+
+    -- Validar máximo $200 por usuario en esta donación
+    IF (v_donado_por_usuario + p_monto) > 200 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El monto máximo permitido por usuario es de $200 pesos.';
+    END IF;
+
+    -- Si todo está bien: insertar
+    INSERT INTO Donadores (Id_usuario_donante, Id_usuario_artista, Id_donacion, Monto)
+    VALUES (p_id_usuario_donante, p_id_usuario_artista, p_id_donacion, p_monto);
+
 END //
 
 DELIMITER ;
+
+
 
 DROP PROCEDURE IF EXISTS SP_ObtenerProyectoCompleto;
 DELIMITER //
@@ -467,7 +521,7 @@ BEGIN
 END //
 
 DELIMITER ;
-
+SELECT * FROM Donaciones;
 DELIMITER //
 
 CREATE PROCEDURE SP_ObtenerResumenDonacion(IN p_id_donacion INT)
