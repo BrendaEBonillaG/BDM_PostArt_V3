@@ -424,6 +424,51 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+DROP PROCEDURE IF EXISTS SP_InsertarDonador;
+
+DELIMITER //
+
+CREATE PROCEDURE SP_InsertarDonador (
+    IN p_id_usuario_donante INT,
+    IN p_id_usuario_artista INT,
+    IN p_id_donacion INT,
+    IN p_monto DECIMAL(10,2)
+)
+BEGIN
+    INSERT INTO Donadores (
+        Id_usuario_donante,
+        Id_usuario_artista,
+        Id_donacion,
+        Monto,
+        Fecha_donacionSP_ObtenerProyectoCompleto
+    ) VALUES (
+        p_id_usuario_donante,
+        p_id_usuario_artista,
+        p_id_donacion,
+        p_monto,
+        NOW()
+    );
+END //
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS SP_ObtenerProyectoCompleto;
+DELIMITER //
+
+CREATE PROCEDURE `SP_ObtenerProyectoCompleto`(IN p_id INT)
+BEGIN
+    SELECT d.Id_usuario, d.Titulo, d.Contenido, d.Video_url, d.Imagen, d.Meta, d.Fecha_Limite,
+           c.Nombre AS Categoria, u.Nickname AS Usuario
+    FROM Donaciones d
+    JOIN Categorias c ON d.Id_Categoria = c.Id_Categoria
+    JOIN Usuario u ON d.Id_usuario = u.ID_Usuario
+    WHERE d.Id_Donacion = p_id;
+END //
+
+DELIMITER ;
+
+
 -- CATEGORIAS ____________________________________________________________________________________________
 
 
