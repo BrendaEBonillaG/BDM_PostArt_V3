@@ -654,3 +654,15 @@ button:hover {
     background-color: var(--dark-color);
     color:#868686; 
 }
+
+/* Estado activo del botón de like */
+.paw-button.active-like i {
+    color: #FF2929;
+    transition: color 0.3s ease;
+}
+
+/* También puedes hacer que al pasar el mouse siempre muestre un hover */
+.paw-button i:hover {
+    color: #FF2929;
+    transition: color 0.3s ease;
+}

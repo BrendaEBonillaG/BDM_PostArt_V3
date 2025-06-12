@@ -9,8 +9,8 @@ if (!isset($_SESSION['usuario'])) {
 }
 
 $usuario = $_SESSION['usuario'];
+$id_usuario = $usuario['ID_Usuario'];  // Necesitamos el ID del usuario logueado
 
-// Convertir la imagen de base64 a src si existe, si no usar imagen por defecto
 $fotoPerfilSrc = $usuario['Foto_perfil']
     ? 'data:image/jpeg;base64,' . $usuario['Foto_perfil']
     : 'imagenes-prueba/User.jpg';
@@ -112,55 +112,90 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             </div>
         </div>
     </div>
+
+
     <div class="container-picture-dashboard">
         <?php
-     
+      
+        $likes_usuario = [];
+        $stmtLikes = $conexion->prepare("SELECT Id_publicacion FROM Me_Gusta WHERE Id_usuario = ?");
+        $stmtLikes->bind_param("i", $id_usuario);
+        $stmtLikes->execute();
+        $resultLikes = $stmtLikes->get_result();
+        while ($likeRow = $resultLikes->fetch_assoc()) {
+            $likes_usuario[] = $likeRow['Id_publicacion'];
+        }
+        $stmtLikes->close();
+
+        // AHORA sí podemos llamar al SP sin problema
         $stmt = $conexion->prepare("CALL SP_ObtenerPublicacionesActivas()");
         $stmt->execute();
         $resultado = $stmt->get_result();
+
 
         if ($resultado && $resultado->num_rows > 0) {
             while ($fila = $resultado->fetch_assoc()) {
                 $imagenCodificada = base64_encode($fila['Imagen']);
                 $src = !empty($fila['Imagen']) ? 'data:image/jpeg;base64,' . $imagenCodificada : "imagenes-prueba/default_post.jpg";
-
                 $perfilSrc = !empty($fila['Foto_perfil']) ? 'data:image/jpeg;base64,' . base64_encode($fila['Foto_perfil']) : "imagenes-prueba/User.jpg";
-                $nombre = !empty($fila['Nombre']) ? htmlspecialchars($fila['Nombre']) : "Artista Desconocido";
-                $rol = !empty($fila['Rol']) ? htmlspecialchars($fila['Rol']) : "Rol no definido";
-                $titulo = !empty($fila['Titulo']) ? htmlspecialchars($fila['Titulo']) : "Sin título";
-                $idUsuario = intval($fila['ID_Usuario']);
+                $nombre = htmlspecialchars($fila['Nombre']);
+                $rol = htmlspecialchars($fila['Rol']);
+                $titulo = htmlspecialchars($fila['Titulo']);
+                $idPublicacion = intval($fila['Id_publicacion']);
 
-                echo '
-<div class="card-image-post">
-    <a href="Picture.php?id=' . $fila['Id_publicacion'] . '" class="tag-artist-info">
-        <div class="tag-artist-avatar">
-            <img src="' . htmlspecialchars($perfilSrc, ENT_QUOTES) . '" alt="Perfil de Usuario">
-        </div>
-        <div class="tag-artist-name">
-            <h3>' . $nombre . '</h3>
-            <h6>' . $rol . '</h6>
-        </div>
-    </a>
-    <div class="tag-paw-botton paw-button">
-        <i class="bx bxs-hot"></i>
-    </div>
-    <a href="Picture.php?id=' . $fila['Id_publicacion'] . '" class="imag" id="cardImagePost">
-        <img src="' . $src . '" alt="' . $titulo . '">
-    </a>
-</div>';
+                // ✅ Verificamos si este post tiene like por el usuario
+                $yaTieneLike = in_array($idPublicacion, $likes_usuario);
+                $claseLike = $yaTieneLike ? "active-like" : "";
+
+                echo "
+        <div class='card-image-post'>
+            <a href='Picture.php?id={$idPublicacion}' class='tag-artist-info'>
+                <div class='tag-artist-avatar'>
+                    <img src='{$perfilSrc}' alt='Perfil de Usuario'>
+                </div>
+                <div class='tag-artist-name'>
+                    <h3>{$nombre}</h3><h6>{$rol}</h6>
+                </div>
+            </a>
+            <div class='tag-paw-botton paw-button {$claseLike}' data-publicacion-id='{$idPublicacion}'>
+                <i class='bx bxs-hot'></i>
+            </div>
+            <a href='Picture.php?id={$idPublicacion}' class='imag' id='cardImagePost'>
+                <img src='{$src}' alt='{$titulo}'>
+            </a>
+        </div>";
             }
         } else {
             echo "<p>No hay publicaciones disponibles.</p>";
         }
 
-        while ($conexion->more_results() && $conexion->next_result()) {
-            $extra = $conexion->use_result();
-            if ($extra instanceof mysqli_result) {
-                $extra->free();
-            }
-        }
+        $stmt->close();
         ?>
     </div>
+
+    <script>
+        document.querySelectorAll('.paw-button').forEach(boton => {
+            boton.addEventListener('click', () => {
+                const idPublicacion = boton.dataset.publicacionId;
+
+                fetch('PHP/RegistrarLike.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'id_publicacion=' + encodeURIComponent(idPublicacion)
+                })
+                    .then(response => response.text())
+                    .then(result => {
+                        alert(result);
+                        boton.classList.toggle('active-like');  // ✅ Alternamos visualmente el estado
+                    })
+                    .catch(err => {
+                        console.error("Error al registrar like: ", err);
+                    });
+            });
+        });
+    </script>
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <script src="../BDM_PostArt_V3/js/script.js"></script>

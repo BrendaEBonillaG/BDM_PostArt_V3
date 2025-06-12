@@ -547,3 +547,24 @@ BEGIN
 END //
 
 DELIMITER ;
+
+
+-- LIKES ___________________________________________________________________________________________--
+DELIMITER //
+
+CREATE PROCEDURE SP_InsertarLike (
+    IN p_id_usuario INT,
+    IN p_id_publicacion INT
+)
+BEGIN
+    -- Validamos si ya existe el like (para no duplicar)
+    IF NOT EXISTS (
+        SELECT 1 FROM Me_Gusta 
+        WHERE Id_usuario = p_id_usuario AND Id_publicacion = p_id_publicacion
+    ) THEN
+        INSERT INTO Me_Gusta (Id_usuario, Id_publicacion)
+        VALUES (p_id_usuario, p_id_publicacion);
+    END IF;
+END //
+
+DELIMITER ;
