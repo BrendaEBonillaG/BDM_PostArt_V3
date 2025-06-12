@@ -114,7 +114,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
     </div>
     <div class="container-picture-dashboard">
         <?php
-     
+
         $stmt = $conexion->prepare("CALL SP_ObtenerPublicacionesActivas()");
         $stmt->execute();
         $resultado = $stmt->get_result();
@@ -141,9 +141,10 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
             <h6>' . $rol . '</h6>
         </div>
     </a>
-    <div class="tag-paw-botton paw-button">
-        <i class="bx bxs-hot"></i>
-    </div>
+   <div class="tag-paw-botton paw-button" data-publicacion-id="' . $fila['Id_publicacion'] . '">
+    <i class="bx bxs-hot"></i>
+</div>
+
     <a href="Picture.php?id=' . $fila['Id_publicacion'] . '" class="imag" id="cardImagePost">
         <img src="' . $src . '" alt="' . $titulo . '">
     </a>
@@ -161,6 +162,28 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
         }
         ?>
     </div>
+    <script>
+        // Delegamos el evento de click a todas las clases "paw-button"
+        document.querySelectorAll('.paw-button').forEach(boton => {
+            boton.addEventListener('click', () => {
+                const idPublicacion = boton.dataset.publicacionId;
+
+                fetch('PHP/RegistrarLike.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'id_publicacion=' + encodeURIComponent(idPublicacion)
+                })
+                    .then(response => response.text())
+                    .then(result => {
+                        alert(result);  // Puedes personalizarlo
+                    })
+                    .catch(err => {
+                        console.error("Error al registrar like: ", err);
+                    });
+            });
+        });
+    </script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
     <script src="../BDM_PostArt_V3/js/script.js"></script>
