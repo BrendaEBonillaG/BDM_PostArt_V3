@@ -1,18 +1,18 @@
 <?php
 session_start();
 
-$user = []; // Inicializamos como array vacío
+$user = [];
 
 if (isset($_SESSION['usuario'])) {
-    $user_id = $_SESSION['usuario']['ID_Usuario']; // Corregido para tomar solo el ID
+    $user_id = $_SESSION['usuario']['ID_Usuario']; 
+require_once __DIR__ . '/Conexion.php';
 
-    require_once __DIR__ . '../Conexion.php'; // Corrección en la ruta
 
+    // 1️⃣ Obtenemos el perfil
     $stmt = $conexion->prepare("CALL GetUserProfileInfo(?)");
     if ($stmt === false) {
         die('Error en la preparación de la consulta: ' . $conexion->error);
     }
-
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $stmt->bind_result($id, $nombre, $apePa, $apeMa, $nick, $correo, $biografia, $foto_perfil, $rol);
@@ -29,17 +29,33 @@ if (isset($_SESSION['usuario'])) {
             'Foto_perfil' => $foto_perfil,
             'Rol' => $rol
         ];
-    } else {
-        echo "No se encontraron datos para este usuario.";
     }
-
     $stmt->close();
+    $conexion->next_result();  // Importante liberar el primer SP
+
+    // 2️⃣ Obtenemos ahora las estadísticas:
+    $stmtEstadisticas = $conexion->prepare("CALL SP_ObtenerEstadisticasPerfil(?)");
+    if ($stmtEstadisticas === false) {
+        die('Error en la preparación de las estadísticas: ' . $conexion->error);
+    }
+    $stmtEstadisticas->bind_param("i", $user_id);
+    $stmtEstadisticas->execute();
+    $resultado = $stmtEstadisticas->get_result();
+    $estadisticas = $resultado->fetch_assoc();
+
+    $total_posts = $estadisticas['posts'] ?? 0;
+    $total_followers = $estadisticas['followers'] ?? 0;
+    $total_following = $estadisticas['following'] ?? 0;
+
+    $stmtEstadisticas->close();
     $conexion->close();
+
 } else {
     header('Location: Login.html');
     exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -68,9 +84,9 @@ if (isset($_SESSION['usuario'])) {
             </div>
             <!-- barra de notificaciones -->
             <div class="activity-header-bar">
-                
+
                 <div class="message-botton-activity-bar">
-                     <button onclick="location.href='groups_dash.html'">
+                    <button onclick="location.href='groups_dash.html'">
                         <i class='bx bxs-message-error'></i>
                     </button>
                     <button onclick="location.href='Chat.php'" class="icon-button">
@@ -129,7 +145,7 @@ if (isset($_SESSION['usuario'])) {
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
             <span><i class='bx bxs-donate-heart'></i></span>
-            <span ><i class='bx bx-plus-circle'></i></span>
+            <span><i class='bx bx-plus-circle'></i></span>
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
@@ -179,10 +195,11 @@ if (isset($_SESSION['usuario'])) {
                     <h4><?= !empty($user['Biografia']) ? htmlspecialchars($user['Biografia']) : 'Sin biografía'; ?></h4>
                     <br>
                     <div class="data-perfil-info">
-                        <h3>50<br><span>Post</span></h3>
-                        <h3>62<br><span>Followers</span></h3>
-                        <h3>5<br><span>Following</span></h3>
+                        <h3><?php echo $total_posts; ?><br><span>Post</span></h3>
+                        <h3><?php echo $total_followers; ?><br><span>Followers</span></h3>
+                        <h3><?php echo $total_following; ?><br><span>Following</span></h3>
                     </div>
+
 
                     <div class="actionBtn-User-info">
                         <button id="editButton">Edit info</button>
