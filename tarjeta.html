@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="CSS/tarjeta.css">
     <link rel="stylesheet" href="CSS/Fondo.css">
 
-    <script src="https://www.paypal.com/sdk/js?client-id=AfhCSE6_TM9NrlmdKdimC-mJ4gPGBdhBZnP5eeo31YyfytDEtOIObcU1Zxgly3TlAc5nVHLingU3LFTz&currency=MXN"></script>
+    <script
+        src="https://www.paypal.com/sdk/js?client-id=AfhCSE6_TM9NrlmdKdimC-mJ4gPGBdhBZnP5eeo31YyfytDEtOIObcU1Zxgly3TlAc5nVHLingU3LFTz&currency=MXN"></script>
 </head>
 
 <body>
@@ -27,7 +28,8 @@
             <form id="payment-form">
                 <div class="input-group">
                     <label for="card-number">Número de Tarjeta</label>
-                    <input type="text" id="card-number" name="card-number" placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
+                    <input type="text" id="card-number" name="card-number" placeholder="XXXX XXXX XXXX XXXX"
+                        maxlength="19">
                 </div>
 
                 <div class="input-row">
@@ -108,15 +110,28 @@
                             method: "POST",
                             body: donacionData
                         })
-                        .then(response => response.text())
-                        .then(data => {
-                            alert("✅ " + data);
-                            window.close();
-                        })
-                        .catch(err => {
-                            console.error("Error al guardar la donación:", err);
-                            alert("Ocurrió un error al registrar la donación.");
-                        });
+                            .then(response => response.text())
+                            .then(data => {
+                                alert("¡Donación realizada correctamente!");
+
+                                // 🔧 Llamamos al padre con try-catch para máxima seguridad
+                                try {
+                                    if (window.opener && window.opener.actualizarDonacionDesdePago) {
+                                        window.opener.actualizarDonacionDesdePago();
+                                    }
+                                } catch (e) {
+                                    console.warn("No se pudo actualizar la ventana principal:", e);
+                                }
+
+                                window.close();
+                            })
+
+
+
+                            .catch(err => {
+                                console.error("Error al guardar la donación:", err);
+                                alert("Ocurrió un error al registrar la donación.");
+                            });
 
                     } else {
                         alert("Tarjeta inválida. Verifica los datos ingresados.");
@@ -129,4 +144,5 @@
         });
     </script>
 </body>
+
 </html>
