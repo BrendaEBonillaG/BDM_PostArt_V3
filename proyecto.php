@@ -263,45 +263,48 @@ $conexion->next_result(); // Siempre después de un CALL
         </div>
 
     </div>
-   <script>
-    // Escuchamos el click del botón "Donar"
-    document.getElementById("btnAbrirPago").addEventListener("click", () => {
-        const monto = document.getElementById("monto").value;
-        const id_donacion = document.getElementById("id_donacion").value;
-        const id_usuario_artista = document.getElementById("id_usuario_artista").value;
+    <script>
+        // Escuchamos el click del botón "Donar"
+        document.getElementById("btnAbrirPago").addEventListener("click", () => {
+            const monto = document.getElementById("monto").value;
+            const id_donacion = document.getElementById("id_donacion").value;
+            const id_usuario_artista = document.getElementById("id_usuario_artista").value;
 
-        if (!monto || monto <= 0) {
-            alert("Ingrese un monto válido.");
-            return;
+            if (!monto || monto <= 0) {
+                alert("Ingrese un monto válido.");
+                return;
+            }
+
+            // Guardamos los datos temporalmente en localStorage
+            localStorage.setItem("montoDonacion", monto);
+            localStorage.setItem("id_donacion", id_donacion);
+            localStorage.setItem("id_usuario_artista", id_usuario_artista);
+
+            // Abrimos la ventana de pago (Tarjeta.html)
+            window.open("Tarjeta.html", "_blank", "width=800,height=600");
+        });
+
+        // Esta función será llamada desde la ventana de pago al finalizar
+        function actualizarDonacionDesdePago() {
+            const idProyecto = <?php echo $idProyecto; ?>;
+
+            fetch("PHP/actualizar_donacion.php?id=" + idProyecto)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+
+                    document.getElementById("numero_participantes").innerText = data.participantes;
+                    document.querySelector(".monto_donacion strong").innerText = `$${parseFloat(data.recaudado).toFixed(2)}`;
+
+                    document.getElementById("monto").value = "";
+                })
+                .catch(err => console.error("Error al actualizar:", err));
         }
 
-        // Guardamos los datos temporalmente en localStorage
-        localStorage.setItem("montoDonacion", monto);
-        localStorage.setItem("id_donacion", id_donacion);
-        localStorage.setItem("id_usuario_artista", id_usuario_artista);
-
-        // Abrimos la ventana de pago (Tarjeta.html)
-        window.open("Tarjeta.html", "_blank", "width=800,height=600");
-    });
-
-    // Esta función será llamada desde la ventana de pago al finalizar
-    function actualizarDonacionDesdePago() {
-        const idProyecto = <?php echo $idProyecto; ?>;  // Lo pasamos desde PHP
-
-        fetch("PHP/actualizarDonacion.php?id=" + idProyecto)
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    console.error(data.error);
-                    return;
-                }
-
-                document.getElementById("numero_participantes").innerText = data.participantes;
-                document.querySelector(".monto_donacion strong").innerText = `$${parseFloat(data.recaudado).toFixed(2)}`;
-            })
-            .catch(err => console.error("Error al actualizar:", err));
-    }
-</script>
+    </script>
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
