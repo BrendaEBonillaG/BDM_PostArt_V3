@@ -426,7 +426,7 @@ END$$
 DELIMITER ;
 
 DROP PROCEDURE IF EXISTS SP_InsertarDonador;
-
+SELECT * FROM Donadores;
 DELIMITER //
 
 CREATE PROCEDURE SP_InsertarDonador (
