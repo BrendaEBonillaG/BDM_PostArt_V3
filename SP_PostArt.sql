@@ -449,7 +449,13 @@ DELIMITER //
 
 CREATE PROCEDURE SP_ObtenerPublicacionPorID(IN p_id INT)
 BEGIN
-    SELECT p.Titulo, p.Imagen, u.Foto_perfil, u.Nickname, u.Rol
+    SELECT 
+    u.ID_Usuario,
+    p.Titulo, 
+    p.Imagen, 
+    u.Foto_perfil, 
+    u.Nickname, 
+    u.Rol
     FROM Publicaciones p
     JOIN Usuario u ON p.ID_Usuario = u.ID_Usuario
     WHERE p.Id_publicacion = p_id;

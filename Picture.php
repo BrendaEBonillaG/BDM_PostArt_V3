@@ -24,6 +24,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 }
 
 $idPublicacion = intval($_GET['id']);
+$id_post = $idPublicacion;
 
 // Obtener datos del post y su autor
 $stmt = $conexion->prepare("CALL SP_ObtenerPublicacionPorID(?)");
@@ -154,7 +155,7 @@ $id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también de
         <h4><?php echo htmlspecialchars($autorRol); ?></h4>
     </div>
 </div>
-
+<?php echo "ID del creador: " . $id_creador; ?>
             <div class="add-homeBtn">
                 <!-- Botón de inicio  -->
                 <button onclick="location.href='index.php'" class="icon-button" title="Inicio">
@@ -162,9 +163,10 @@ $id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también de
                 </button>
 
                 <!-- Botón de perfil del creador -->
-                <button onclick="location.href='Perfil.php?id=<?php echo $id_creador; ?>'" class="icon-button" title="Perfil del creador">
+                <button onclick="location.href='Perfil.php?id=<?php echo $id_creador; ?>&t=<?php echo time(); ?>'" class="icon-button" title="Perfil del creador">
                     <i class='bx bxs-user'></i>
                 </button>
+                
 
                 <!-- Botón de seguir -->
                 <button onclick="seguirUsuario(<?php echo $id_creador; ?>)" class="icon-button" title="Seguir">

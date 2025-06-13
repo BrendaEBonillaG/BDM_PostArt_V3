@@ -1,4 +1,7 @@
 <?php
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 session_start();
 require __DIR__ . '/Conexion.php';
 
@@ -42,6 +45,7 @@ if ($resSeguidores && $resSeguidores->num_rows > 0) {
 $resSeguidores->close();
 $stmtSeguidores->close();
 while ($conexion->more_results() && $conexion->next_result()) { $conexion->use_result(); }
+
 
 // Obtener datos del artista
 $stmt = $conexion->prepare("CALL ObtenerDatosPerfilArtista(?)");

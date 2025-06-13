@@ -113,7 +113,7 @@ END$$
 
 DELIMITER ;
 
-
+USE PostArt;
 DELIMITER //
 CREATE PROCEDURE `ObtenerDatosUsuario`(IN p_id_usuario INT)
 BEGIN
@@ -122,6 +122,7 @@ BEGIN
     WHERE ID_Usuario = p_id_usuario;
 END//
 DELIMITER  ;
+
 
 DELIMITER //
 CREATE PROCEDURE `ObtenerDatosPerfilArtista`(IN p_id_artista INT)
