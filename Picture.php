@@ -6,7 +6,7 @@ if (!isset($_SESSION['usuario'])) {
     header('Location: ../Login.html');
     exit();
 }
-
+// echo "<pre>"; print_r($_SESSION['usuario']); echo "</pre>"; exit();
 $usuario = $_SESSION['usuario'];
 
 // Variables del NAVBAR (dejan igual)
@@ -18,6 +18,24 @@ $nickname = $usuario['Nickname'];
 $rol = $usuario['Rol'];
 $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
 
+// Guardar nuevo comentario
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comentario'])) {
+    $comentarioTexto = trim($_POST['comentario']);
+    $idUsuario = $usuario['ID_Usuario']; // asumimos que la sesión contiene este valor
+    $idPublicacion = intval($_GET['id']);
+
+    if (!empty($comentarioTexto)) {
+        $stmtComentario = $conexion->prepare("INSERT INTO Comentarios (Id_publicacion, Id_usuario, Comentario) VALUES (?, ?, ?)");
+        $stmtComentario->bind_param("iis", $idPublicacion, $idUsuario, $comentarioTexto);
+        $stmtComentario->execute();
+        $stmtComentario->close();
+
+        // Redirigir para evitar reenvío del formulario
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit();
+    }
+}
+
 // Validar ID del post
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("ID de publicación no válido.");
@@ -25,6 +43,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $idPublicacion = intval($_GET['id']);
 $id_post = $idPublicacion;
+
 
 // Obtener datos del post y su autor
 $stmt = $conexion->prepare("CALL SP_ObtenerPublicacionPorID(?)");
@@ -39,6 +58,25 @@ if ($res->num_rows === 0) {
 $publicacion = $res->fetch_assoc();
 $stmt->close();
 
+// Obtener comentarios de la publicación
+$comentarios = [];
+$stmtComentarios = $conexion->prepare("
+    SELECT c.Comentario, c.Fecha_comentario, u.Nickname 
+    FROM Comentarios c 
+    JOIN Usuario u ON c.Id_usuario = u.Id_usuario 
+    WHERE c.Id_publicacion = ? AND c.Estado = 'Activo' 
+    ORDER BY c.Fecha_comentario DESC
+");
+$stmtComentarios->bind_param("i", $idPublicacion);
+$stmtComentarios->execute();
+$resComentarios = $stmtComentarios->get_result();
+
+while ($coment = $resComentarios->fetch_assoc()) {
+    $comentarios[] = $coment;
+}
+$stmtComentarios->close();
+
+
 // Variables del POST
 $tituloPublicacion = $publicacion['Titulo'];
 $imagenPublicacion = $publicacion['Imagen'];
@@ -51,7 +89,10 @@ $autorFotoPerfil = $publicacion['Foto_perfil']
     ? 'data:image/jpeg;base64,' . base64_encode($publicacion['Foto_perfil'])
     : 'imagenes-prueba/User.jpg';
 $id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también devuelve esto
+
+
 ?>
+
 
 
 
@@ -189,14 +230,63 @@ $id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también de
     </div>
 
 
-    <div class="right-space-zone">
-        <div class="upload-space-zone-info">
-            <div class="upload-space-zone-title-form-container">
+<div class="right-space-zone">
+    <div class="upload-space-zone-info">
+        <div class="upload-space-zone-title-form-container">
+            <h2 style="color: blue; font-size: 24px; margin-bottom: 20px;">
+                <?php echo htmlspecialchars($tituloPublicacion); ?>
+            </h2>
+        </div>
 
-            </div>
-
+        <!-- Mostrar los comentarios primero -->
+<?php if (!empty($comentarios)): ?>
+    <div class="comentarios" style="margin-bottom: 20px;">
+        <h3>Comentarios:</h3>
+        
+        <!-- Contenedor con scroll si hay más de 3 comentarios -->
+        <div style="
+            max-height: 450px; /* Altura aproximada para 3 comentarios */
+            overflow-y: auto;
+            padding-right: 10px; /* Para evitar cortar contenido por el scroll */
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        ">
+            <?php foreach ($comentarios as $comentario): ?>
+                <div class="comentario" style="margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ccc;">
+                    <div style="
+                        display: flex;
+                        flex-direction: column;
+                        padding: 15px;
+                        margin-bottom: 15px;
+                        border: 1px solid #ccc;
+                        border-radius: 10px;
+                        background-color: #f9f9f9;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                    ">
+                        <p style="font-size: 16px; margin: 0 0 8px; color: #333;">
+                            <?php echo nl2br(htmlspecialchars($comentario['Comentario'])); ?>
+                        </p>
+                        <div style="font-size: 13px; color: #777;">
+                            <span>Por <strong><?php echo htmlspecialchars($comentario['Nickname']); ?></strong></span>
+                            <span> • <?php echo date('d/m/Y H:i', strtotime($comentario['Fecha_comentario'])); ?></span>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
+<?php endif; ?>
+
+
+        <!-- Formulario de nuevo comentario -->
+        <form method="post" action="">
+            <textarea name="comentario" rows="4" cols="50" placeholder="Escribe tu comentario aquí..." required></textarea>
+            <input type="hidden" name="publicacion_id" value="<?php echo htmlspecialchars($idPublicacion); ?>">
+            <br>
+            <button type="submit">Comentar</button>
+        </form>
+    </div>
+</div>
 
 
     </div>
