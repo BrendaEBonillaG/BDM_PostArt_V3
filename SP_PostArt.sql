@@ -553,7 +553,7 @@ BEGIN
             mg.id_usuario, 
             u.Nickname AS nombre_usuario, 
             mg.contenido, 
-            mg.fecha_envio
+            mg.fecha_envioSP_InsertarDonadorSP_InsertarDonador
         FROM Mensajes_Grupales mg
         INNER JOIN Usuario u ON mg.id_usuario = u.ID_Usuario
         WHERE mg.id_chat_Grupal = p_id_chat
