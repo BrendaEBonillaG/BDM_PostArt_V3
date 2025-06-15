@@ -2,50 +2,53 @@
 session_start();
 require __DIR__ . '../Conexion.php';
 
+// 🔧 FUNCION GLOBAL PARA LIMPIAR EL BUFFER DESPUÉS DE CADA SP
+function limpiarBufferMysqli($conexion) {
+    while ($conexion->more_results() && $conexion->next_result()) {
+        if ($resultado = $conexion->store_result()) {
+            $resultado->free();
+        }
+    }
+}
+
 if (!isset($_SESSION['usuario'])) {
     header('Location: ../Login.html');
     exit();
 }
-// echo "<pre>"; print_r($_SESSION['usuario']); echo "</pre>"; exit();
+
 $usuario = $_SESSION['usuario'];
 
-// Variables del NAVBAR (dejan igual)
-$fotoPerfilSrc = $usuario['Foto_perfil']
-    ? 'data:image/jpeg;base64,' . $usuario['Foto_perfil']
-    : 'imagenes-prueba/User.jpg';
-
+// NAVBAR datos:
+$fotoPerfilSrc = $usuario['Foto_perfil'] ? 'data:image/jpeg;base64,' . $usuario['Foto_perfil'] : 'imagenes-prueba/User.jpg';
 $nickname = $usuario['Nickname'];
 $rol = $usuario['Rol'];
 $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
 
+// Capturamos ID publicación
+if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    die("ID de publicación no válido.");
+}
+$idPublicacion = intval($_GET['id']);
+$id_post = $idPublicacion;
+
 // Guardar nuevo comentario
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comentario'])) {
     $comentarioTexto = trim($_POST['comentario']);
-    $idUsuario = $usuario['ID_Usuario']; // asumimos que la sesión contiene este valor
-    $idPublicacion = intval($_GET['id']);
-
+    $idUsuario = $usuario['ID_Usuario'];
+    
     if (!empty($comentarioTexto)) {
         $stmtComentario = $conexion->prepare("INSERT INTO Comentarios (Id_publicacion, Id_usuario, Comentario) VALUES (?, ?, ?)");
         $stmtComentario->bind_param("iis", $idPublicacion, $idUsuario, $comentarioTexto);
         $stmtComentario->execute();
         $stmtComentario->close();
+        limpiarBufferMysqli($conexion); // 🔧
 
-        // Redirigir para evitar reenvío del formulario
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit();
     }
 }
 
-// Validar ID del post
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-    die("ID de publicación no válido.");
-}
-
-$idPublicacion = intval($_GET['id']);
-$id_post = $idPublicacion;
-
-
-// Obtener datos del post y su autor
+// ✅ CONSULTA DE PUBLICACIÓN
 $stmt = $conexion->prepare("CALL SP_ObtenerPublicacionPorID(?)");
 $stmt->bind_param("i", $idPublicacion);
 $stmt->execute();
@@ -57,8 +60,9 @@ if ($res->num_rows === 0) {
 
 $publicacion = $res->fetch_assoc();
 $stmt->close();
+limpiarBufferMysqli($conexion);  // 🔧 IMPORTANTE
 
-// Obtener comentarios de la publicación
+// ✅ CONSULTA DE COMENTARIOS
 $comentarios = [];
 $stmtComentarios = $conexion->prepare("
     SELECT c.Comentario, c.Fecha_comentario, u.Nickname 
@@ -75,23 +79,17 @@ while ($coment = $resComentarios->fetch_assoc()) {
     $comentarios[] = $coment;
 }
 $stmtComentarios->close();
+limpiarBufferMysqli($conexion); // 🔧 también aquí
 
-
-// Variables del POST
+// Variables del post y autor
 $tituloPublicacion = $publicacion['Titulo'];
-$imagenPublicacion = $publicacion['Imagen'];
-$imagenSrc = 'data:image/jpeg;base64,' . base64_encode($imagenPublicacion);
-
-// Variables del AUTOR del POST (nuevas variables)
+$imagenSrc = 'data:image/jpeg;base64,' . base64_encode($publicacion['Imagen']);
 $autorNickname = $publicacion['Nickname'];
 $autorRol = $publicacion['Rol'];
-$autorFotoPerfil = $publicacion['Foto_perfil']
-    ? 'data:image/jpeg;base64,' . base64_encode($publicacion['Foto_perfil'])
-    : 'imagenes-prueba/User.jpg';
-$id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también devuelve esto
-
-
+$autorFotoPerfil = $publicacion['Foto_perfil'] ? 'data:image/jpeg;base64,' . base64_encode($publicacion['Foto_perfil']) : 'imagenes-prueba/User.jpg';
+$id_creador = $publicacion['ID_Creador'];
 ?>
+
 
 
 
@@ -168,7 +166,7 @@ $id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también de
             <span><i class='bx bxs-hot menu-favoritos'></i></span>
             <span><i class='bx bxs-add-to-queue'></i></span>
             <span><i class='bx bxs-donate-heart'></i></span>
-            <span ><i class='bx bx-plus-circle'></i></span>
+            <span><i class='bx bx-plus-circle'></i></span>
             <span><i class='bx bx-log-out'></i></span>
         </div>
     </div>
@@ -188,15 +186,15 @@ $id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también de
     <div class="space-container-area">
         <<div class="left-space-zone">
             <div class="contenedor-card-perfil">
-    <div class="avatar-perfil-publicar">
-        <img src="<?php echo $autorFotoPerfil; ?>" alt="Avatar del autor">
-    </div>
-    <div class="content-perfil-publicar-info-user">
-        <h2><?php echo htmlspecialchars($autorNickname); ?></h2>
-        <h4><?php echo htmlspecialchars($autorRol); ?></h4>
-    </div>
-</div>
-<?php echo "ID del creador: " . $id_creador; ?>
+                <div class="avatar-perfil-publicar">
+                    <img src="<?php echo $autorFotoPerfil; ?>" alt="Avatar del autor">
+                </div>
+                <div class="content-perfil-publicar-info-user">
+                    <h2><?php echo htmlspecialchars($autorNickname); ?></h2>
+                    <h4><?php echo htmlspecialchars($autorRol); ?></h4>
+                </div>
+            </div>
+            <?php echo "ID del creador: " . $id_creador; ?>
             <div class="add-homeBtn">
                 <!-- Botón de inicio  -->
                 <button onclick="location.href='index.php'" class="icon-button" title="Inicio">
@@ -204,10 +202,11 @@ $id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también de
                 </button>
 
                 <!-- Botón de perfil del creador -->
-                <button onclick="location.href='Perfil.php?id=<?php echo $id_creador; ?>&t=<?php echo time(); ?>'" class="icon-button" title="Perfil del creador">
+                <button onclick="location.href='Perfil.php?id=<?php echo $id_creador; ?>&t=<?php echo time(); ?>'"
+                    class="icon-button" title="Perfil del creador">
                     <i class='bx bxs-user'></i>
                 </button>
-                
+
 
                 <!-- Botón de seguir -->
                 <button onclick="seguirUsuario(<?php echo $id_creador; ?>)" class="icon-button" title="Seguir">
@@ -230,30 +229,30 @@ $id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también de
     </div>
 
 
-<div class="right-space-zone">
-    <div class="upload-space-zone-info">
-        <div class="upload-space-zone-title-form-container">
-            <h2 style="color: blue; font-size: 24px; margin-bottom: 20px;">
-                <?php echo htmlspecialchars($tituloPublicacion); ?>
-            </h2>
-        </div>
+    <div class="right-space-zone">
+        <div class="upload-space-zone-info">
+            <div class="upload-space-zone-title-form-container">
+                <h2 style="color: blue; font-size: 24px; margin-bottom: 20px;">
+                    <?php echo htmlspecialchars($tituloPublicacion); ?>
+                </h2>
+            </div>
 
-        <!-- Mostrar los comentarios primero -->
-<?php if (!empty($comentarios)): ?>
-    <div class="comentarios" style="margin-bottom: 20px;">
-        <h3>Comentarios:</h3>
-        
-        <!-- Contenedor con scroll si hay más de 3 comentarios -->
-        <div style="
+            <!-- Mostrar los comentarios primero -->
+            <?php if (!empty($comentarios)): ?>
+                <div class="comentarios" style="margin-bottom: 20px;">
+                    <h3>Comentarios:</h3>
+
+                    <!-- Contenedor con scroll si hay más de 3 comentarios -->
+                    <div style="
             max-height: 450px; /* Altura aproximada para 3 comentarios */
             overflow-y: auto;
             padding-right: 10px; /* Para evitar cortar contenido por el scroll */
             border: 1px solid #ddd;
             border-radius: 10px;
         ">
-            <?php foreach ($comentarios as $comentario): ?>
-                <div class="comentario" style="margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ccc;">
-                    <div style="
+                        <?php foreach ($comentarios as $comentario): ?>
+                            <div class="comentario" style="margin-bottom: 10px; padding: 10px; border-bottom: 1px solid #ccc;">
+                                <div style="
                         display: flex;
                         flex-direction: column;
                         padding: 15px;
@@ -263,30 +262,33 @@ $id_creador = $publicacion['ID_Usuario']; // asegúrate de que el SP también de
                         background-color: #f9f9f9;
                         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
                     ">
-                        <p style="font-size: 16px; margin: 0 0 8px; color: #333;">
-                            <?php echo nl2br(htmlspecialchars($comentario['Comentario'])); ?>
-                        </p>
-                        <div style="font-size: 13px; color: #777;">
-                            <span>Por <strong><?php echo htmlspecialchars($comentario['Nickname']); ?></strong></span>
-                            <span> • <?php echo date('d/m/Y H:i', strtotime($comentario['Fecha_comentario'])); ?></span>
-                        </div>
+                                    <p style="font-size: 16px; margin: 0 0 8px; color: #333;">
+                                        <?php echo nl2br(htmlspecialchars($comentario['Comentario'])); ?>
+                                    </p>
+                                    <div style="font-size: 13px; color: #777;">
+                                        <span>Por
+                                            <strong><?php echo htmlspecialchars($comentario['Nickname']); ?></strong></span>
+                                        <span> •
+                                            <?php echo date('d/m/Y H:i', strtotime($comentario['Fecha_comentario'])); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
-            <?php endforeach; ?>
+            <?php endif; ?>
+
+
+            <!-- Formulario de nuevo comentario -->
+            <form method="post" action="">
+                <textarea name="comentario" rows="4" cols="50" placeholder="Escribe tu comentario aquí..."
+                    required></textarea>
+                <input type="hidden" name="publicacion_id" value="<?php echo htmlspecialchars($idPublicacion); ?>">
+                <br>
+                <button type="submit">Comentar</button>
+            </form>
         </div>
     </div>
-<?php endif; ?>
-
-
-        <!-- Formulario de nuevo comentario -->
-        <form method="post" action="">
-            <textarea name="comentario" rows="4" cols="50" placeholder="Escribe tu comentario aquí..." required></textarea>
-            <input type="hidden" name="publicacion_id" value="<?php echo htmlspecialchars($idPublicacion); ?>">
-            <br>
-            <button type="submit">Comentar</button>
-        </form>
-    </div>
-</div>
 
 
     </div>

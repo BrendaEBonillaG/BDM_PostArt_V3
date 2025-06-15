@@ -123,12 +123,17 @@ BEGIN
 END//
 DELIMITER  ;
 
-
+DROP PROCEDURE IF EXISTS ObtenerDatosPerfilArtista;
 DELIMITER //
 CREATE PROCEDURE `ObtenerDatosPerfilArtista`(IN p_id_artista INT)
 BEGIN
     SELECT 
-        u.Nickname, u.Rol, u.Biografia, u.Foto_perfil, u.Correo,
+        u.ID_Usuario AS ID_Creador,  
+        u.Nickname, 
+        u.Rol, 
+        u.Biografia, 
+        u.Foto_perfil, 
+        u.Correo,
         rs1.Link AS Facebook,
         rs2.Link AS Instagram,
         rs3.Link AS Twitter,
@@ -141,6 +146,7 @@ BEGIN
     WHERE u.ID_Usuario = p_id_artista;
 END//
 DELIMITER ;
+
 
 -- SEGUIDORES _______________________________________________________________________________________________________
 
@@ -379,17 +385,26 @@ END //
 
 DELIMITER ;
 
+DROP PROCEDURE SP_ObtenerPublicacionPorID;
 DELIMITER //
 
 CREATE PROCEDURE SP_ObtenerPublicacionPorID(IN p_id INT)
 BEGIN
-    SELECT p.Titulo, p.Imagen, u.Foto_perfil, u.Nickname, u.Rol
+    SELECT 
+        p.Id_publicacion, 
+        p.Titulo, 
+        p.Imagen, 
+        u.ID_Usuario AS ID_Creador, 
+        u.Foto_perfil, 
+        u.Nickname, 
+        u.Rol
     FROM Publicaciones p
     JOIN Usuario u ON p.ID_Usuario = u.ID_Usuario
     WHERE p.Id_publicacion = p_id;
 END //
 
 DELIMITER ;
+
 
 -- DONACIONES ________________________________________________________________________________________________
 
