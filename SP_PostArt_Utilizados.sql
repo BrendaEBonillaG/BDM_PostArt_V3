@@ -164,6 +164,7 @@ END;
 
 DELIMITER ;
 
+SELECT * FROM Seguidores;
 DROP PROCEDURE IF EXISTS SeguirArtista;
 DELIMITER //
 
@@ -173,13 +174,14 @@ CREATE PROCEDURE SeguirArtista(
 )
 fin: BEGIN
 
+    -- Primero declaramos variables
+    DECLARE estado_actual VARCHAR(20);
+
     -- Validación: no puede seguirse a sí mismo
     IF p_id_seguidor = p_id_artista THEN
         SELECT 'error_mismo_usuario' AS resultado;
         LEAVE fin;
     END IF;
-
-    DECLARE estado_actual VARCHAR(20);
 
     -- Buscar si ya existe relación
     SELECT Estado INTO estado_actual
@@ -215,9 +217,11 @@ fin: BEGIN
     VALUES (p_id_seguidor, p_id_artista, 'Activo');
     SELECT 'seguido' AS resultado;
 
-END;
-//
+END //
+
 DELIMITER ;
+
+
 
 
 
@@ -317,7 +321,7 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
-
+SELECT * FROM Usuario;
 DELIMITER //
 CREATE PROCEDURE ChatGrupal_Operacion(
     IN p_operacion VARCHAR(10), -- 'insertar' o 'listar'
