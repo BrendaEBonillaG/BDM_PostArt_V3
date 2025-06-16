@@ -222,10 +222,10 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
                         <?php if ($idUsuarioLog !== $idArtista): ?>
                             <button id="btnFollow" data-artista="<?php echo $idArtista; ?>"
                                 data-seguidores="<?php echo $totalSeguidores; ?>">
-                                Follow
+                                <?php echo $isFollowing ? 'Following' : 'Follow'; ?>
                             </button>
-
                         <?php endif; ?>
+
 
 
                         <button>Subs</button>
@@ -259,43 +259,43 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
     <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
 
     <script>
-       $('#btnFollow').on('click', function () {
-    const idArtista = $(this).data('artista');
-    const boton = $(this);
+        $('#btnFollow').on('click', function () {
+            const idArtista = $(this).data('artista');
+            const boton = $(this);
 
-    $.ajax({
-        url: 'PHP/follow.php',
-        method: 'POST',
-        data: { artista_id: idArtista },
-        success: function (response) {
-            switch(response.status) {
-                case 'seguido':
-                    boton.text('Following');
-                    actualizarContadorSeguidores(1);
-                    break;
-                case 'cancelado':
-                    boton.text('Follow');
-                    actualizarContadorSeguidores(-1);
-                    break;
-                case 'error_mismo_usuario':
-                    alert('No puedes seguirte a ti mismo.');
-                    break;
-                default:
-                    alert('Error inesperado: ' + response.status);
-            }
-        },
-        error: function () {
-            alert('Error de conexión con el servidor.');
+            $.ajax({
+                url: 'PHP/follow.php',
+                method: 'POST',
+                data: { artista_id: idArtista },
+                success: function (response) {
+                    switch (response.status) {
+                        case 'seguido':
+                            boton.text('Following');
+                            actualizarContadorSeguidores(1);
+                            break;
+                        case 'cancelado':
+                            boton.text('Follow');
+                            actualizarContadorSeguidores(-1);
+                            break;
+                        case 'error_mismo_usuario':
+                            alert('No puedes seguirte a ti mismo.');
+                            break;
+                        default:
+                            alert('Error inesperado: ' + response.status);
+                    }
+                },
+                error: function () {
+                    alert('Error de conexión con el servidor.');
+                }
+            });
+        });
+
+
+        function actualizarContadorSeguidores(delta) {
+            let contador = parseInt($('#contadorSeguidores').text());
+            contador += delta;
+            $('#contadorSeguidores').text(contador);
         }
-    });
-});
-
-
-function actualizarContadorSeguidores(delta) {
-    let contador = parseInt($('#contadorSeguidores').text());
-    contador += delta;
-    $('#contadorSeguidores').text(contador);
-}
 
 
     </script>
