@@ -1,17 +1,13 @@
 <?php
 session_start();
-require '../config.php';
+require __DIR__ . '/../Conexion.php';  // ← conexión mysqli
 
 if (!isset($_SESSION['usuario'])) {
     header("Location: ../Index.php");
     exit();
 }
 
-$id_emisor = $_SESSION['usuario']['id'] ?? null;
-
-if ($id_emisor === null) {
-    die("No se pudo obtener el ID del emisor");
-}
+$id_emisor = $_SESSION['usuario']['ID_Usuario'];
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("ID de usuario inválido");
@@ -23,31 +19,32 @@ if ($id_emisor === $id_remitente) {
     die("No puedes chatear contigo mismo");
 }
 
-// Paso 1: Verificar si ya existe un chat privado
-$stmt_check = $conn->prepare("CALL SP_ObtenerChatPrivado(:rem1, :em1, :rem2, :em2)");
-$stmt_check->execute([
-    ':rem1' => $id_remitente,
-    ':em1' => $id_emisor,
-    ':rem2' => $id_emisor,
-    ':em2' => $id_remitente
-]);
-$result = $stmt_check->fetch(PDO::FETCH_ASSOC);
-$stmt_check->closeCursor();
+// Verificamos si ya existe chat privado
+$stmt_check = $conexion->prepare("CALL SP_ObtenerChatPrivado(?, ?, ?, ?)");
+$stmt_check->bind_param("iiii", $id_remitente, $id_emisor, $id_emisor, $id_remitente);
+$stmt_check->execute();
+$res_check = $stmt_check->get_result();
 
-if ($result && isset($result['id_chat'])) {
-    $id_chat = $result['id_chat'];
+if ($row = $res_check->fetch_assoc()) {
+    $id_chat = $row['id_chat'];
+    $res_check->free();
+    $stmt_check->close();
 } else {
-    // Paso 2: Crear nuevo chat si no existe
-    $stmt_insert = $conn->prepare("CALL SP_CrearChatPrivado(:remitente, :emisor)");
-    $stmt_insert->execute([
-        ':remitente' => $id_remitente,
-        ':emisor' => $id_emisor
-    ]);
-    $stmt_insert->closeCursor();
+    $res_check->free();
+    $stmt_check->close();
 
-    // Paso 3: Obtener el último chat creado (alternativamente puedes devolverlo desde el procedure)
-    $stmt_last_id = $conn->query("SELECT LAST_INSERT_ID() AS id_chat");
-    $id_chat = $stmt_last_id->fetch(PDO::FETCH_ASSOC)['id_chat'];
+    while ($conexion->more_results() && $conexion->next_result()) { }
+
+    $stmt_insert = $conexion->prepare("CALL SP_CrearChatPrivado(?, ?)");
+    $stmt_insert->bind_param("ii", $id_remitente, $id_emisor);
+    $stmt_insert->execute();
+    $stmt_insert->close();
+
+    while ($conexion->more_results() && $conexion->next_result()) { }
+
+    $result_last = $conexion->query("SELECT LAST_INSERT_ID() AS id_chat");
+    $row_last = $result_last->fetch_assoc();
+    $id_chat = $row_last['id_chat'];
 }
 
 header("Location: ../Chat.php?id=" . $id_chat);

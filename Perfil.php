@@ -112,6 +112,27 @@ $nicknameUsuario = htmlspecialchars($usuarioLog['Nickname']);
 $rolUsuario = htmlspecialchars($usuarioLog['Rol']);
 $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuarioLog['Biografia']) : 'Sin biografía';
 
+
+// ✅ CONSULTA SI YA SE SIGUEN MUTUAMENTE
+$hayFollowMutuo = false;
+
+$stmtMutuo = $conexion->prepare("
+    SELECT 
+        (SELECT Estado FROM Seguidores WHERE Id_usuario_seguidor = ? AND Id_usuario_artista = ?) AS sigoA,
+        (SELECT Estado FROM Seguidores WHERE Id_usuario_seguidor = ? AND Id_usuario_artista = ?) AS meSigue
+");
+
+$stmtMutuo->bind_param("iiii", $idUsuarioLog, $idArtista, $idArtista, $idUsuarioLog);
+$stmtMutuo->execute();
+$resMutuo = $stmtMutuo->get_result();
+
+if ($resMutuo->num_rows > 0) {
+    $filaMutuo = $resMutuo->fetch_assoc();
+    if ($filaMutuo['sigoA'] === 'Activo' && $filaMutuo['meSigue'] === 'Activo') {
+        $hayFollowMutuo = true;
+    }
+}
+$stmtMutuo->close();
 ?>
 
 
@@ -226,11 +247,15 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
                             </button>
                         <?php endif; ?>
 
-
-
                         <button>Subs</button>
-                        <button onclick="location.href='Chat.php'">Message</button>
+
+                        <?php if ($hayFollowMutuo): ?>
+                            <button onclick="location.href='PHP/crear_chat.php?id=<?php echo $idArtista; ?>'">Message</button>
+                        <?php else: ?>
+                            <button disabled style="opacity: 0.5; cursor: not-allowed;">Message</button>
+                        <?php endif; ?>
                     </div>
+
                 </div>
             </div>
             <div class="perfil-info-social" id="perfil-info-social">
