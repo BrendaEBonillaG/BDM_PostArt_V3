@@ -201,13 +201,6 @@ $id_creador = $publicacion['ID_Creador'];
                     <i class='bx bxs-home'></i>
                 </button>
 
-                <!-- Botón de perfil del creador -->
-                <button onclick="location.href='Perfil.php?id=<?php echo $id_creador; ?>&t=<?php echo time(); ?>'"
-                    class="icon-button" title="Perfil del creador">
-                    <i class='bx bxs-user'></i>
-                </button>
-
-
                 <!-- Botón de seguir -->
                 <button onclick="seguirUsuario(<?php echo $id_creador; ?>)" class="icon-button" title="Seguir">
                     <i class='bx bxs-user-plus'></i>

@@ -6,7 +6,8 @@ session_start();
 require __DIR__ . '/Conexion.php';
 
 // 🔧 FUNCIÓN GLOBAL PARA LIMPIAR EL BUFFER
-function limpiarBufferMysqli($conexion) {
+function limpiarBufferMysqli($conexion)
+{
     while ($conexion->more_results() && $conexion->next_result()) {
         if ($resultado = $conexion->store_result()) {
             $resultado->free();
@@ -87,8 +88,8 @@ $twitter = $artista['Twitter'] ?? '#';
 $youtube = $artista['Youtube'] ?? '#';
 
 // Variables del usuario logueado (navbar)
-$fotoUsuario = !empty($usuarioLog['Foto_perfil']) && is_string($usuarioLog['Foto_perfil']) 
-    ? 'data:image/jpeg;base64,' . base64_encode($usuarioLog['Foto_perfil']) 
+$fotoUsuario = !empty($usuarioLog['Foto_perfil']) && is_string($usuarioLog['Foto_perfil'])
+    ? 'data:image/jpeg;base64,' . base64_encode($usuarioLog['Foto_perfil'])
     : 'imagenes-prueba/User.jpg';
 
 $nicknameUsuario = htmlspecialchars($usuarioLog['Nickname']);
@@ -196,12 +197,19 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
                     <br>
                     <div class="data-perfil-info">
                         <h3>--<br><span>Post</span></h3>
-                      <h3><?php echo $totalSeguidores; ?><br><span>Followers</span></h3>
+                        <h3><?php echo $totalSeguidores; ?><br><span>Followers</span></h3>
 
                         <h3>--<br><span>Following</span></h3>
                     </div>
                     <div class="actionBtn-perfil-info" style="gap: 8px;">
-                        <button id="btnFollow" data-artista="<?php echo $idArtista; ?>">Follow</button>
+                        <?php if ($idUsuarioLog !== $idArtista): ?>
+                            <button id="btnFollow" data-artista="<?php echo $idArtista; ?>"
+                                data-seguidores="<?php echo $totalSeguidores; ?>">
+                                Follow
+                            </button>
+
+                        <?php endif; ?>
+
 
                         <button>Subs</button>
                         <button onclick="location.href='Chat.php'">Message</button>
@@ -229,34 +237,41 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
         </div>
     </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="../BDM_PostArt_V3/js/script.js"></script>
-<script src="../BDM_PostArt_V3/js/enlaces.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../BDM_PostArt_V3/js/script.js"></script>
+    <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
 
-<script>
-    $('#btnFollow').on('click', function () {
-        const idArtista = $(this).data('artista');
+    <script>
+        $('#btnFollow').on('click', function () {
+            const idArtista = $(this).data('artista');
+            let totalSeguidores = parseInt($(this).data('seguidores'));
 
-        $.ajax({
-            url: 'PHP/follow.php',
-            method: 'POST',
-            data: {
-                artista_id: idArtista
-            },
-            success: function (response) {
-                if (response === 'ok') {
-                    alert('Ahora sigues a este artista.');
-                    $('#btnFollow').text('Following').prop('disabled', true);
-                } else {
-                    alert('Error al seguir al artista.');
+            $.ajax({
+                url: 'PHP/follow.php',
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    artista_id: idArtista
+                },
+                success: function (response) {
+                    if (response.status === 'ok') {
+                        $('#btnFollow').text('Following').prop('disabled', true);
+                        totalSeguidores += 1;
+                        $('.data-perfil-info h3 span:contains("Followers")').prev().text(totalSeguidores);
+                    } else if (response.status === 'ya_se_sigue') {
+                        alert('Ya sigues a este usuario');
+                    } else {
+                        alert('Error: ' + response.status);
+                    }
+                },
+                error: function () {
+                    alert('Error de conexión con el servidor.');
                 }
-            },
-            error: function () {
-                alert('Error de conexión con el servidor.');
-            }
+            });
         });
-    });
-</script>
+
+
+    </script>
 
 </body>
 
