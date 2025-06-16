@@ -31,10 +31,9 @@ $idArtista = intval($_GET['id']);
 // Validamos si está accediendo a su propio perfil
 $idUsuarioLog = $_SESSION['usuario']['ID_Usuario'];
 if ($idArtista === $idUsuarioLog) {
-    //header('Location: Picture.php');
-    //exit();
+    // Puedes redirigir si deseas, de momento lo dejamos
 }
-echo "ID GET: $idArtista | ID Logueado: $idUsuarioLog";
+
 // ✅ CONSULTA DE DATOS DEL ARTISTA
 $stmt = $conexion->prepare("CALL ObtenerDatosPerfilArtista(?)");
 $stmt->bind_param("i", $idArtista);
@@ -47,7 +46,25 @@ if ($res->num_rows === 0) {
 }
 $artista = $res->fetch_assoc();
 $stmt->close();
-limpiarBufferMysqli($conexion);  // 🔧 LIMPIAMOS BUFFER
+limpiarBufferMysqli($conexion);  // 🔧 LIMPIAMOS BUFFER solo después de cerrar el CALL
+
+// ✅ CONSULTA SI YA LO SIGUE
+$isFollowing = false;
+
+$stmtSeguir = $conexion->prepare("SELECT Estado FROM Seguidores WHERE Id_usuario_seguidor = ? AND Id_usuario_artista = ?");
+$stmtSeguir->bind_param("ii", $idUsuarioLog, $idArtista);
+$stmtSeguir->execute();
+$resSeguir = $stmtSeguir->get_result();
+
+if ($resSeguir->num_rows > 0) {
+    $filaSeguir = $resSeguir->fetch_assoc();
+    if ($filaSeguir['Estado'] === 'Activo') {
+        $isFollowing = true;
+    }
+}
+
+$resSeguir->close();
+$stmtSeguir->close();
 
 // ✅ CONSULTA DEL TOTAL DE SEGUIDORES
 $stmtSeguidores = $conexion->prepare("CALL ObtenerTotalSeguidores(?)");
@@ -60,7 +77,6 @@ if ($resSeguidores->num_rows > 0) {
     $fila = $resSeguidores->fetch_assoc();
     $totalSeguidores = $fila['total_seguidores'];
 }
-$resSeguidores->close();
 $stmtSeguidores->close();
 limpiarBufferMysqli($conexion);  // 🔧 LIMPIAMOS BUFFER
 
@@ -96,8 +112,8 @@ $nicknameUsuario = htmlspecialchars($usuarioLog['Nickname']);
 $rolUsuario = htmlspecialchars($usuarioLog['Rol']);
 $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuarioLog['Biografia']) : 'Sin biografía';
 
-
 ?>
+
 
 
 <!DOCTYPE html>
@@ -197,7 +213,8 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
                     <br>
                     <div class="data-perfil-info">
                         <h3>--<br><span>Post</span></h3>
-                        <h3><?php echo $totalSeguidores; ?><br><span>Followers</span></h3>
+                        <h3 id="contadorSeguidores"><?php echo $totalSeguidores; ?></h3><br><span>Followers</span>
+
 
                         <h3>--<br><span>Following</span></h3>
                     </div>
@@ -242,36 +259,43 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
     <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
 
     <script>
-        $('#btnFollow').on('click', function () {
-            const idArtista = $(this).data('artista');
-            const boton = $(this);
+       $('#btnFollow').on('click', function () {
+    const idArtista = $(this).data('artista');
+    const boton = $(this);
 
-            $.ajax({
-                url: 'PHP/follow.php',
-                method: 'POST',
-                data: { artista_id: idArtista },
-                success: function (response) {
-                    // Ya viene como JSON
-                    switch (response.status) {
-                        case 'seguido':
-                            boton.text('Following').prop('disabled', false).removeClass('unfollow').addClass('follow');
-                            break;
-                        case 'cancelado':
-                            boton.text('Follow').prop('disabled', false).removeClass('follow').addClass('unfollow');
-                            break;
-                        case 'error_mismo_usuario':
-                            alert('No puedes seguirte a ti mismo.');
-                            break;
-                        default:
-                            alert('Error inesperado: ' + response.status);
-                    }
-                },
-                error: function () {
-                    alert('Error de conexión con el servidor.');
-                }
-            });
-        });
+    $.ajax({
+        url: 'PHP/follow.php',
+        method: 'POST',
+        data: { artista_id: idArtista },
+        success: function (response) {
+            switch(response.status) {
+                case 'seguido':
+                    boton.text('Following');
+                    actualizarContadorSeguidores(1);
+                    break;
+                case 'cancelado':
+                    boton.text('Follow');
+                    actualizarContadorSeguidores(-1);
+                    break;
+                case 'error_mismo_usuario':
+                    alert('No puedes seguirte a ti mismo.');
+                    break;
+                default:
+                    alert('Error inesperado: ' + response.status);
+            }
+        },
+        error: function () {
+            alert('Error de conexión con el servidor.');
+        }
+    });
+});
 
+
+function actualizarContadorSeguidores(delta) {
+    let contador = parseInt($('#contadorSeguidores').text());
+    contador += delta;
+    $('#contadorSeguidores').text(contador);
+}
 
 
     </script>
