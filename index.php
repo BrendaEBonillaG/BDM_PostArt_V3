@@ -142,6 +142,8 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
                 $rol = htmlspecialchars($fila['Rol']);
                 $titulo = htmlspecialchars($fila['Titulo']);
                 $idPublicacion = intval($fila['Id_publicacion']);
+                $idCreador = intval($fila['ID_Usuario']);
+
 
                 // ✅ Verificamos si este post tiene like por el usuario
                 $yaTieneLike = in_array($idPublicacion, $likes_usuario);
@@ -149,7 +151,8 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
 
                 echo "
         <div class='card-image-post'>
-            <a href='Picture.php?id={$idPublicacion}' class='tag-artist-info'>
+            <a href='Perfil.php?id={$idCreador}' class='tag-artist-info'>
+
                 <div class='tag-artist-avatar'>
                     <img src='{$perfilSrc}' alt='Perfil de Usuario'>
                 </div>

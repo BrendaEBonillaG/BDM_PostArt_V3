@@ -6,7 +6,8 @@ session_start();
 require __DIR__ . '/Conexion.php';
 
 // 🔧 FUNCIÓN GLOBAL PARA LIMPIAR EL BUFFER
-function limpiarBufferMysqli($conexion) {
+function limpiarBufferMysqli($conexion)
+{
     while ($conexion->more_results() && $conexion->next_result()) {
         if ($resultado = $conexion->store_result()) {
             $resultado->free();
@@ -30,10 +31,9 @@ $idArtista = intval($_GET['id']);
 // Validamos si está accediendo a su propio perfil
 $idUsuarioLog = $_SESSION['usuario']['ID_Usuario'];
 if ($idArtista === $idUsuarioLog) {
-    //header('Location: Picture.php');
-    //exit();
+    // Puedes redirigir si deseas, de momento lo dejamos
 }
-echo "ID GET: $idArtista | ID Logueado: $idUsuarioLog";
+
 // ✅ CONSULTA DE DATOS DEL ARTISTA
 $stmt = $conexion->prepare("CALL ObtenerDatosPerfilArtista(?)");
 $stmt->bind_param("i", $idArtista);
@@ -46,7 +46,25 @@ if ($res->num_rows === 0) {
 }
 $artista = $res->fetch_assoc();
 $stmt->close();
-limpiarBufferMysqli($conexion);  // 🔧 LIMPIAMOS BUFFER
+limpiarBufferMysqli($conexion);  // 🔧 LIMPIAMOS BUFFER solo después de cerrar el CALL
+
+// ✅ CONSULTA SI YA LO SIGUE
+$isFollowing = false;
+
+$stmtSeguir = $conexion->prepare("SELECT Estado FROM Seguidores WHERE Id_usuario_seguidor = ? AND Id_usuario_artista = ?");
+$stmtSeguir->bind_param("ii", $idUsuarioLog, $idArtista);
+$stmtSeguir->execute();
+$resSeguir = $stmtSeguir->get_result();
+
+if ($resSeguir->num_rows > 0) {
+    $filaSeguir = $resSeguir->fetch_assoc();
+    if ($filaSeguir['Estado'] === 'Activo') {
+        $isFollowing = true;
+    }
+}
+
+$resSeguir->close();
+$stmtSeguir->close();
 
 // ✅ CONSULTA DEL TOTAL DE SEGUIDORES
 $stmtSeguidores = $conexion->prepare("CALL ObtenerTotalSeguidores(?)");
@@ -59,7 +77,6 @@ if ($resSeguidores->num_rows > 0) {
     $fila = $resSeguidores->fetch_assoc();
     $totalSeguidores = $fila['total_seguidores'];
 }
-$resSeguidores->close();
 $stmtSeguidores->close();
 limpiarBufferMysqli($conexion);  // 🔧 LIMPIAMOS BUFFER
 
@@ -87,16 +104,16 @@ $twitter = $artista['Twitter'] ?? '#';
 $youtube = $artista['Youtube'] ?? '#';
 
 // Variables del usuario logueado (navbar)
-$fotoUsuario = !empty($usuarioLog['Foto_perfil']) && is_string($usuarioLog['Foto_perfil']) 
-    ? 'data:image/jpeg;base64,' . base64_encode($usuarioLog['Foto_perfil']) 
+$fotoUsuario = !empty($usuarioLog['Foto_perfil']) && is_string($usuarioLog['Foto_perfil'])
+    ? 'data:image/jpeg;base64,' . base64_encode($usuarioLog['Foto_perfil'])
     : 'imagenes-prueba/User.jpg';
 
 $nicknameUsuario = htmlspecialchars($usuarioLog['Nickname']);
 $rolUsuario = htmlspecialchars($usuarioLog['Rol']);
 $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuarioLog['Biografia']) : 'Sin biografía';
 
-
 ?>
+
 
 
 <!DOCTYPE html>
@@ -196,12 +213,20 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
                     <br>
                     <div class="data-perfil-info">
                         <h3>--<br><span>Post</span></h3>
-                      <h3><?php echo $totalSeguidores; ?><br><span>Followers</span></h3>
+                        <h3 id="contadorSeguidores"><?php echo $totalSeguidores; ?></h3><br><span>Followers</span>
+
 
                         <h3>--<br><span>Following</span></h3>
                     </div>
                     <div class="actionBtn-perfil-info" style="gap: 8px;">
-                        <button id="btnFollow" data-artista="<?php echo $idArtista; ?>">Follow</button>
+                        <?php if ($idUsuarioLog !== $idArtista): ?>
+                            <button id="btnFollow" data-artista="<?php echo $idArtista; ?>"
+                                data-seguidores="<?php echo $totalSeguidores; ?>">
+                                <?php echo $isFollowing ? 'Following' : 'Follow'; ?>
+                            </button>
+                        <?php endif; ?>
+
+
 
                         <button>Subs</button>
                         <button onclick="location.href='Chat.php'">Message</button>
@@ -229,34 +254,51 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
         </div>
     </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="../BDM_PostArt_V3/js/script.js"></script>
-<script src="../BDM_PostArt_V3/js/enlaces.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../BDM_PostArt_V3/js/script.js"></script>
+    <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
 
-<script>
-    $('#btnFollow').on('click', function () {
-        const idArtista = $(this).data('artista');
+    <script>
+        $('#btnFollow').on('click', function () {
+            const idArtista = $(this).data('artista');
+            const boton = $(this);
 
-        $.ajax({
-            url: 'PHP/follow.php',
-            method: 'POST',
-            data: {
-                artista_id: idArtista
-            },
-            success: function (response) {
-                if (response === 'ok') {
-                    alert('Ahora sigues a este artista.');
-                    $('#btnFollow').text('Following').prop('disabled', true);
-                } else {
-                    alert('Error al seguir al artista.');
+            $.ajax({
+                url: 'PHP/follow.php',
+                method: 'POST',
+                data: { artista_id: idArtista },
+                success: function (response) {
+                    switch (response.status) {
+                        case 'seguido':
+                            boton.text('Following');
+                            actualizarContadorSeguidores(1);
+                            break;
+                        case 'cancelado':
+                            boton.text('Follow');
+                            actualizarContadorSeguidores(-1);
+                            break;
+                        case 'error_mismo_usuario':
+                            alert('No puedes seguirte a ti mismo.');
+                            break;
+                        default:
+                            alert('Error inesperado: ' + response.status);
+                    }
+                },
+                error: function () {
+                    alert('Error de conexión con el servidor.');
                 }
-            },
-            error: function () {
-                alert('Error de conexión con el servidor.');
-            }
+            });
         });
-    });
-</script>
+
+
+        function actualizarContadorSeguidores(delta) {
+            let contador = parseInt($('#contadorSeguidores').text());
+            contador += delta;
+            $('#contadorSeguidores').text(contador);
+        }
+
+
+    </script>
 
 </body>
 

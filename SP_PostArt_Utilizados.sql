@@ -164,6 +164,7 @@ END;
 
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS SeguirArtista;
 DELIMITER //
 
 CREATE PROCEDURE SeguirArtista(
@@ -171,29 +172,54 @@ CREATE PROCEDURE SeguirArtista(
     IN p_id_artista INT
 )
 fin: BEGIN
+
     -- Validación: no puede seguirse a sí mismo
     IF p_id_seguidor = p_id_artista THEN
         SELECT 'error_mismo_usuario' AS resultado;
         LEAVE fin;
     END IF;
 
-    -- Validación: verificar si ya lo sigue
-    IF EXISTS (
-        SELECT 1 
-        FROM Seguidores 
-        WHERE Id_usuario_seguidor = p_id_seguidor AND Id_usuario_artista = p_id_artista
-    ) THEN
-        SELECT 'ya' AS resultado;
-        LEAVE fin;
+    DECLARE estado_actual VARCHAR(20);
+
+    -- Buscar si ya existe relación
+    SELECT Estado INTO estado_actual
+    FROM Seguidores
+    WHERE Id_usuario_seguidor = p_id_seguidor AND Id_usuario_artista = p_id_artista
+    LIMIT 1;
+
+    -- Si existe
+    IF estado_actual IS NOT NULL THEN
+
+        -- Si está activo lo cancelamos
+        IF estado_actual = 'Activo' THEN
+            UPDATE Seguidores
+            SET Estado = 'Cancelado'
+            WHERE Id_usuario_seguidor = p_id_seguidor AND Id_usuario_artista = p_id_artista;
+            SELECT 'cancelado' AS resultado;
+            LEAVE fin;
+        END IF;
+
+        -- Si estaba cancelado lo reactivamos
+        IF estado_actual = 'Cancelado' THEN
+            UPDATE Seguidores
+            SET Estado = 'Activo'
+            WHERE Id_usuario_seguidor = p_id_seguidor AND Id_usuario_artista = p_id_artista;
+            SELECT 'seguido' AS resultado;
+            LEAVE fin;
+        END IF;
+
     END IF;
 
-    -- Insertar nuevo seguimiento
-    INSERT INTO Seguidores (Id_usuario_seguidor, Id_usuario_artista)
-    VALUES (p_id_seguidor, p_id_artista);
+    -- Si no existía lo insertamos como nuevo activo
+    INSERT INTO Seguidores (Id_usuario_seguidor, Id_usuario_artista, Estado)
+    VALUES (p_id_seguidor, p_id_artista, 'Activo');
+    SELECT 'seguido' AS resultado;
 
-    SELECT 'ok' AS resultado;
 END;
 //
+DELIMITER ;
+
+
 
 DROP PROCEDURE IF EXISTS SP_ObtenerEstadisticasPerfil;
 
@@ -365,6 +391,9 @@ END //
 
 DELIMITER ;
 
+USE PostArt;
+SELECT * FROM Seguidores;
+SELECT * FROM Usuario;
 DELIMITER //
 
 CREATE PROCEDURE SP_ObtenerPublicacionesActivas()
