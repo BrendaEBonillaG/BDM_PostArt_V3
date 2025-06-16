@@ -45,7 +45,8 @@ CREATE TABLE Publicaciones (
 	FOREIGN KEY (Id_usuario) REFERENCES Usuario(Id_usuario),
 	FOREIGN KEY (Id_Categoria) REFERENCES Categorias(Id_Categoria)
 );
-
+USE PostArt;
+SELECT * FROM Comentarios;
 -- Tabla de Comentarios
 CREATE TABLE Comentarios (
     Id_comentario INT AUTO_INCREMENT PRIMARY KEY,

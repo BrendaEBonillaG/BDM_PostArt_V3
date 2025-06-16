@@ -244,24 +244,26 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
     <script>
         $('#btnFollow').on('click', function () {
             const idArtista = $(this).data('artista');
-            let totalSeguidores = parseInt($(this).data('seguidores'));
+            const boton = $(this);
 
             $.ajax({
                 url: 'PHP/follow.php',
                 method: 'POST',
-                dataType: 'json',
-                data: {
-                    artista_id: idArtista
-                },
+                data: { artista_id: idArtista },
                 success: function (response) {
-                    if (response.status === 'ok') {
-                        $('#btnFollow').text('Following').prop('disabled', true);
-                        totalSeguidores += 1;
-                        $('.data-perfil-info h3 span:contains("Followers")').prev().text(totalSeguidores);
-                    } else if (response.status === 'ya_se_sigue') {
-                        alert('Ya sigues a este usuario');
-                    } else {
-                        alert('Error: ' + response.status);
+                    // Ya viene como JSON
+                    switch (response.status) {
+                        case 'seguido':
+                            boton.text('Following').prop('disabled', false).removeClass('unfollow').addClass('follow');
+                            break;
+                        case 'cancelado':
+                            boton.text('Follow').prop('disabled', false).removeClass('follow').addClass('unfollow');
+                            break;
+                        case 'error_mismo_usuario':
+                            alert('No puedes seguirte a ti mismo.');
+                            break;
+                        default:
+                            alert('Error inesperado: ' + response.status);
                     }
                 },
                 error: function () {
@@ -269,6 +271,7 @@ $biografiaUsuario = !empty($usuarioLog['Biografia']) ? htmlspecialchars($usuario
                 }
             });
         });
+
 
 
     </script>
