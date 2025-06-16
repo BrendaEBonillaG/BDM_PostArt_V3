@@ -52,16 +52,6 @@ Event1menu.forEach(function(icon) {
     });
 });
 
-// Evento para los íconos de favoritos
-const Event2menu = document.querySelectorAll('.bx.bxs-hot.menu-favoritos');
-
-Event2menu.forEach(function(icon) { 
-    icon.addEventListener('click', function(event) {
-        event.stopPropagation(); // Evita que el clic se propague
-        window.location.href = 'Favoritos.php'; // Redirige a Favoritos.php
-    });
-});
-
 // Evento para los íconos de añadir
 const Event3menu = document.querySelectorAll('.bx.bxs-add-to-queue');
 
@@ -100,25 +90,18 @@ Event6menu.forEach(function(icon) {
     });
 });
 
-
 // Manejo del botón "No"
 document.getElementById('noBtn').addEventListener('click', function() {
-    document.getElementById('confirmationModal').style.display = 'none'; // Oculta la ventana modal
-    
-    // Restaura el color de fondo a --blue-panel
-    document.documentElement.style.setProperty('--blue-panel', '#05a8ee5d'); // O usa 'var(--blue-panel)' si lo prefieres
+    document.getElementById('confirmationModal').style.display = 'none';
+    document.documentElement.style.setProperty('--blue-panel', '#05a8ee5d');
     document.querySelector('.pantalla-blur').style.setProperty('mix-blend-mode', 'color');
 });
 
-// Manejo del botón "Yes"
+// ✅ Aquí está el nuevo logout funcional:
 document.getElementById('yesBtn').addEventListener('click', function() {
-    // Aquí puedes agregar la lógica para cerrar sesión
-    alert('Logged out!'); // Ejemplo de acción al hacer clic en "Yes"
-    document.getElementById('confirmationModal').style.display = 'none'; // Oculta la ventana modal
-    
-    // Redirige a login.html o realiza la acción de cierre de sesión
-    window.location.href = 'login.html'; // Redirige a login.html
+    window.location.href = 'PHP/Logout.php';
 });
+
 
 // Evento para el botón del menú de perfil
 $(".menu-perfil-btn").click(function(event) {

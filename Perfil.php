@@ -162,9 +162,7 @@ $stmtMutuo->close();
             </div>
             <div class="activity-header-bar">
                 <div class="message-botton-activity-bar">
-                    <button onclick="location.href='groups_dash.html'">
-                        <i class='bx bxs-message-error'></i>
-                    </button>
+                      
                     <button onclick="location.href='Chat.php'" class="icon-button">
                         <i class='bx bxs-message-minus'></i>
                     </button>
@@ -202,7 +200,7 @@ $stmtMutuo->close();
         </div>
         <div class="btns-menu-profile">
             <span><i class='bx bxs-user'></i></span>
-            <span><i class='bx bxs-hot menu-favoritos'></i></span>
+ 
             <span><i class='bx bxs-add-to-queue'></i></span>
             <span><i class='bx bxs-donate-heart'></i></span>
             <span><i class='bx bx-plus-circle'></i></span>
