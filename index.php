@@ -127,15 +127,15 @@ while ($likeRow = $resultLikes->fetch_assoc()) {
 $stmtLikes->close();
 
 // Primero obtenemos TODAS las publicaciones en un array temporal
-$stmt = $conexion->prepare("CALL SP_ObtenerPublicacionesActivas()");
-$stmt->execute();
-$resultado = $stmt->get_result();
+
+$resultado = $conexion->query("SELECT * FROM Vista_Publicaciones_Activas");
+
 
 $publicaciones = [];
 while ($fila = $resultado->fetch_assoc()) {
     $publicaciones[] = $fila;
 }
-$stmt->close();
+
 
 // LIMPIAMOS el buffer de resultados pendientes del SP
 while ($conexion->more_results() && $conexion->next_result()) {}

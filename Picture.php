@@ -65,11 +65,10 @@ limpiarBufferMysqli($conexion);  // 🔧 IMPORTANTE
 // ✅ CONSULTA DE COMENTARIOS
 $comentarios = [];
 $stmtComentarios = $conexion->prepare("
-    SELECT c.Comentario, c.Fecha_comentario, u.Nickname 
-    FROM Comentarios c 
-    JOIN Usuario u ON c.Id_usuario = u.Id_usuario 
-    WHERE c.Id_publicacion = ? AND c.Estado = 'Activo' 
-    ORDER BY c.Fecha_comentario DESC
+    SELECT Comentario, Fecha_comentario, Nickname
+    FROM Vista_Comentarios_Publicaciones
+    WHERE Id_publicacion = ?
+    ORDER BY Fecha_comentario DESC
 ");
 $stmtComentarios->bind_param("i", $idPublicacion);
 $stmtComentarios->execute();
@@ -79,7 +78,7 @@ while ($coment = $resComentarios->fetch_assoc()) {
     $comentarios[] = $coment;
 }
 $stmtComentarios->close();
-limpiarBufferMysqli($conexion); // 🔧 también aquí
+
 
 // Variables del post y autor
 $tituloPublicacion = $publicacion['Titulo'];
