@@ -397,7 +397,9 @@ DELIMITER ;
 
 USE PostArt;
 SELECT * FROM Seguidores;
-SELECT * FROM Usuario;
+SELECT * FROM Publicaciones;
+
+DROP PROCEDURE SP_ObtenerPublicacionesActivas;
 DELIMITER //
 
 CREATE PROCEDURE SP_ObtenerPublicacionesActivas()
@@ -406,6 +408,7 @@ BEGIN
         p.Id_publicacion, 
         p.Titulo, 
         p.Imagen, 
+        p.Tipo,   -- ← AGREGADO AQUI
         u.ID_Usuario, 
         u.Foto_perfil, 
         u.Nombre, 
@@ -417,6 +420,7 @@ BEGIN
 END //
 
 DELIMITER ;
+
 
 DROP PROCEDURE SP_ObtenerPublicacionPorID;
 DELIMITER //
