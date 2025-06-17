@@ -115,7 +115,7 @@ CREATE TABLE Subscripciones (
 	FOREIGN KEY (Id_usuario_comprador) REFERENCES Usuario(Id_usuario),
     FOREIGN KEY (Id_usuario_artista) REFERENCES Usuario(Id_usuario)
 );
-
+SELECT * FROM Subscripciones;
 
 
 SELECT * FROM Mensajes_Privado;
