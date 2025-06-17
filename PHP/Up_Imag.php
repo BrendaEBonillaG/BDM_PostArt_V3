@@ -6,7 +6,7 @@ if ($_POST["dato"] == 'inserta_archivo') {
     $usuario = $_SESSION['usuario']['ID_Usuario'];
     $titulo = $_POST["titulo"];
     $descripcion = $_POST["descripcion"];
-    $tipo = $_POST["tipo"];
+    $tipo = $_POST["tipo"];  // Pública o Subscripción
     $catego = $_POST["categoria"] ?? 1;
 
     if (!empty($_FILES['imagen']['tmp_name'])) {
@@ -14,10 +14,7 @@ if ($_POST["dato"] == 'inserta_archivo') {
         $contenidoImagen = file_get_contents($archivo['tmp_name']);
 
         $stmt = $conexion->prepare("CALL SP_InsertarPublicacion(?, ?, ?, ?, ?, ?)");
-
-        $null = null;
-        $stmt->bind_param("iisssb", $usuario, $catego, $titulo, $descripcion, $contenidoImagen, $tipo);
-        $stmt->send_long_data(4, $contenidoImagen); 
+        $stmt->bind_param("iissss", $usuario, $catego, $titulo, $descripcion, $contenidoImagen, $tipo);
 
         if ($stmt->execute()) {
             echo "Imagen subida correctamente.";
@@ -26,9 +23,12 @@ if ($_POST["dato"] == 'inserta_archivo') {
         }
 
         $stmt->close();
+
+        // Limpiar buffer para no saturar conexiones posteriores
         while ($conexion->more_results() && $conexion->next_result()) {
             $conexion->use_result();
         }
+
     } else {
         echo 'No se ha seleccionado ninguna imagen';
     }
