@@ -162,7 +162,7 @@ $stmtMutuo->close();
             </div>
             <div class="activity-header-bar">
                 <div class="message-botton-activity-bar">
-                      
+
                     <button onclick="location.href='Chat.php'" class="icon-button">
                         <i class='bx bxs-message-minus'></i>
                     </button>
@@ -200,7 +200,7 @@ $stmtMutuo->close();
         </div>
         <div class="btns-menu-profile">
             <span><i class='bx bxs-user'></i></span>
- 
+
             <span><i class='bx bxs-add-to-queue'></i></span>
             <span><i class='bx bxs-donate-heart'></i></span>
             <span><i class='bx bx-plus-circle'></i></span>
@@ -239,18 +239,22 @@ $stmtMutuo->close();
                     </div>
                     <div class="actionBtn-perfil-info" style="gap: 8px;">
                         <?php if ($idUsuarioLog !== $idArtista): ?>
-                            <button id="btnFollow" data-artista="<?php echo $idArtista; ?>"
-                                data-seguidores="<?php echo $totalSeguidores; ?>">
-                                <?php echo $isFollowing ? 'Following' : 'Follow'; ?>
-                            </button>
+                        <button id="btnFollow" data-artista="<?php echo $idArtista; ?>"
+                            data-seguidores="<?php echo $totalSeguidores; ?>">
+                            <?php echo $isFollowing ? 'Following' : 'Follow'; ?>
+                        </button>
                         <?php endif; ?>
 
-                        <button>Subs</button>
+                        <button id="btnSubs" data-artista="<?php echo $idArtista; ?>">Subs</button>
+
+
+
 
                         <?php if ($hayFollowMutuo): ?>
-                            <button onclick="location.href='PHP/crear_chat.php?id=<?php echo $idArtista; ?>'">Message</button>
+                        <button
+                            onclick="location.href='PHP/crear_chat.php?id=<?php echo $idArtista; ?>'">Message</button>
                         <?php else: ?>
-                            <button disabled style="opacity: 0.5; cursor: not-allowed;">Message</button>
+                        <button disabled style="opacity: 0.5; cursor: not-allowed;">Message</button>
                         <?php endif; ?>
                     </div>
 
@@ -282,46 +286,60 @@ $stmtMutuo->close();
     <script src="../BDM_PostArt_V3/js/enlaces.js"></script>
 
     <script>
-        $('#btnFollow').on('click', function () {
-            const idArtista = $(this).data('artista');
-            const boton = $(this);
+    $('#btnFollow').on('click', function() {
+        const idArtista = $(this).data('artista');
+        const boton = $(this);
 
-            $.ajax({
-                url: 'PHP/follow.php',
-                method: 'POST',
-                data: { artista_id: idArtista },
-                success: function (response) {
-                    switch (response.status) {
-                        case 'seguido':
-                            boton.text('Following');
-                            actualizarContadorSeguidores(1);
-                            break;
-                        case 'cancelado':
-                            boton.text('Follow');
-                            actualizarContadorSeguidores(-1);
-                            break;
-                        case 'error_mismo_usuario':
-                            alert('No puedes seguirte a ti mismo.');
-                            break;
-                        default:
-                            alert('Error inesperado: ' + response.status);
-                    }
-                },
-                error: function () {
-                    alert('Error de conexión con el servidor.');
+        $.ajax({
+            url: 'PHP/follow.php',
+            method: 'POST',
+            data: {
+                artista_id: idArtista
+            },
+            success: function(response) {
+                switch (response.status) {
+                    case 'seguido':
+                        boton.text('Following');
+                        actualizarContadorSeguidores(1);
+                        break;
+                    case 'cancelado':
+                        boton.text('Follow');
+                        actualizarContadorSeguidores(-1);
+                        break;
+                    case 'error_mismo_usuario':
+                        alert('No puedes seguirte a ti mismo.');
+                        break;
+                    default:
+                        alert('Error inesperado: ' + response.status);
                 }
-            });
+            },
+            error: function() {
+                alert('Error de conexión con el servidor.');
+            }
         });
+    });
 
 
-        function actualizarContadorSeguidores(delta) {
-            let contador = parseInt($('#contadorSeguidores').text());
-            contador += delta;
-            $('#contadorSeguidores').text(contador);
-        }
+    function actualizarContadorSeguidores(delta) {
+        let contador = parseInt($('#contadorSeguidores').text());
+        contador += delta;
+        $('#contadorSeguidores').text(contador);
+    }
 
 
+    $('#btnSubs').on('click', function() {
+        const idArtista = $(this).data('artista');
+
+        // ✅ Guardamos temporalmente el id del artista en localStorage para que la ventana de pago lo pueda leer
+        localStorage.setItem("id_usuario_comprador", <?php echo $idUsuarioLog; ?>);
+        localStorage.setItem("id_usuario_artista", <?php echo $idArtista; ?>);
+        localStorage.setItem("montoDonacion", "50.00"); // Aquí defines el monto de la subscripción
+
+        // ✅ Abrimos la ventana de pago
+        window.open("tarjeta.html", "_blank", "width=800,height=700");
+    });
     </script>
+
 
 </body>
 
