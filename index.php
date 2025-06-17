@@ -52,7 +52,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
 
 
                 <div class="message-botton-activity-bar">
-                      
+
                     <button onclick="location.href='Chat.php'" class="icon-button">
                         <i class='bx bxs-message-minus'></i>
                     </button>
@@ -90,7 +90,7 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
         </div>
         <div class="btns-menu-profile">
             <span><i class='bx bxs-user'></i></span>
- 
+
             <span><i class='bx bxs-add-to-queue'></i></span>
             <span><i class='bx bxs-donate-heart'></i></span>
             <span><i class='bx bx-plus-circle'></i></span>
@@ -114,64 +114,93 @@ $biografia = $usuario['Biografia'] ?? 'Artista sin descripción';
 
     <div class="container-picture-dashboard">
         <?php
-      
-        $likes_usuario = [];
-        $stmtLikes = $conexion->prepare("SELECT Id_publicacion FROM Me_Gusta WHERE Id_usuario = ?");
-        $stmtLikes->bind_param("i", $id_usuario);
-        $stmtLikes->execute();
-        $resultLikes = $stmtLikes->get_result();
-        while ($likeRow = $resultLikes->fetch_assoc()) {
-            $likes_usuario[] = $likeRow['Id_publicacion'];
-        }
-        $stmtLikes->close();
 
-        // AHORA sí podemos llamar al SP sin problema
-        $stmt = $conexion->prepare("CALL SP_ObtenerPublicacionesActivas()");
-        $stmt->execute();
-        $resultado = $stmt->get_result();
+// Sacamos los likes igual que antes
+$likes_usuario = [];
+$stmtLikes = $conexion->prepare("SELECT Id_publicacion FROM Me_Gusta WHERE Id_usuario = ?");
+$stmtLikes->bind_param("i", $id_usuario);
+$stmtLikes->execute();
+$resultLikes = $stmtLikes->get_result();
+while ($likeRow = $resultLikes->fetch_assoc()) {
+    $likes_usuario[] = $likeRow['Id_publicacion'];
+}
+$stmtLikes->close();
 
+// Primero obtenemos TODAS las publicaciones en un array temporal
+$stmt = $conexion->prepare("CALL SP_ObtenerPublicacionesActivas()");
+$stmt->execute();
+$resultado = $stmt->get_result();
 
-        if ($resultado && $resultado->num_rows > 0) {
-            while ($fila = $resultado->fetch_assoc()) {
-                $imagenCodificada = base64_encode($fila['Imagen']);
-                $src = !empty($fila['Imagen']) ? 'data:image/jpeg;base64,' . $imagenCodificada : "imagenes-prueba/default_post.jpg";
-                $perfilSrc = !empty($fila['Foto_perfil']) ? 'data:image/jpeg;base64,' . base64_encode($fila['Foto_perfil']) : "imagenes-prueba/User.jpg";
-                $nombre = htmlspecialchars($fila['Nombre']);
-                $rol = htmlspecialchars($fila['Rol']);
-                $titulo = htmlspecialchars($fila['Titulo']);
-                $idPublicacion = intval($fila['Id_publicacion']);
-                $idCreador = intval($fila['ID_Usuario']);
+$publicaciones = [];
+while ($fila = $resultado->fetch_assoc()) {
+    $publicaciones[] = $fila;
+}
+$stmt->close();
 
+// LIMPIAMOS el buffer de resultados pendientes del SP
+while ($conexion->more_results() && $conexion->next_result()) {}
 
-                // ✅ Verificamos si este post tiene like por el usuario
-                $yaTieneLike = in_array($idPublicacion, $likes_usuario);
-                $claseLike = $yaTieneLike ? "active-like" : "";
+// Ahora sí podemos recorrer las publicaciones y hacer las validaciones sin errores
+if (count($publicaciones) > 0) {
+    foreach ($publicaciones as $fila) {
+        $tipoPublicacion = $fila['Tipo'] ?? 'Publica';  // Por si viene nulo
+        $idArtistaPublicacion = $fila['ID_Usuario'];
 
-                echo "
-        <div class='card-image-post'>
-            <a href='Perfil.php?id={$idCreador}' class='tag-artist-info'>
+        $mostrarPublicacion = false;
 
-                <div class='tag-artist-avatar'>
-                    <img src='{$perfilSrc}' alt='Perfil de Usuario'>
-                </div>
-                <div class='tag-artist-name'>
-                    <h3>{$nombre}</h3><h6>{$rol}</h6>
-                </div>
-            </a>
-            <div class='tag-paw-botton paw-button {$claseLike}' data-publicacion-id='{$idPublicacion}'>
-                <i class='bx bxs-hot'></i>
-            </div>
-            <a href='Picture.php?id={$idPublicacion}' class='imag' id='cardImagePost'>
-                <img src='{$src}' alt='{$titulo}'>
-            </a>
-        </div>";
-            }
+        if ($tipoPublicacion === 'Publica') {
+            $mostrarPublicacion = true;
         } else {
-            echo "<p>No hay publicaciones disponibles.</p>";
+            // Validar si estoy suscrito al artista
+            $stmtSub = $conexion->prepare("SELECT 1 FROM Subscripciones WHERE Id_usuario_comprador = ? AND Id_usuario_artista = ? AND Estado = 'Activa' LIMIT 1");
+            $stmtSub->bind_param("ii", $id_usuario, $idArtistaPublicacion);
+            $stmtSub->execute();
+            $resSub = $stmtSub->get_result();
+
+            if ($resSub->num_rows > 0) {
+                $mostrarPublicacion = true;
+            }
+            $stmtSub->close();
         }
 
-        $stmt->close();
-        ?>
+        if ($mostrarPublicacion) {
+            $imagenCodificada = base64_encode($fila['Imagen']);
+            $src = !empty($fila['Imagen']) ? 'data:image/jpeg;base64,' . $imagenCodificada : "imagenes-prueba/default_post.jpg";
+            $perfilSrc = !empty($fila['Foto_perfil']) ? 'data:image/jpeg;base64,' . base64_encode($fila['Foto_perfil']) : "imagenes-prueba/User.jpg";
+            $nombre = htmlspecialchars($fila['Nombre']);
+            $rol = htmlspecialchars($fila['Rol']);
+            $titulo = htmlspecialchars($fila['Titulo']);
+            $idPublicacion = intval($fila['Id_publicacion']);
+            $idCreador = intval($fila['ID_Usuario']);
+
+            $yaTieneLike = in_array($idPublicacion, $likes_usuario);
+            $claseLike = $yaTieneLike ? "active-like" : "";
+
+            echo "
+            <div class='card-image-post'>
+                <a href='Perfil.php?id={$idCreador}' class='tag-artist-info'>
+                    <div class='tag-artist-avatar'>
+                        <img src='{$perfilSrc}' alt='Perfil de Usuario'>
+                    </div>
+                    <div class='tag-artist-name'>
+                        <h3>{$nombre}</h3><h6>{$rol}</h6>
+                    </div>
+                </a>
+                <div class='tag-paw-botton paw-button {$claseLike}' data-publicacion-id='{$idPublicacion}'>
+                    <i class='bx bxs-hot'></i>
+                </div>
+                <a href='Picture.php?id={$idPublicacion}' class='imag' id='cardImagePost'>
+                    <img src='{$src}' alt='{$titulo}'>
+                </a>
+            </div>";
+        }
+    }
+} else {
+    echo "<p>No hay publicaciones disponibles.</p>";
+}
+
+?>
+
     </div>
 
     <script>
