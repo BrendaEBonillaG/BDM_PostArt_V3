@@ -400,26 +400,6 @@ SELECT * FROM Seguidores;
 SELECT * FROM Publicaciones;
 
 DROP PROCEDURE SP_ObtenerPublicacionesActivas;
-DELIMITER //
-
-CREATE PROCEDURE SP_ObtenerPublicacionesActivas()
-BEGIN
-    SELECT 
-        p.Id_publicacion, 
-        p.Titulo, 
-        p.Imagen, 
-        p.Tipo,   -- ← AGREGADO AQUI
-        u.ID_Usuario, 
-        u.Foto_perfil, 
-        u.Nombre, 
-        u.Rol
-    FROM Publicaciones p 
-    JOIN Usuario u ON p.ID_Usuario = u.ID_Usuario 
-    WHERE p.Estado = 'Activo' 
-    ORDER BY p.Fecha_creacion DESC;
-END //
-
-DELIMITER ;
 
 
 DROP PROCEDURE SP_ObtenerPublicacionPorID;
@@ -571,19 +551,6 @@ BEGIN
     JOIN Categorias c ON d.Id_Categoria = c.Id_Categoria
     JOIN Usuario u ON d.Id_usuario = u.ID_Usuario
     WHERE d.Id_Donacion = p_id;
-END //
-
-DELIMITER ;
-SELECT * FROM Donaciones;
-DELIMITER //
-
-CREATE PROCEDURE SP_ObtenerResumenDonacion(IN p_id_donacion INT)
-BEGIN
-    SELECT 
-        IFNULL(SUM(Monto), 0) AS Recaudado,
-        COUNT(DISTINCT Id_usuario_donante) AS Participantes
-    FROM Donadores
-    WHERE Id_donacion = p_id_donacion;
 END //
 
 DELIMITER ;

@@ -81,8 +81,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-      document.getElementById("payment-form").addEventListener("submit", function (e) {
+<script>
+document.getElementById("payment-form").addEventListener("submit", function (e) {
     e.preventDefault();
 
     const form = e.target;
@@ -92,46 +92,53 @@
         method: "POST",
         body: formData
     })
-        .then(response => response.text())
-        .then(result => {
-            if (result.trim() === "valido") {
-                const monto = localStorage.getItem("montoDonacion");
-                const id_donacion = localStorage.getItem("id_donacion");
-                const id_usuario_artista = localStorage.getItem("id_usuario_artista");
-                const id_usuario_comprador = localStorage.getItem("id_usuario_comprador");
+    .then(response => response.text())
+    .then(result => {
+        if (result.trim() === "valido") {
+            const monto = localStorage.getItem("montoDonacion");
+            const id_donacion = localStorage.getItem("id_donacion");
+            const id_usuario_artista = localStorage.getItem("id_usuario_artista");
+            const id_usuario_comprador = localStorage.getItem("id_usuario_comprador");
 
-                const donacionData = new FormData();
-                donacionData.append("monto", monto);
-                donacionData.append("id_donacion", id_donacion);
-                donacionData.append("id_usuario_artista", id_usuario_artista);
+            const donacionData = new FormData();
+            donacionData.append("monto", monto);
+            donacionData.append("id_donacion", id_donacion);
+            donacionData.append("id_usuario_artista", id_usuario_artista);
 
-                fetch("PHP/Donar.php", {
+            fetch("PHP/Donar.php", {
+                method: "POST",
+                body: donacionData
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log("Donación registrada correctamente.");
+
+                const subsData = new FormData();
+                subsData.append("comprador_id", id_usuario_comprador);
+                subsData.append("artista_id", id_usuario_artista);
+                subsData.append("monto", monto);
+
+                return fetch("PHP/subscripcion.php", {
                     method: "POST",
-                    body: donacionData
-                })
-                .then(response => response.text())
-                .then(data => {
-                    console.log("Donación registrada correctamente.");
+                    body: subsData
+                });
+            })
+            .then(res => res.text())
+            .then(text => {
+                console.log("Respuesta cruda subscripción:", text);
 
-                    const subsData = new FormData();
-                    subsData.append("comprador_id", id_usuario_comprador);
-                    subsData.append("artista_id", id_usuario_artista);
-                    subsData.append("monto", monto);
+                let respuesta;
+                try {
+                    respuesta = JSON.parse(text);
+                } catch (e) {
+                    console.error("Respuesta no es JSON válido:", e);
+                    alert("Error inesperado al registrar la subscripción.");
+                    return;
+                }
 
-                    return fetch("PHP/subscripcion.php", {
-                        method: "POST",
-                        body: subsData
-                    });
-                })
-                .then(res => res.json())
-                .then(respuesta => {
-                    if (respuesta.status === 'suscrito' || respuesta.status === 'reactivado') {
-                        alert("Subscripción registrada correctamente");
-                    } else {
-                        alert("Nota: subscripción ya activa o error: " + respuesta.status);
-                    }
+                if (respuesta.status === 'suscrito' || respuesta.status === 'reactivado') {
+                    alert("Subscripción registrada correctamente");
 
-                    // Solo cerramos la ventana después de todo el proceso correcto
                     try {
                         if (window.opener && window.opener.actualizarDonacionDesdePago) {
                             window.opener.actualizarDonacionDesdePago();
@@ -141,23 +148,28 @@
                     }
 
                     window.close();
-                })
-                .catch(err => {
-                    console.error("Error al registrar subscripción:", err);
-                    alert("Error al registrar subscripción");
-                });
+                } else if (respuesta.status === 'ya_suscrito') {
+                    alert("Nota: ya estás suscrito a este artista.");
+                } else {
+                    alert("Nota: subscripción no realizada. Motivo: " + respuesta.status);
+                }
+            })
+            .catch(err => {
+                console.error("Error al registrar subscripción:", err);
+                alert("Error de red al registrar subscripción.");
+            });
 
-            } else {
-                alert("Tarjeta inválida. Verifica los datos ingresados.");
-            }
-        })
-        .catch(error => {
-            console.error("Error al validar tarjeta:", error);
-            alert("Error al validar la tarjeta.");
-        });
+        } else {
+            alert("Tarjeta inválida. Verifica los datos ingresados.");
+        }
+    })
+    .catch(error => {
+        console.error("Error al validar tarjeta:", error);
+        alert("Error al validar la tarjeta.");
+    });
 });
+</script>
 
-    </script>
 
 </body>
 

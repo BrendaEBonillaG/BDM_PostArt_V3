@@ -73,7 +73,11 @@ if ($hoy > $fecha_limite) {
 
 
 
-$stmt = $conexion->prepare("CALL SP_ObtenerResumenDonacion(?)");
+$stmt = $conexion->prepare("
+    SELECT Recaudado, Participantes 
+    FROM Vista_Donaciones_Recaudadas 
+    WHERE Id_donacion = ?
+");
 $stmt->bind_param("i", $idProyecto);
 $stmt->execute();
 
@@ -82,6 +86,7 @@ $row = $res->fetch_assoc();
 
 $recaudado = $row['Recaudado'] ?? 0;
 $numero_participantes = $row['Participantes'] ?? 0;
+
 $completado = ($recaudado >= $meta || $dias_restantes <= 0);
 
 
