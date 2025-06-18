@@ -11,3 +11,5 @@ CREATE FUNCTION TotalDonadoArtista(idArtista INT)
 RETURNS DECIMAL(10,2)
 DETERMINISTIC
 RETURN (SELECT IFNULL(SUM(Monto), 0) FROM Donadores WHERE Id_usuario_artista = idArtista);
+
+SELECT * FROM Subscripciones;
